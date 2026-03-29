@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className="px-32">
+      <body className="xl:px-32">
         <Header />
         {children}
       </body>

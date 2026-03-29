@@ -27,11 +27,6 @@ body {
   box-sizing: border-box;
 }
 
-.btn-primary {
-  @apply rounded-md px-4 py-2 text-sm font-medium text-white hover:bg-gray-800;
-  background-color: #5841EA;
-}
-
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
@@ -73,6 +68,8 @@ body {
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-brand: #5841EA;
+  --color-brand-hover: #4632D0;
 }
 
 :root {
