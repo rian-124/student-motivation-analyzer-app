@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className="px-32">
+    <html lang="en" className={cn("font-sans", geist.variable, raleway.variable)}>
+      <body className="xl:px-32">
         <Header />
         {children}
       </body>
