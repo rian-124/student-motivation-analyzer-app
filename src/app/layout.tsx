@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const raleway = Raleway({
   variable: "--font-raleway",
@@ -22,10 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable, raleway.variable)}>
-      <body className="xl:px-32">
-        <Header />
-        {children}
+    <html
+      lang="en"
+      className={cn("font-sans", geist.variable, raleway.variable)}
+    >
+      <body>
+        <div className="min-h-screen xl:px-32">
+          <Header />
+          <main>{children}</main>
+        </div>
       </body>
     </html>
   );

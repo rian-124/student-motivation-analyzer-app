@@ -42,7 +42,6 @@ export default function Navbar() {
           ))}
         </NavigationMenuList>
       </NavigationMenu>
-
       {/* Mobile & Tablet */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>

@@ -69,7 +69,11 @@ body {
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-brand: #5841EA;
+  --color-brand-accent: #FBD300;
+  --color-brand-accent-hover: #E3BE00;
+  --color-brand-secondary: #101566;
   --color-brand-hover: #4632D0;
+  --color-brand-hover-secondary: #101566;
 }
 
 :root {

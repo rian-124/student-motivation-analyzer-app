@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 
 export default function Header() {
   return (
-    <header className="w-full flex lg:gap-20 sm:gap-5 items-center justify-between border-b px-8 py-4 border border-red-500">
+    <header className="w-full flex lg:gap-20 sm:gap-5 items-center justify-between px-8 py-4">
       <Link href="/">
         <Image src="/next.svg" alt="Logo" width={100} height={24} priority />
       </Link>
