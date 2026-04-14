@@ -64,7 +64,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/sign-up"
+              href="/login"
               onClick={() => setOpen(false)}
               className="mt-4 mx-2 rounded-lg bg-brand! py-2.5 text-center text-sm text-white hover:bg-brand-hover!"
             >

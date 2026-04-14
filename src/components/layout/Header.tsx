@@ -11,7 +11,7 @@ export default function Header() {
       </Link>
       <Navbar />
       <Button asChild className="hidden md:inline-flex lg:inline-flex ml-auto bg-brand! p-5 font-normal text-xs hover:bg-brand-hover!">
-        <Link href={"/sign-up"}>Sign Up</Link>
+        <Link href={"/login"}>Sign Up</Link>
       </Button>
     </header>
   );

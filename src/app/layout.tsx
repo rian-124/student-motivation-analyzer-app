@@ -27,10 +27,7 @@ export default function RootLayout({
       className={cn("font-sans", geist.variable, raleway.variable)}
     >
       <body className="h-screen overflow-x-hidden">
-        <div className="xl:px-32 h-full flex flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-        </div>
+        {children}
       </body>
     </html>
   );
