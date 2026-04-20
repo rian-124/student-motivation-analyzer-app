@@ -13,7 +13,7 @@ import {
   BookOpen,
 } from "lucide-react";
 
-export default function DashboardPage() {
+export default function Dashboard() {
   return (
     <section className="p-6 space-y-6 w-full min-h-screen">
 

@@ -1,70 +1,62 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LogIn } from "lucide-react";
 
 export default function Login() {
   return (
-    <section className="w-full flex justify-center items-center min-h-screen">
-      <Card className="shadow-xl border-2 w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">
-            Login
-          </CardTitle>
-          <CardDescription>
-            Masuk ke akun kamu
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm space-y-6">
 
-        <CardContent className="space-y-4">
-          <form className="space-y-4">
-            {/* Email */}
+        {/* HEADER */}
+        <div className="text-center space-y-3">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-extrabold shadow-lg">
+            M
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-bold">Selamat Datang</h1>
+            <p className="text-sm text-muted-foreground">
+              Student Motivation Analyzer System
+            </p>
+          </div>
+        </div>
+
+        {/* FORM */}
+        <Card>
+          <CardContent className="p-6 space-y-4">
+
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@email.com"
-                required
-              />
+              <Label>Email / NIM</Label>
+              <Input placeholder="Masukkan email atau NIM" />
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-              />
+              <Label>Password</Label>
+              <Input type="password" placeholder="Masukkan password" />
             </div>
 
-            {/* Button */}
-            <Button className="w-full">
-              Login
+            <Button className="w-full gap-2">
+              <LogIn className="w-4 h-4" />
+              Masuk
             </Button>
-          </form>
 
-          {/* Footer */}
-          <p className="text-center text-sm text-muted-foreground">
-            Belum punya akun?{" "}
-            <a
-              href="/sign-up"
-              className="text-primary font-medium hover:underline"
-            >
-              Sign up
-            </a>
-          </p>
-        </CardContent>
-      </Card>
-    </section>
+            <Separator />
+
+            {/* DESKRIPSI */}
+            <p className="text-center text-xs text-muted-foreground leading-relaxed">
+              Sistem ini digunakan untuk menganalisis tingkat motivasi mahasiswa berdasarkan data
+              audio dan MFCC secara otomatis untuk membantu dosen dalam proses evaluasi akademik.
+            </p>
+
+          </CardContent>
+        </Card>
+
+      </div>
+    </div>
   );
 }

@@ -74,14 +74,14 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
           href: "/lecture/dashboard",
         },
         {
-          title: "Grafik Kelas",
-          icon: Monitor,
-          href: "/lecture/graph-class",
-        },
-        {
           title: "Grafik Keseluruhan",
           icon: Monitor,
           href: "/lecture/graph-overall",
+        },
+        {
+          title: "Grafik Kelas",
+          icon: Monitor,
+          href: "/lecture/graph-class",
         },
       ],
     },
@@ -90,19 +90,14 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
       roles: ["lecture"],
       items: [
         {
-          title: "Dashboard",
+          title: "Semua Hasil Analisis",
           icon: Monitor,
-          href: "/lecture/dashboard",
+          href: "/lecture/analysis-results",
         },
         {
-          title: "Grafik Kelas",
+          title: "Unduh Laporan",
           icon: Monitor,
-          href: "/lecture/graph-class",
-        },
-        {
-          title: "Grafik Keseluruhan",
-          icon: Monitor,
-          href: "/lecture/graph-overall",
+          href: "/lecture/download-report",
         },
       ],
     },
@@ -116,9 +111,14 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
           href: "/admin/dashboard",
         },
         {
-          title: "Manajemen User",
+          title: "Manajemen Mahasiswa",
           icon: UserIcon,
-          href: "/admin/users",
+          href: "/admin/manage-student",
+        },
+        {
+          title: "Manajemen Dosen",
+          icon: UserIcon,
+          href: "/admin/manage-lecture",
         },
       ],
     },
@@ -139,7 +139,7 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
 export function AppSidebar() {
   const pathname = usePathname();
   // Nantinya ganti "student" ini dengan state dari Context/Auth
-  const userRole: UserRole = "lecture"; 
+  const userRole: UserRole = "admin"; 
 
   // Panggil fungsi untuk mendapatkan data terbaru berdasarkan role
   const sidebarData = getSidebarData(userRole);
@@ -152,7 +152,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/images/logo/logo-icon.svg"
+            src="/logo-icon.svg"
             alt="Logo icon"
             width={32}
             height={32}

@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function GrafikKelasPage() {
+export default function GrapClass() {
   return (
     <section className="p-6 space-y-6">
 
