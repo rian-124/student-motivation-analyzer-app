@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Raleway, Geist } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });

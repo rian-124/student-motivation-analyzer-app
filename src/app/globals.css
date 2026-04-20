@@ -15,8 +15,8 @@ body {
 }
 
 body {
-  min-height: 100%;
-  display: flex;
+  min-height: 100vh;
+  display: block;
   flex-direction: column;
   font-family: var(--font-raleway), sans-serif;
   -webkit-font-smoothing: antialiased;
