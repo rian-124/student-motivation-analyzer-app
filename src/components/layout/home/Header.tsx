@@ -14,7 +14,7 @@ export default function Header() {
         asChild
         className="hidden md:inline-flex lg:inline-flex ml-auto bg-brand! p-5 font-normal text-xs hover:bg-brand-hover!"
       >
-        <Link href={"/login"}>Sign Up</Link>
+        <Link href={"/login"}>Login</Link>
       </Button>
     </header>
   );

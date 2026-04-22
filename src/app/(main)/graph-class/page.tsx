@@ -1,0 +1,1 @@
+export { default } from "@/features/graph-class/page/graphClassPage";
