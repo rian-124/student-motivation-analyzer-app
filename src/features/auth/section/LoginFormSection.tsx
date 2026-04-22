@@ -21,15 +21,15 @@ export default function LoginFormSection() {
           <Input type="password" placeholder="Masukkan password" />
         </div>
 
-        <Button className="w-full gap-2">
+        <Button type="submit" className="w-full gap-2 bg-brand! hover:bg-brand-hover! shadow-lg shadow-brand/20">
           <LogIn className="w-4 h-4" />
           Masuk
         </Button>
 
-        <Separator />
+        <Separator className="bg-brand/10" />
 
         {/* DESKRIPSI */}
-        <p className="text-center text-xs text-muted-foreground leading-relaxed">
+        <p className="text-center text-xs text-brand-secondary/70 leading-relaxed">
           Sistem ini digunakan untuk menganalisis tingkat motivasi mahasiswa
           berdasarkan data audio dan MFCC secara otomatis untuk membantu dosen
           dalam proses evaluasi akademik.

@@ -19,7 +19,7 @@ export default function ChartSection() {
             {[80, 60, 90, 50, 70, 85, 55, 75].map((val, i) => (
               <div key={i} className="flex flex-col items-center gap-1">
                 <div
-                  className="w-4 bg-green-500 rounded"
+                  className="w-4 bg-brand rounded"
                   style={{ height: `${val}%` }}
                 />
                 <span className="text-xs text-muted-foreground">

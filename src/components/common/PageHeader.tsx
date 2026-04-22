@@ -11,8 +11,8 @@ export default function PageHeader({ title, description, actions }: PageHeaderPr
   return (
     <div className="flex flex-col lg:flex-row justify-between gap-4">
       <div>
-        <h1 className="text-xl font-bold">{title}</h1>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <h1 className="text-xl font-bold text-brand-secondary">{title}</h1>
+        <p className="text-sm text-brand-secondary/70">{description}</p>
       </div>
       {actions && <div className="flex gap-2">{actions}</div>}
     </div>

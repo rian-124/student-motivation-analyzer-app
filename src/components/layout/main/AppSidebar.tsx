@@ -11,13 +11,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { UserRole } from "@/lib/types/Role.type"; // Pastikan path ini benar
+import { UserRole } from "@/lib/types/Role.type"; 
 
 import {
   LucideIcon,
   Mic,
   Monitor,
   UserIcon,
+  BarChart3,
+  PieChart,
+  FileText,
+  Users,
+  LayoutDashboard
 } from "lucide-react";
 
 import Image from "next/image";
@@ -58,7 +63,7 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
         },
         {
           title: "Hasil Analisis",
-          icon: Monitor,
+          icon: FileText,
           href: "/student/analysis-results",
           roles: ["student"],
         },
@@ -70,18 +75,18 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
       items: [
         {
           title: "Dashboard",
-          icon: Monitor,
-          href: "/lecture/dashboard",
+          icon: LayoutDashboard,
+          href: "/dashboard",
         },
         {
           title: "Grafik Keseluruhan",
-          icon: Monitor,
-          href: "/lecture/graph-overall",
+          icon: PieChart,
+          href: "/graph-overall",
         },
         {
           title: "Grafik Kelas",
-          icon: Monitor,
-          href: "/lecture/graph-class",
+          icon: BarChart3,
+          href: "/graph-class",
         },
       ],
     },
@@ -92,12 +97,12 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
         {
           title: "Semua Hasil Analisis",
           icon: Monitor,
-          href: "/lecture/analysis-results",
+          href: "/analysis-results",
         },
         {
           title: "Unduh Laporan",
-          icon: Monitor,
-          href: "/lecture/download-report",
+          icon: FileText,
+          href: "/download-report",
         },
       ],
     },
@@ -107,18 +112,18 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
       items: [
         {
           title: "Dashboard Admin",
-          icon: Monitor,
-          href: "/admin/dashboard",
+          icon: LayoutDashboard,
+          href: "/dashboard",
         },
         {
           title: "Manajemen Mahasiswa",
-          icon: UserIcon,
-          href: "/admin/manage-student",
+          icon: Users,
+          href: "/manage-student",
         },
         {
           title: "Manajemen Dosen",
-          icon: UserIcon,
-          href: "/admin/manage-lecture",
+          icon: Users,
+          href: "/manage-lecture",
         },
       ],
     },
@@ -139,7 +144,7 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
 export function AppSidebar() {
   const pathname = usePathname();
   // Nantinya ganti "student" ini dengan state dari Context/Auth
-  const userRole: UserRole = "admin"; 
+  const userRole: UserRole = "lecture"; 
 
   // Panggil fungsi untuk mendapatkan data terbaru berdasarkan role
   const sidebarData = getSidebarData(userRole);
@@ -147,7 +152,7 @@ export function AppSidebar() {
   const isActive = (href: string) => pathname.startsWith(href);
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar text-brand-secondary">
       {/* ── Logo ── */}
       <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
         <Link href="/" className="flex items-center gap-2">
@@ -158,6 +163,7 @@ export function AppSidebar() {
             height={32}
             className="shrink-0"
           />
+          <span className="font-bold text-brand group-data-[collapsible=icon]:hidden">Motivation Analyzer</span>
         </Link>
       </SidebarHeader>
 
@@ -169,7 +175,7 @@ export function AppSidebar() {
           )
           .map((category) => (
             <SidebarGroup key={category.label}>
-              <SidebarGroupLabel>{category.label}</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-brand-secondary font-semibold">{category.label}</SidebarGroupLabel>
 
               <SidebarMenu>
                 {category.items
@@ -177,22 +183,24 @@ export function AppSidebar() {
                     (item) =>
                       !item.roles || item.roles.includes(userRole)
                   )
-                  .map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        tooltip={item.title}
-                        isActive={
-                          item.href ? isActive(item.href) : false
-                        }
-                      >
-                        <Link href={item.href || "#"}>
-                          <item.icon className="size-4" />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  .map((item) => {
+                    const active = item.href ? isActive(item.href) : false;
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          tooltip={item.title}
+                          isActive={active}
+                          className={active ? "bg-brand/10 text-brand hover:bg-brand/15 hover:text-brand" : "hover:bg-brand/5 hover:text-brand"}
+                        >
+                          <Link href={item.href || "#"}>
+                            <item.icon className="size-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
               </SidebarMenu>
             </SidebarGroup>
           ))}
@@ -200,7 +208,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-4">
         <p className="text-xs text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden">
-          © 2025 Your App
+          © 2025 SMA App
         </p>
       </SidebarFooter>
     </Sidebar>

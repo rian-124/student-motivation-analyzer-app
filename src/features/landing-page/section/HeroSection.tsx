@@ -30,17 +30,17 @@ export default function HeroSection() {
       </div>
       <div className="relative w-1/2 h-[20rem]">
         <div className="w-10 h-10 absolute left-[-60px] top-10 z-10 flex flex-col gap-3">
-          <div className="w-[7.5rem] p-1 rounded-2xl flex items-center gap-2 shadow-[0_16px_40px_rgba(16,21,102,0.12)]">
-            <div className="rounded-full bg-amber-400 w-10 h-10 p-3">
-              <Sparkles className="size-full text-white" />
+          <div className="w-[7.5rem] p-1 rounded-2xl flex items-center gap-2 shadow-[0_16px_40px_rgba(16,21,102,0.12)] bg-white">
+            <div className="rounded-full bg-brand-accent w-10 h-10 p-3">
+              <Sparkles className="size-full text-brand-secondary" />
             </div>
             <div className="text-xs text-gray-500">
               <h1>AI</h1>
               <h2 className="font-bold text-brand-secondary">Motivation</h2>
             </div>
           </div>
-          <div className="w-[7.5rem] ml-7 p-1 rounded-2xl flex items-center gap-2 shadow-[0_16px_40px_rgba(16,21,102,0.12)]">
-            <div className="rounded-full bg-red-500 w-10 h-10 p-3">
+          <div className="w-[7.5rem] ml-7 p-1 rounded-2xl flex items-center gap-2 shadow-[0_16px_40px_rgba(16,21,102,0.12)] bg-white">
+            <div className="rounded-full bg-brand w-10 h-10 p-3">
               <FileAudio className="size-full text-white" />
             </div>
             <div className="text-xs text-gray-500">
@@ -72,17 +72,17 @@ export default function HeroSection() {
           </div>
         </div>
         <div className="w-10 h-10 absolute right-40 -bottom-10 z-10 flex flex-col gap-3">
-          <div className="w-[7.5rem] p-1 rounded-2xl flex items-center gap-2 border border-gray-200 shadow-2xl">
-            <div className="rounded-full bg-amber-400 w-10 h-10 p-3">
-              <Sparkles className="size-full text-white" />
+          <div className="w-[7.5rem] p-1 rounded-2xl flex items-center gap-2 border border-gray-200 shadow-2xl bg-white">
+            <div className="rounded-full bg-brand-accent w-10 h-10 p-3">
+              <Sparkles className="size-full text-brand-secondary" />
             </div>
             <div className="text-xs text-gray-500">
               <h1>AI</h1>
               <h2 className="font-bold text-brand-secondary">Motivation</h2>
             </div>
           </div>
-          <div className="w-[7.5rem] ml-7 p-1 rounded-2xl flex items-center gap-2 border border-gray-200 shadow-2xl">
-            <div className="rounded-full bg-red-500 w-10 h-10 p-3">
+          <div className="w-[7.5rem] ml-7 p-1 rounded-2xl flex items-center gap-2 border border-gray-200 shadow-2xl bg-white">
+            <div className="rounded-full bg-brand w-10 h-10 p-3">
               <FileAudio className="size-full text-white" />
             </div>
             <div className="text-xs text-gray-500">

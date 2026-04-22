@@ -7,18 +7,18 @@ export default function ProfileSummarySection() {
     <Card className="lg:col-span-4 h-fit">
       <CardContent className="p-6 text-center space-y-4">
         {/* AVATAR */}
-        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-teal-500 to-blue-500 flex items-center justify-center text-white text-2xl font-bold">
+        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-brand to-brand-secondary flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-brand/20">
           A
         </div>
 
         {/* NAME */}
         <div>
-          <h2 className="font-semibold text-lg">Admin Sistem</h2>
-          <p className="text-sm text-muted-foreground">Administrator</p>
+          <h2 className="font-semibold text-lg text-brand-secondary">Admin Sistem</h2>
+          <p className="text-sm text-brand-secondary/70">Administrator</p>
         </div>
 
         {/* STATUS */}
-        <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+        <Badge className="bg-brand/10 text-brand border-brand/20">
           ● Akun Aktif
         </Badge>
 

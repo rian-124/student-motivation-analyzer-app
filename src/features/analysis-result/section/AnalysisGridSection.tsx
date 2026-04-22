@@ -17,7 +17,7 @@ export default function AnalysisGridSection() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Energi Suara</span>
-              <span className="text-green-500">91%</span>
+              <span className="text-brand">91%</span>
             </div>
             <Progress value={91} />
           </div>
@@ -25,7 +25,7 @@ export default function AnalysisGridSection() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Kecepatan Bicara</span>
-              <span className="text-blue-500">78%</span>
+              <span className="text-brand-secondary">78%</span>
             </div>
             <Progress value={78} />
           </div>
@@ -33,7 +33,7 @@ export default function AnalysisGridSection() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Variasi Nada</span>
-              <span className="text-teal-500">85%</span>
+              <span className="text-brand-accent">85%</span>
             </div>
             <Progress value={85} />
           </div>
@@ -41,7 +41,7 @@ export default function AnalysisGridSection() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Kelancaran Bicara</span>
-              <span className="text-green-500">88%</span>
+              <span className="text-brand-hover">88%</span>
             </div>
             <Progress value={88} />
           </div>
@@ -49,7 +49,7 @@ export default function AnalysisGridSection() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Kejelasan Artikulasi</span>
-              <span className="text-indigo-500">94%</span>
+              <span className="text-brand">94%</span>
             </div>
             <Progress value={94} />
           </div>

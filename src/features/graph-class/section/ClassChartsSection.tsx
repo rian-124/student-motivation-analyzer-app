@@ -13,7 +13,7 @@ export default function ClassChartsSection() {
             {[70, 60, 80, 65, 90, 75].map((h, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 <div
-                  className="w-4 bg-blue-500 rounded"
+                  className="w-4 bg-brand rounded"
                   style={{ height: `${h}%` }}
                 />
                 <span className="text-xs text-muted-foreground">M{i + 1}</span>

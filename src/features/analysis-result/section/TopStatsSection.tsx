@@ -28,15 +28,15 @@ export default function TopStatsSection() {
       <Card>
         <CardContent className="p-6 flex flex-col items-center text-center space-y-2">
           {/* ICON */}
-          <div className="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center">
-            <Brain className="w-5 h-5 text-teal-500" />
+          <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
+            <Brain className="w-5 h-5 text-brand" />
           </div>
 
           {/* SCORE */}
           <div className="text-3xl font-semibold">92.1</div>
 
           {/* LABEL */}
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-brand-secondary/70">
             Skor MFCC Processing
           </p>
         </CardContent>
@@ -46,15 +46,15 @@ export default function TopStatsSection() {
       <Card>
         <CardContent className="p-6 flex flex-col items-center text-center space-y-2">
           {/* ICON */}
-          <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center">
-            <Mic className="w-5 h-5 text-indigo-500" />
+          <div className="w-10 h-10 rounded-full bg-brand-secondary/10 flex items-center justify-center">
+            <Mic className="w-5 h-5 text-brand-secondary" />
           </div>
 
           {/* SCORE */}
           <div className="text-3xl font-semibold">83.7</div>
 
           {/* LABEL */}
-          <p className="text-sm text-muted-foreground">Skor Speech-to-Text</p>
+          <p className="text-sm text-brand-secondary/70">Skor Speech-to-Text</p>
         </CardContent>
       </Card>
     </div>
