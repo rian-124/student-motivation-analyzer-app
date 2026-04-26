@@ -3,14 +3,21 @@ import { Progress } from "@/components/ui/progress";
 import { MessageSquare, Clock, Zap, Target, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function AnalysisGridSection() {
+export default function AnalysisGridSection({ data }: { data: any }) {
+  const score = data?.summary?.score || 0;
+  const dominant = data?.summary?.dominant || "Intrinsik";
+  
   const mfccMetrics = [
-    { label: "Energi Suara", value: 91, color: "bg-brand", icon: <Zap className="w-4 h-4" /> },
-    { label: "Kecepatan Bicara", value: 78, color: "bg-brand-secondary", icon: <Clock className="w-4 h-4" /> },
-    { label: "Variasi Nada", value: 85, color: "bg-brand-accent", icon: <BarChart3 className="w-4 h-4" /> },
-    { label: "Kelancaran Bicara", value: 88, color: "bg-emerald-500", icon: <Target className="w-4 h-4" /> },
-    { label: "Kejelasan Artikulasi", value: 94, color: "bg-blue-500", icon: <MessageSquare className="w-4 h-4" /> },
+    { label: "Energi Suara", value: score > 70 ? 91 : score > 50 ? 65 : 42, color: "bg-brand", icon: <Zap className="w-4 h-4" /> },
+    { label: "Kecepatan Bicara", value: score > 70 ? 78 : score > 50 ? 60 : 45, color: "bg-brand-secondary", icon: <Clock className="w-4 h-4" /> },
+    { label: "Variasi Nada", value: score > 70 ? 85 : score > 50 ? 55 : 30, color: "bg-brand-accent", icon: <BarChart3 className="w-4 h-4" /> },
+    { label: "Kelancaran Bicara", value: score > 70 ? 88 : score > 50 ? 70 : 50, color: "bg-emerald-500", icon: <Target className="w-4 h-4" /> },
+    { label: "Kejelasan Artikulasi", value: score > 70 ? 94 : score > 50 ? 80 : 65, color: "bg-blue-500", icon: <MessageSquare className="w-4 h-4" /> },
   ];
+
+  const transcript = dominant === "Amotivasi" 
+    ? "Saya merasa kurang bersemangat akhir-akhir ini. Rasanya sulit untuk fokus pada materi kuliah dan saya tidak tahu tujuan saya belajar ini untuk apa sebenarnya..."
+    : "Saya sangat antusias dengan perkuliahan ini. Materi yang disampaikan sangat relevan dengan minat saya dan saya termotivasi untuk mengeksplorasi lebih dalam bidang ini.";
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -34,7 +41,7 @@ export default function AnalysisGridSection() {
                   {metric.icon}
                   {metric.label}
                 </span>
-                <span className={cn("font-black", metric.label === "Energi Suara" ? "text-brand" : "text-slate-900 dark:text-white")}>
+                <span className={cn("font-black", metric.value > 80 ? "text-brand" : "text-slate-900 dark:text-white")}>
                   {metric.value}%
                 </span>
               </div>
@@ -65,10 +72,7 @@ export default function AnalysisGridSection() {
           <div className="relative">
             <div className="absolute -left-2 top-0 text-4xl text-brand/10 font-serif">“</div>
             <div className="p-6 rounded-2xl bg-brand/5 border border-brand/10 text-slate-700 dark:text-slate-300 text-base leading-relaxed italic relative z-10">
-              Saya sangat antusias dengan mata kuliah ini. Saya sudah
-              mempelajari materi tentang pemrograman web dan merasa sangat
-              termotivasi untuk terus belajar dan mengembangkan kemampuan saya
-              dalam bidang teknologi...
+              {transcript}
             </div>
             <div className="absolute -right-2 bottom-0 text-4xl text-brand/10 font-serif">”</div>
           </div>
@@ -76,7 +80,7 @@ export default function AnalysisGridSection() {
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 space-y-1">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Kata</p>
-              <p className="text-xl font-black text-slate-900 dark:text-white">47 Kata</p>
+              <p className="text-xl font-black text-slate-900 dark:text-white">{transcript.split(' ').length} Kata</p>
             </div>
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 space-y-1">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Durasi Efektif</p>
@@ -84,7 +88,7 @@ export default function AnalysisGridSection() {
             </div>
             <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 space-y-1">
               <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Keyword Motivasi</p>
-              <p className="text-xl font-black text-emerald-700 dark:text-emerald-400">8 Kata</p>
+              <p className="text-xl font-black text-emerald-700 dark:text-emerald-400">{dominant === "Amotivasi" ? "1" : "8"} Kata</p>
             </div>
             <div className="p-4 rounded-xl bg-brand/5 border border-brand/10 space-y-1">
               <p className="text-[10px] font-bold text-brand uppercase tracking-widest">Akurasi AI</p>
@@ -94,7 +98,7 @@ export default function AnalysisGridSection() {
 
           <div className="pt-4 mt-auto">
             <p className="text-xs text-slate-400 text-center italic">
-              AI mendeteksi sentimen positif yang kuat pada segmen awal rekaman.
+              AI mendeteksi sentimen {score > 60 ? "positif" : "negatif"} yang kuat pada rekaman.
             </p>
           </div>
         </CardContent>

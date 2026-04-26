@@ -2,27 +2,32 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart3, PieChart, ArrowRight } from "lucide-react";
+import { BarChart3, PieChart, ArrowRight, BookOpen } from "lucide-react";
 import MotivationBarChart from "@/components/common/MotivationBarChart";
 import MotivationPieChart from "@/components/common/MotivationPieChart";
+import { useAuth } from "@/context/AuthContext";
+import { CLASS_DATA, MOTIVATION_DISTRIBUTION, GLOBAL_STATS } from "@/lib/data/dummyData";
 
 export default function ChartSection() {
-  const barData = [
-    { label: "A", value: 80 },
-    { label: "B", value: 60 },
-    { label: "C", value: 90 },
-    { label: "D", value: 50 },
-    { label: "E", value: 70 },
-    { label: "F", value: 85 },
-    { label: "G", value: 55 },
-    { label: "H", value: 75 },
-  ];
+  const { userRole, user } = useAuth();
+  
+  const isAdmin = userRole === "admin";
+  // @ts-ignore - assignedClass exists in dummy user data
+  const userClass = user?.assignedClass || "2021-A";
 
-  const pieData = [
-    { category: "Motivasi Tinggi", value: 57, fill: "#10b981" },
-    { category: "Motivasi Sedang", value: 29, fill: "#f59e0b" },
-    { category: "Motivasi Rendah", value: 14, fill: "#f43f5e" },
-  ];
+  const barData = isAdmin 
+    ? CLASS_DATA.map(c => ({ label: c.label, value: c.value }))
+    : [
+        { label: "Sen", value: 65 },
+        { label: "Sel", value: 72 },
+        { label: "Rab", value: 85 },
+        { label: "Kam", value: 78 },
+        { label: "Jum", value: 90 },
+      ];
+
+  const pieData = isAdmin 
+    ? MOTIVATION_DISTRIBUTION.global 
+    : (MOTIVATION_DISTRIBUTION.classes as any)[userClass] || MOTIVATION_DISTRIBUTION.global;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -31,9 +36,13 @@ export default function ChartSection() {
         <CardHeader className="p-6 pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
             <BarChart3 className="w-4 h-4 text-brand" />
-            Motivasi per Kelas
+            {isAdmin ? "Motivasi per Kelas" : "Tren Motivasi Mingguan"}
           </CardTitle>
-          <p className="text-xs text-slate-500">Rata-rata skor motivasi mahasiswa di tiap kelas.</p>
+          <p className="text-xs text-slate-500">
+            {isAdmin 
+              ? "Rata-rata skor motivasi mahasiswa di tiap kelas bimbingan." 
+              : `Rata-rata motivasi harian untuk ${userClass}.`}
+          </p>
         </CardHeader>
         
         <CardContent className="p-6">
@@ -46,16 +55,20 @@ export default function ChartSection() {
         <CardHeader className="p-6 pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
             <PieChart className="w-4 h-4 text-slate-400" />
-            Distribusi Global
+            {isAdmin ? "Distribusi Global" : `Distribusi ${userClass}`}
           </CardTitle>
-          <p className="text-xs text-slate-500">Total 124 Mahasiswa terdaftar.</p>
+          <p className="text-xs text-slate-500">
+            {isAdmin 
+              ? `Total ${GLOBAL_STATS.totalStudents} Mahasiswa terdaftar.` 
+              : "Berdasarkan hasil analisis bimbingan terbaru."}
+          </p>
         </CardHeader>
         
         <CardContent className="p-6 flex flex-col items-center justify-between">
           <MotivationPieChart data={pieData} />
 
-          <Button variant="ghost" size="sm" className="w-full mt-4 text-xs font-bold text-slate-400 hover:text-brand">
-            Detail Analisis
+          <Button variant="ghost" size="sm" className="w-full mt-4 text-xs font-bold text-slate-400 hover:text-brand transition-all">
+            {isAdmin ? "Lihat Semua Kelas" : "Detail Mahasiswa"}
             <ArrowRight className="w-3 h-3 ml-1.5" />
           </Button>
         </CardContent>

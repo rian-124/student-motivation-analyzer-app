@@ -124,7 +124,7 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
           href: "/manage-student",
         },
         {
-          title: "Manajemen Dosen",
+          title: "Manajemen Dosen Wali",
           icon: Users,
           href: "/manage-lecture",
         },
@@ -152,6 +152,15 @@ export function AppSidebar() {
   const sidebarData = getSidebarData(userRole || "student");
 
   const isActive = (href: string) => pathname.startsWith(href);
+
+  const getRoleLabel = (role: UserRole) => {
+    switch(role) {
+      case "admin": return "Administrator";
+      case "lecture": return "Dosen Wali";
+      case "student": return "Mahasiswa";
+      default: return role;
+    }
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white text-brand-secondary">
@@ -219,12 +228,18 @@ export function AppSidebar() {
         <div className="group-data-[collapsible=icon]:hidden flex items-center justify-between gap-1">
           {user && (
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-[10px] shrink-0 border border-slate-200">
-                {user.name.charAt(0)}
+              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-[10px] shrink-0 border border-slate-200 overflow-hidden">
+                {user.avatar ? (
+                  <Image src={user.avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+                ) : (
+                  user.name.charAt(0)
+                )}
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-[12px] font-bold text-brand-secondary truncate leading-tight">{user.name}</span>
-                <span className="text-[9px] text-brand-secondary/40 font-medium truncate uppercase tracking-tight">{user.role}</span>
+                <span className="text-[9px] text-brand-secondary/40 font-black uppercase tracking-tight">
+                  {getRoleLabel(user.role)}
+                </span>
               </div>
             </div>
           )}
@@ -241,8 +256,12 @@ export function AppSidebar() {
         </div>
         <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-4">
           {user && (
-            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs border border-slate-200">
-              {user.name.charAt(0)}
+            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs border border-slate-200 overflow-hidden">
+              {user.avatar ? (
+                <Image src={user.avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+              ) : (
+                user.name.charAt(0)
+              )}
             </div>
           )}
           <Button 

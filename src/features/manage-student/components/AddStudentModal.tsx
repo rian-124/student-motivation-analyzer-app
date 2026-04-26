@@ -21,9 +21,34 @@ import {
 } from "@/components/ui/select";
 import { UserPlus, User, Mail, Hash, Save } from "lucide-react";
 import { useState } from "react";
+import { Student } from "../page/manageStudentPage";
 
-export function AddStudentModal({ children }: { children: React.ReactNode }) {
+interface AddStudentModalProps {
+  onAdd?: (student: Student) => void;
+  children: React.ReactNode;
+}
+
+export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    id: "",
+    class: "A",
+    email: ""
+  });
+
+  const handleSave = () => {
+    if (onAdd) {
+      onAdd({
+        name: formData.name || "Mahasiswa Baru",
+        id: formData.id || `20210100${Math.floor(Math.random() * 90) + 10}`,
+        class: formData.class.toUpperCase(),
+        email: formData.email || "baru@kampus.ac.id"
+      });
+    }
+    setFormData({ name: "", id: "", class: "A", email: "" });
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -48,6 +73,8 @@ export function AddStudentModal({ children }: { children: React.ReactNode }) {
             <div className="relative">
               <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input 
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
                 placeholder="Nama mahasiswa..." 
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
@@ -61,6 +88,8 @@ export function AddStudentModal({ children }: { children: React.ReactNode }) {
               <div className="relative">
                 <Hash className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <Input 
+                  value={formData.id}
+                  onChange={(e) => setFormData({...formData, id: e.target.value})}
                   placeholder="202101..." 
                   className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
@@ -70,7 +99,7 @@ export function AddStudentModal({ children }: { children: React.ReactNode }) {
             {/* KELAS */}
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Kelas</Label>
-              <Select>
+              <Select value={formData.class.toLowerCase()} onValueChange={(val) => setFormData({...formData, class: val})}>
                 <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
                   <SelectValue placeholder="Pilih" />
                 </SelectTrigger>
@@ -90,6 +119,8 @@ export function AddStudentModal({ children }: { children: React.ReactNode }) {
             <div className="relative">
               <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input 
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
                 type="email" 
                 placeholder="email@kampus.ac.id" 
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
@@ -102,7 +133,7 @@ export function AddStudentModal({ children }: { children: React.ReactNode }) {
           <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl text-xs font-bold text-slate-400 h-9">
             Batal
           </Button>
-          <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95">
+          <Button onClick={handleSave} className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95">
             <Save className="w-3.5 h-3.5 mr-2" />
             Daftarkan
           </Button>

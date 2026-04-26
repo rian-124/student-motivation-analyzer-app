@@ -7,13 +7,13 @@ export default function LectureStatsSection() {
       <StatCard 
         icon={Users} 
         value={16} 
-        label="Total Dosen Terdaftar" 
+        label="Total Dosen Wali" 
         variant="blue" 
       />
       <StatCard
         icon={UserCheck}
         value={16}
-        label="Akun Terverifikasi"
+        label="Dosen Wali Aktif"
         variant="emerald"
       />
     </div>

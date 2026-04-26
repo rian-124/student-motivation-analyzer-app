@@ -5,7 +5,7 @@
     "email": "admin@sma.com",
     "password": "admin123",
     "role": "admin",
-    "avatar": "/avatars/admin.png"
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=admin"
   },
   {
     "id": "2",
@@ -13,14 +13,46 @@
     "email": "dosen@sma.com",
     "password": "dosen123",
     "role": "lecture",
-    "avatar": "/avatars/dosen.png"
+    "assignedClass": "2021-A",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=ahmad"
   },
   {
     "id": "3",
+    "name": "Dr. Sari Dewi, M.Kom.",
+    "email": "sari@sma.com",
+    "password": "dosen123",
+    "role": "lecture",
+    "assignedClass": "2021-B",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=sari"
+  },
+  {
+    "id": "4",
     "name": "Andi Pratama",
     "email": "student@sma.com",
     "password": "student123",
     "role": "student",
-    "avatar": "/avatars/student.png"
+    "class": "2021-A",
+    "nim": "2021010001",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=andi"
+  },
+  {
+    "id": "5",
+    "name": "Rizky Fauzan",
+    "email": "rizky@sma.com",
+    "password": "student123",
+    "role": "student",
+    "class": "2021-A",
+    "nim": "2021010031",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=rizky"
+  },
+  {
+    "id": "6",
+    "name": "Dewi Kusuma",
+    "email": "dewi@sma.com",
+    "password": "student123",
+    "role": "student",
+    "class": "2021-B",
+    "nim": "2021010022",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dewi"
   }
 ]

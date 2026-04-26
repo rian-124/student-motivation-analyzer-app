@@ -21,19 +21,33 @@ import {
 } from "@/components/ui/select";
 import { Edit, User, Mail, Hash, Save } from "lucide-react";
 import { useState } from "react";
+import { Student } from "../page/manageStudentPage";
 
 interface EditStudentModalProps {
-  student: {
-    name: string;
-    id: string;
-    class: string;
-    email: string;
-  };
+  student: Student;
+  onEdit?: (student: Student) => void;
   children: React.ReactNode;
 }
 
-export function EditStudentModal({ student, children }: EditStudentModalProps) {
+export function EditStudentModal({ student, onEdit, children }: EditStudentModalProps) {
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: student.name,
+    class: student.class,
+    email: student.email
+  });
+
+  const handleSave = () => {
+    if (onEdit) {
+      onEdit({
+        ...student,
+        name: formData.name,
+        class: formData.class.toUpperCase(),
+        email: formData.email
+      });
+    }
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -57,7 +71,8 @@ export function EditStudentModal({ student, children }: EditStudentModalProps) {
             <div className="relative">
               <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input 
-                defaultValue={student.name}
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>
@@ -78,7 +93,7 @@ export function EditStudentModal({ student, children }: EditStudentModalProps) {
 
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Kelas</Label>
-              <Select defaultValue={student.class.toLowerCase()}>
+              <Select value={formData.class.toLowerCase()} onValueChange={(val) => setFormData({...formData, class: val})}>
                 <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
                   <SelectValue placeholder="Pilih" />
                 </SelectTrigger>
@@ -98,7 +113,8 @@ export function EditStudentModal({ student, children }: EditStudentModalProps) {
               <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input 
                 type="email" 
-                defaultValue={student.email}
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>
@@ -109,7 +125,7 @@ export function EditStudentModal({ student, children }: EditStudentModalProps) {
           <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl text-xs font-bold text-slate-400 h-9">
             Batal
           </Button>
-          <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95">
+          <Button onClick={handleSave} className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95">
             <Save className="w-3.5 h-3.5 mr-2" />
             Simpan Perubahan
           </Button>

@@ -2,13 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Mic, TrendingUp, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-export default function TopStatsSection() {
+export default function TopStatsSection({ data }: { data: any }) {
+  const score = data?.summary?.score || 0;
+  const status = data?.summary?.status || "N/A";
+  const dominant = data?.summary?.dominant || "N/A";
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       {/* MAIN SCORE CIRCULAR */}
       <Card className="md:col-span-6 border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden relative group">
         <div className="absolute top-0 right-0 p-4">
-          <Badge className="bg-brand/10 text-brand border-none px-3 py-1">Kategori: Tinggi</Badge>
+          <Badge className="bg-brand/10 text-brand border-none px-3 py-1">Kategori: {status}</Badge>
         </div>
         
         <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
@@ -32,13 +36,13 @@ export default function TopStatsSection() {
                 strokeWidth="12"
                 fill="transparent"
                 strokeDasharray={440}
-                strokeDashoffset={440 - (440 * 87.4) / 100}
+                strokeDashoffset={440 - (440 * score) / 100}
                 strokeLinecap="round"
                 className="text-brand transition-all duration-1000 ease-out"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-slate-900 dark:text-white">87.4</span>
+              <span className="text-4xl font-black text-slate-900 dark:text-white">{score}</span>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Skor Total</span>
             </div>
           </div>
@@ -46,26 +50,28 @@ export default function TopStatsSection() {
           <div className="space-y-4 text-center md:text-left">
             <div className="space-y-1">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center justify-center md:justify-start gap-2">
-                Motivasi Luar Biasa!
+                Motivasi {score > 70 ? "Luar Biasa!" : score > 50 ? "Cukup Baik" : "Perlu Ditingkatkan"}
                 <Award className="w-6 h-6 text-brand-accent fill-brand-accent/20" />
               </h2>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-                Anda menunjukkan antusiasme yang sangat tinggi dalam rekaman ini. 
-                Pertahankan ritme dan intonasi bicara Anda yang energik!
+                Dominasi motivasi Anda adalah <span className="font-bold text-brand">{dominant}</span>. 
+                {score > 70 ? " Pertahankan ritme dan antusiasme Anda!" : " Cobalah untuk menemukan tujuan baru yang lebih personal."}
               </p>
             </div>
             
             <div className="flex items-center justify-center md:justify-start gap-4">
               <div className="flex flex-col">
                 <span className="text-xs font-bold text-slate-400 uppercase">Status</span>
-                <span className="text-sm font-bold text-emerald-500">OPTIMAL</span>
+                <span className={`text-sm font-bold ${score > 70 ? "text-emerald-500" : score > 50 ? "text-amber-500" : "text-rose-500"}`}>
+                  {status.toUpperCase()}
+                </span>
               </div>
               <div className="w-px h-8 bg-slate-100 dark:bg-slate-800" />
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-slate-400 uppercase">Tren</span>
+                <span className="text-xs font-bold text-slate-400 uppercase">Fokus Utama</span>
                 <span className="text-sm font-bold text-brand flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
-                  +12% dari sebelumnya
+                  {dominant}
                 </span>
               </div>
             </div>

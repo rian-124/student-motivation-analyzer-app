@@ -11,17 +11,21 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, FileText, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Search, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export default function StudentDetailTableSection() {
+  const router = useRouter();
   const students = [
-    { name: "Andi Pratama", nim: "2021010001", status: "High", score: 87.4, lastUpload: "18 Apr 2026", color: "emerald" },
-    { name: "Siti Rahayu", nim: "2021010008", status: "Medium", score: 63.1, lastUpload: "18 Apr 2026", color: "amber" },
-    { name: "Budi Santoso", nim: "2021010015", status: "Low", score: 31.8, lastUpload: "17 Apr 2026", color: "rose" },
-    { name: "Diana Putri", nim: "2021010022", status: "High", score: 91.2, lastUpload: "20 Apr 2026", color: "emerald" },
-    { name: "Eko Prasetyo", nim: "2021010029", status: "Medium", score: 58.5, lastUpload: "15 Apr 2026", color: "amber" },
+    { id: "4", name: "Andi Pratama", nim: "2021010001", status: "High", score: 87.4, lastUpload: "18 Apr 2026", color: "emerald" },
+    { id: "5", name: "Rizky Fauzan", nim: "2021010031", status: "Low", score: 41.8, lastUpload: "17 Apr 2026", color: "rose" },
+    { id: "6", name: "Dewi Kusuma", nim: "2021010022", status: "High", score: 91.2, lastUpload: "20 Apr 2026", color: "emerald" },
   ];
+
+  const handleViewDetail = (id: string) => {
+    router.push(`/analysis-result?studentId=${id}`);
+  };
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
@@ -78,7 +82,12 @@ export default function StudentDetailTableSection() {
                   </TableCell>
                   <TableCell className="text-slate-500 text-xs px-5">{student.lastUpload}</TableCell>
                   <TableCell className="text-right px-5">
-                    <Button size="sm" variant="outline" className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all">
+                    <Button 
+                      onClick={() => handleViewDetail(student.id)}
+                      size="sm" 
+                      variant="outline" 
+                      className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"
+                    >
                       <FileText className="w-3 h-3 mr-1.5" />
                       Detail
                     </Button>

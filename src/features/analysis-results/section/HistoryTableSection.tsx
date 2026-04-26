@@ -20,15 +20,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, FileText, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function HistoryTableSection() {
+  const router = useRouter();
   const data = [
-    { id: "2021010001", name: "Andi Pratama", class: "A", status: "High", score: 87.4, mfcc: 92.1, date: "18 Apr 2026", color: "emerald" },
-    { id: "2021010022", name: "Dewi Kusuma", class: "C", status: "High", score: 91.2, mfcc: 94.5, date: "17 Apr 2026", color: "emerald" },
-    { id: "2021010008", name: "Siti Rahayu", class: "B", status: "Medium", score: 63.1, mfcc: 67.3, date: "18 Apr 2026", color: "amber" },
-    { id: "2021010015", name: "Budi Santoso", class: "A", status: "Low", score: 31.8, mfcc: 28.4, date: "17 Apr 2026", color: "rose" },
-    { id: "2021010031", name: "Rizky Fauzan", class: "D", status: "Processing", score: null, mfcc: null, date: "19 Apr 2026", color: "slate" },
+    { id: "2021010001", userId: "4", name: "Andi Pratama", class: "A", status: "High", score: 87.4, mfcc: 92.1, date: "18 Apr 2026", color: "emerald" },
+    { id: "2021010022", userId: "6", name: "Dewi Kusuma", class: "C", status: "High", score: 91.2, mfcc: 94.5, date: "17 Apr 2026", color: "emerald" },
+    { id: "2021010008", userId: "4", name: "Siti Rahayu", class: "B", status: "Medium", score: 63.1, mfcc: 67.3, date: "18 Apr 2026", color: "amber" }, // fallback userId for demo
+    { id: "2021010015", userId: "5", name: "Budi Santoso", class: "A", status: "Low", score: 31.8, mfcc: 28.4, date: "17 Apr 2026", color: "rose" }, // fallback userId for demo
+    { id: "2021010031", userId: "5", name: "Rizky Fauzan", class: "D", status: "Processing", score: null, mfcc: null, date: "19 Apr 2026", color: "slate" },
   ];
+
+  const handleViewDetail = (userId: string) => {
+    router.push(`/analysis-result?studentId=${userId}`);
+  };
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
@@ -112,6 +118,7 @@ export default function HistoryTableSection() {
                   </TableCell>
                   <TableCell className="text-right px-5">
                     <Button 
+                      onClick={() => handleViewDetail(row.userId)}
                       size="sm" 
                       variant="outline" 
                       className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"

@@ -4,8 +4,20 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Share2 } from "lucide-react";
 import TopStatsSection from "../section/TopStatsSection";
 import AnalysisGridSection from "../section/AnalysisGridSection";
+import { useAuth } from "@/context/AuthContext";
+import { STUDENT_RESULTS } from "@/lib/data/dummyData";
+import usersData from "@/lib/data/users.json";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function AnalysisResultPage() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const studentId = searchParams.get("studentId") || user?.id;
+  
+  const studentData = studentId ? (STUDENT_RESULTS as any)[studentId] : (STUDENT_RESULTS as any)["4"];
+  const targetUser = usersData.find(u => u.id === studentId) || user;
+
   return (
     <section className="p-6 lg:p-10 space-y-8 w-full min-h-screen bg-slate-50/30 dark:bg-slate-950">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -20,16 +32,16 @@ export default function AnalysisResultPage() {
               Hasil Analisis Motivasi
             </h1>
             <p className="text-slate-500 text-sm">
-              Berkas: <span className="font-semibold text-slate-700 dark:text-slate-200">rekaman_andi_apr2026.wav</span> • 19 April 2026
+              Peserta: <span className="font-semibold text-slate-700 dark:text-slate-200">{targetUser?.name || "Mahasiswa"}</span> • 19 April 2026
             </p>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="rounded-lg">
+            <Button variant="outline" size="sm" className="rounded-lg" onClick={() => toast.success("Tautan Disalin", { description: "Tautan laporan berhasil disalin ke papan klip." })}>
               <Share2 className="w-3.5 h-3.5 mr-2" />
               Bagikan
             </Button>
-            <Button size="sm" className="bg-brand hover:bg-brand-hover text-white rounded-lg shadow-sm">
+            <Button size="sm" className="bg-brand hover:bg-brand-hover text-white rounded-lg shadow-sm" onClick={() => toast.success("Unduhan Dimulai", { description: "Laporan PDF sedang dipersiapkan untuk diunduh." })}>
               <Download className="w-3.5 h-3.5 mr-2" />
               Unduh PDF
             </Button>
@@ -47,8 +59,8 @@ export default function AnalysisResultPage() {
         </div>
 
         <div className="space-y-8">
-          <TopStatsSection />
-          <AnalysisGridSection />
+          <TopStatsSection data={studentData} />
+          <AnalysisGridSection data={studentData} />
         </div>
       </div>
     </section>
