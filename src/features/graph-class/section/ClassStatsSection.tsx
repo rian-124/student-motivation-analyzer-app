@@ -1,29 +1,35 @@
 import StatCard from "@/components/common/StatCard";
+import { Users, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export default function ClassStatsSection() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatCard value={32} label="Total Mahasiswa" />
+      <StatCard 
+        icon={Users} 
+        value={32} 
+        label="Total Mahasiswa" 
+        variant="blue" 
+      />
       <StatCard
+        icon={TrendingUp}
         value={18}
-        valueColor="text-green-600"
         label="Motivasi Tinggi"
-        trend="57%"
-        trendColor="text-green-600"
+        variant="emerald"
+        trend={{ value: "57%", isUp: true }}
       />
       <StatCard
+        icon={Minus}
         value={9}
-        valueColor="text-yellow-600"
         label="Motivasi Sedang"
-        trend="28%"
-        trendColor="text-yellow-600"
+        variant="amber"
+        trend={{ value: "28%", isUp: null }}
       />
       <StatCard
+        icon={TrendingDown}
         value={5}
-        valueColor="text-red-600"
         label="Motivasi Rendah"
-        trend="15%"
-        trendColor="text-red-600"
+        variant="rose"
+        trend={{ value: "15%", isUp: false }}
       />
     </div>
   );

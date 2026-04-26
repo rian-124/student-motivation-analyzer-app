@@ -67,7 +67,7 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
         {
           title: "Hasil Analisis",
           icon: FileText,
-          href: "/analysis-results",
+          href: "/analysis-result",
           roles: ["student"],
         },
       ],
@@ -197,13 +197,13 @@ export function AppSidebar() {
                           className={`
                             h-11 rounded-xl px-4 transition-all duration-200
                             ${active 
-                              ? "bg-brand text-white shadow-lg shadow-brand/20 hover:bg-brand hover:text-white" 
+                              ? "!bg-brand !text-white shadow-lg shadow-brand/30 hover:!bg-brand hover:!text-white" 
                               : "text-brand-secondary/60 hover:bg-brand/5 hover:text-brand"
                             }
                           `}
                         >
                           <Link href={item.href || "#"}>
-                            <item.icon className={`size-4 ${active ? "text-white" : ""}`} />
+                            <item.icon className={`size-4 !shrink-0 ${active ? "!text-white" : ""}`} />
                             <span className="font-bold text-sm">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
@@ -215,30 +215,31 @@ export function AppSidebar() {
           ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-slate-100 p-4">
-        <div className="group-data-[collapsible=icon]:hidden space-y-4">
+      <SidebarFooter className="border-t border-slate-100 p-2 lg:p-3">
+        <div className="group-data-[collapsible=icon]:hidden flex items-center justify-between gap-1">
           {user && (
-            <div className="flex items-center gap-3 px-2 py-1">
-              <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs shrink-0 border border-slate-200">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-[10px] shrink-0 border border-slate-200">
                 {user.name.charAt(0)}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-sm font-bold text-brand-secondary truncate">{user.name}</span>
-                <span className="text-[10px] text-brand-secondary/40 font-medium truncate uppercase tracking-wider">{user.role}</span>
+                <span className="text-[12px] font-bold text-brand-secondary truncate leading-tight">{user.name}</span>
+                <span className="text-[9px] text-brand-secondary/40 font-medium truncate uppercase tracking-tight">{user.role}</span>
               </div>
             </div>
           )}
 
           <Button 
             variant="ghost" 
+            size="icon"
             onClick={logout}
-            className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl font-bold text-sm h-11 px-4"
+            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg h-8 w-8 shrink-0"
+            title="Keluar"
           >
             <LogOut size={16} />
-            Keluar
           </Button>
         </div>
-        <div className="hidden group-data-[collapsible=icon]:flex justify-center flex-col items-center gap-4">
+        <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-4">
           {user && (
             <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs border border-slate-200">
               {user.name.charAt(0)}
@@ -248,7 +249,7 @@ export function AppSidebar() {
             variant="ghost" 
             size="icon"
             onClick={logout}
-            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl"
+            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
           >
             <LogOut size={18} />
           </Button>

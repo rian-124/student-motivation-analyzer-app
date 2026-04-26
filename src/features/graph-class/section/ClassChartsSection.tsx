@@ -1,55 +1,55 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart3, PieChart } from "lucide-react";
+import MotivationBarChart from "@/components/common/MotivationBarChart";
+import MotivationPieChart from "@/components/common/MotivationPieChart";
 
 export default function ClassChartsSection() {
+  const weeklyData = [
+    { label: "Minggu 1", value: 70 },
+    { label: "Minggu 2", value: 65 },
+    { label: "Minggu 3", value: 80 },
+    { label: "Minggu 4", value: 60 },
+    { label: "Minggu 5", value: 92 },
+    { label: "Minggu 6", value: 75 },
+    { label: "Minggu 7", value: 85 },
+    { label: "Minggu 8", value: 70 },
+  ];
+
+  const distributionData = [
+    { category: "Motivasi Tinggi", value: 65, fill: "#10b981" },
+    { category: "Motivasi Sedang", value: 25, fill: "#f59e0b" },
+    { category: "Motivasi Rendah", value: 10, fill: "#f43f5e" },
+  ];
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {/* BAR CHART */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Tren Motivasi Mingguan</CardTitle>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* WEEKLY TREND */}
+      <Card className="lg:col-span-8 border-none shadow-sm bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
+        <CardHeader className="p-6 pb-2">
+          <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+            <BarChart3 className="w-4 h-4 text-brand" />
+            Tren Motivasi Mingguan
+          </CardTitle>
+          <p className="text-xs text-slate-500">Statistik perkembangan rata-rata motivasi kelas per minggu.</p>
         </CardHeader>
-        <CardContent>
-          <div className="h-[180px] flex items-end gap-3">
-            {[70, 60, 80, 65, 90, 75].map((h, i) => (
-              <div key={i} className="flex flex-col items-center gap-2">
-                <div
-                  className="w-4 bg-brand rounded"
-                  style={{ height: `${h}%` }}
-                />
-                <span className="text-xs text-muted-foreground">M{i + 1}</span>
-              </div>
-            ))}
-          </div>
+        <CardContent className="p-6">
+          <MotivationBarChart data={weeklyData} color="#5841EA" />
         </CardContent>
       </Card>
 
-      {/* DONUT */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Persentase Motivasi</CardTitle>
+      {/* CLASS DISTRIBUTION */}
+      <Card className="lg:col-span-4 border-none shadow-sm bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
+        <CardHeader className="p-6 pb-2">
+          <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+            <PieChart className="w-4 h-4 text-slate-400" />
+            Komposisi Kelas
+          </CardTitle>
+          <p className="text-xs text-slate-500">Distribusi tingkat motivasi di dalam kelas ini.</p>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center gap-4">
-            {/* simple donut (placeholder modern UI) */}
-            <div className="relative w-32 h-32 rounded-full border-8 border-muted flex items-center justify-center">
-              <span className="text-lg font-bold">89%</span>
-            </div>
-
-            <div className="space-y-2 text-sm w-full">
-              <div className="flex justify-between">
-                <span className="text-green-600">Tinggi</span>
-                <span>57%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-yellow-600">Sedang</span>
-                <span>28%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-red-600">Rendah</span>
-                <span>15%</span>
-              </div>
-            </div>
-          </div>
+        <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+          <MotivationPieChart data={distributionData} centerLabel="92%" />
         </CardContent>
       </Card>
     </div>

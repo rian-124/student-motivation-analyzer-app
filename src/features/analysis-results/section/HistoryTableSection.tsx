@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -17,27 +19,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, FileText, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 
 export default function HistoryTableSection() {
+  const data = [
+    { id: "2021010001", name: "Andi Pratama", class: "A", status: "High", score: 87.4, mfcc: 92.1, date: "18 Apr 2026", color: "emerald" },
+    { id: "2021010022", name: "Dewi Kusuma", class: "C", status: "High", score: 91.2, mfcc: 94.5, date: "17 Apr 2026", color: "emerald" },
+    { id: "2021010008", name: "Siti Rahayu", class: "B", status: "Medium", score: 63.1, mfcc: 67.3, date: "18 Apr 2026", color: "amber" },
+    { id: "2021010015", name: "Budi Santoso", class: "A", status: "Low", score: 31.8, mfcc: 28.4, date: "17 Apr 2026", color: "rose" },
+    { id: "2021010031", name: "Rizky Fauzan", class: "D", status: "Processing", score: null, mfcc: null, date: "19 Apr 2026", color: "slate" },
+  ];
+
   return (
-    <Card>
-      {/* HEADER FILTER */}
-      <CardHeader>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <CardTitle>Riwayat Analisis</CardTitle>
-
-          <div className="flex gap-2">
-            {/* SEARCH */}
-            <div className="relative w-[180px]">
-              <Search className="w-4 h-4 absolute left-2 top-2.5 text-muted-foreground" />
-              <Input placeholder="Cari..." className="pl-8" />
+    <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
+      {/* TOOLBAR */}
+      <CardHeader className="p-4 space-y-4 bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <CardTitle className="text-base font-bold text-slate-800 dark:text-white px-1">Riwayat Analisis</CardTitle>
+          
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Input 
+                placeholder="Cari Mahasiswa/NIM..." 
+                className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" 
+              />
             </div>
-
-            {/* FILTER */}
             <Select defaultValue="all">
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Filter" />
+              <SelectTrigger className="w-[130px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                <Filter className="w-3.5 h-3.5 mr-2 text-slate-400" />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua</SelectItem>
@@ -50,139 +61,88 @@ export default function HistoryTableSection() {
         </div>
       </CardHeader>
 
-      {/* TABLE */}
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Mahasiswa</TableHead>
-              <TableHead>Kelas</TableHead>
-              <TableHead>Motivasi</TableHead>
-              <TableHead>Skor</TableHead>
-              <TableHead>MFCC</TableHead>
-              <TableHead>S2T</TableHead>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Info Mahasiswa</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Kelas</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Status</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Skor</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Tanggal</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Opsi</TableHead>
+              </TableRow>
+            </TableHeader>
 
-          <TableBody>
-            {/* HIGH */}
-            <TableRow>
-              <TableCell>
-                <div className="font-medium">Andi Pratama</div>
-                <div className="text-xs text-muted-foreground">2021010001</div>
-              </TableCell>
-              <TableCell>A</TableCell>
-              <TableCell>
-                <Badge>High</Badge>
-              </TableCell>
-              <TableCell className="text-green-600 font-mono">87.4</TableCell>
-              <TableCell className="font-mono">92.1</TableCell>
-              <TableCell className="font-mono">83.7</TableCell>
-              <TableCell className="text-xs text-muted-foreground font-mono">
-                18 Apr
-              </TableCell>
-              <TableCell>
-                <Button size="sm" variant="ghost">
-                  Lihat
-                </Button>
-              </TableCell>
-            </TableRow>
-
-            {/* HIGH */}
-            <TableRow>
-              <TableCell>
-                <div className="font-medium">Dewi Kusuma</div>
-                <div className="text-xs text-muted-foreground">2021010022</div>
-              </TableCell>
-              <TableCell>C</TableCell>
-              <TableCell>
-                <Badge>High</Badge>
-              </TableCell>
-              <TableCell className="text-green-600 font-mono">91.2</TableCell>
-              <TableCell className="font-mono">94.5</TableCell>
-              <TableCell className="font-mono">88.0</TableCell>
-              <TableCell className="text-xs text-muted-foreground font-mono">
-                17 Apr
-              </TableCell>
-              <TableCell>
-                <Button size="sm" variant="ghost">
-                  Lihat
-                </Button>
-              </TableCell>
-            </TableRow>
-
-            {/* MEDIUM */}
-            <TableRow>
-              <TableCell>
-                <div className="font-medium">Siti Rahayu</div>
-                <div className="text-xs text-muted-foreground">2021010008</div>
-              </TableCell>
-              <TableCell>B</TableCell>
-              <TableCell>
-                <Badge variant="secondary">Medium</Badge>
-              </TableCell>
-              <TableCell className="text-yellow-600 font-mono">63.1</TableCell>
-              <TableCell className="font-mono">67.3</TableCell>
-              <TableCell className="font-mono">59.0</TableCell>
-              <TableCell className="text-xs text-muted-foreground font-mono">
-                18 Apr
-              </TableCell>
-              <TableCell>
-                <Button size="sm" variant="ghost">
-                  Lihat
-                </Button>
-              </TableCell>
-            </TableRow>
-
-            {/* LOW */}
-            <TableRow>
-              <TableCell>
-                <div className="font-medium">Budi Santoso</div>
-                <div className="text-xs text-muted-foreground">2021010015</div>
-              </TableCell>
-              <TableCell>A</TableCell>
-              <TableCell>
-                <Badge variant="destructive">Low</Badge>
-              </TableCell>
-              <TableCell className="text-red-600 font-mono">31.8</TableCell>
-              <TableCell className="font-mono">28.4</TableCell>
-              <TableCell className="font-mono">35.2</TableCell>
-              <TableCell className="text-xs text-muted-foreground font-mono">
-                17 Apr
-              </TableCell>
-              <TableCell>
-                <Button size="sm" variant="ghost">
-                  Lihat
-                </Button>
-              </TableCell>
-            </TableRow>
-
-            {/* PROCESS */}
-            <TableRow>
-              <TableCell>
-                <div className="font-medium">Rizky Fauzan</div>
-                <div className="text-xs text-muted-foreground">2021010031</div>
-              </TableCell>
-              <TableCell>D</TableCell>
-              <TableCell>
-                <Badge variant="outline">Processing</Badge>
-              </TableCell>
-              <TableCell className="text-muted-foreground font-mono">—</TableCell>
-              <TableCell className="text-muted-foreground font-mono">—</TableCell>
-              <TableCell className="text-muted-foreground font-mono">—</TableCell>
-              <TableCell className="text-xs text-muted-foreground font-mono">
-                19 Apr
-              </TableCell>
-              <TableCell>
-                <Button size="sm" variant="ghost" disabled>
-                  Proses
-                </Button>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+            <TableBody>
+              {data.map((row, idx) => (
+                <TableRow key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
+                  <TableCell className="py-3.5 px-5">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">{row.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono tracking-wider">{row.id}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
+                      {row.class}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge 
+                      variant="outline" 
+                      className={`rounded-full px-2.5 py-0 border-none font-bold text-[9px] uppercase tracking-widest
+                        ${row.color === 'emerald' ? 'bg-emerald-100/50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}
+                        ${row.color === 'amber' ? 'bg-amber-100/50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}
+                        ${row.color === 'rose' ? 'bg-rose-100/50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' : ''}
+                        ${row.color === 'slate' ? 'bg-slate-100/50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400' : ''}
+                      `}
+                    >
+                      {row.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right px-5">
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">
+                      {row.score ? row.score.toFixed(1) : "—"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-slate-500 text-xs px-5">
+                    {row.date}
+                  </TableCell>
+                  <TableCell className="text-right px-5">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"
+                      disabled={row.status === "Processing"}
+                    >
+                      <FileText className="w-3 h-3 mr-1.5" />
+                      Detail
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        
+        {/* FOOTER / PAGINATION */}
+        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total 128 Record</p>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="w-7 h-7 rounded-md text-slate-400" disabled>
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <div className="flex items-center gap-1 px-1">
+              <span className="w-6 h-6 flex items-center justify-center text-[11px] font-bold bg-brand text-white rounded-md">1</span>
+              <span className="w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-400 hover:bg-slate-100 rounded-md cursor-pointer">2</span>
+            </div>
+            <Button variant="ghost" size="icon" className="w-7 h-7 rounded-md text-slate-400">
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

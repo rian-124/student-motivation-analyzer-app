@@ -14,25 +14,44 @@ import StudentDetailTableSection from "../section/StudentDetailTableSection";
 
 export default function GraphClassPage() {
   return (
-    <section className="p-6 space-y-6">
+    <div className="p-6 space-y-8 max-w-7xl mx-auto">
       <PageHeader
-        title="Grafik Motivasi — Kelas Saya"
-        description="Visualisasi motivasi mahasiswa per kelas yang Anda ampu"
+        title="Grafik Motivasi — Analisis Kelas"
+        description="Detail perkembangan motivasi mahasiswa untuk kelas spesifik"
         actions={
-          <Select defaultValue="kelas-a">
-            <SelectTrigger className="w-[260px]">
-              <SelectValue placeholder="Pilih kelas" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="kelas-a">Kelas A — Pemrograman Web</SelectItem>
-              <SelectItem value="kelas-b">Kelas B — Pemrograman Web</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-3">
+            <Select defaultValue="genap">
+              <SelectTrigger className="w-[200px] bg-white dark:bg-slate-900 border-none shadow-sm">
+                <SelectValue placeholder="Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="genap">Genap 2025/26</SelectItem>
+                <SelectItem value="ganjil">Ganjil 2025/26</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select defaultValue="kelas-a">
+              <SelectTrigger className="w-[240px] bg-white dark:bg-slate-900 border-none shadow-sm font-medium">
+                <SelectValue placeholder="Pilih kelas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kelas-a">Kelas A — Web Dev</SelectItem>
+                <SelectItem value="kelas-b">Kelas B — Web Dev</SelectItem>
+                <SelectItem value="kelas-c">Kelas C — UI/UX</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         }
       />
+      
       <ClassStatsSection />
-      <ClassChartsSection />
+      
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="xl:col-span-12">
+          <ClassChartsSection />
+        </div>
+      </div>
+
       <StudentDetailTableSection />
-    </section>
+    </div>
   );
 }

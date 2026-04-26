@@ -1,64 +1,63 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { BarChart3, PieChart, ArrowRight } from "lucide-react";
+import MotivationBarChart from "@/components/common/MotivationBarChart";
+import MotivationPieChart from "@/components/common/MotivationPieChart";
 
 export default function ChartSection() {
+  const barData = [
+    { label: "A", value: 80 },
+    { label: "B", value: 60 },
+    { label: "C", value: 90 },
+    { label: "D", value: 50 },
+    { label: "E", value: 70 },
+    { label: "F", value: 85 },
+    { label: "G", value: 55 },
+    { label: "H", value: 75 },
+  ];
+
+  const pieData = [
+    { category: "Motivasi Tinggi", value: 57, fill: "#10b981" },
+    { category: "Motivasi Sedang", value: 29, fill: "#f59e0b" },
+    { category: "Motivasi Rendah", value: 14, fill: "#f43f5e" },
+  ];
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* BAR CHART MOCK */}
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle>Distribusi Motivasi per Kelas</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Perbandingan tingkat motivasi tiap kelas
-          </p>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* BAR CHART */}
+      <Card className="lg:col-span-8 border-none shadow-sm bg-white dark:bg-slate-900 rounded-xl">
+        <CardHeader className="p-6 pb-2">
+          <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+            <BarChart3 className="w-4 h-4 text-brand" />
+            Motivasi per Kelas
+          </CardTitle>
+          <p className="text-xs text-slate-500">Rata-rata skor motivasi mahasiswa di tiap kelas.</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-8 gap-2 h-40 items-end">
-            {[80, 60, 90, 50, 70, 85, 55, 75].map((val, i) => (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div
-                  className="w-4 bg-brand rounded"
-                  style={{ height: `${val}%` }}
-                />
-                <span className="text-xs text-muted-foreground">
-                  {String.fromCharCode(65 + i)}
-                </span>
-              </div>
-            ))}
-          </div>
+        
+        <CardContent className="p-6">
+          <MotivationBarChart data={barData} color="#5841EA" />
         </CardContent>
       </Card>
 
-      {/* DONUT MOCK */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Distribusi Keseluruhan</CardTitle>
-          <p className="text-sm text-muted-foreground">124 mahasiswa</p>
+      {/* PIE CHART */}
+      <Card className="lg:col-span-4 border-none shadow-sm bg-white dark:bg-slate-900 rounded-xl">
+        <CardHeader className="p-6 pb-2">
+          <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+            <PieChart className="w-4 h-4 text-slate-400" />
+            Distribusi Global
+          </CardTitle>
+          <p className="text-xs text-slate-500">Total 124 Mahasiswa terdaftar.</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Motivasi Tinggi</span>
-              <span className="text-green-500">57%</span>
-            </div>
-            <Progress value={57} />
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Motivasi Sedang</span>
-              <span className="text-yellow-500">29%</span>
-            </div>
-            <Progress value={29} />
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Motivasi Rendah</span>
-              <span className="text-red-500">14%</span>
-            </div>
-            <Progress value={14} />
-          </div>
+        
+        <CardContent className="p-6 flex flex-col items-center justify-between">
+          <MotivationPieChart data={pieData} />
+
+          <Button variant="ghost" size="sm" className="w-full mt-4 text-xs font-bold text-slate-400 hover:text-brand">
+            Detail Analisis
+            <ArrowRight className="w-3 h-3 ml-1.5" />
+          </Button>
         </CardContent>
       </Card>
     </div>

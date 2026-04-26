@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -9,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Search, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -17,26 +19,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
 
 export default function StudentTableSection() {
+  const students = [
+    { name: "Andi Pratama", id: "2021010001", class: "A", email: "andi@kampus.ac.id" },
+    { name: "Rizky Fauzan", id: "2021010031", class: "D", email: "rizky@kampus.ac.id" },
+    { name: "Budi Santoso", id: "2021010015", class: "A", email: "budi@kampus.ac.id" },
+    { name: "Dewi Kusuma", id: "2021010022", class: "C", email: "dewi@kampus.ac.id" },
+    { name: "Siti Rahayu", id: "2021010008", class: "B", email: "siti@kampus.ac.id" },
+  ];
+
   return (
-    <Card>
-      {/* HEADER FILTER */}
-      <CardHeader>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <CardTitle>Daftar Mahasiswa</CardTitle>
-
-          <div className="flex gap-2">
-            {/* SEARCH */}
-            <div className="relative w-[200px]">
-              <Search className="w-4 h-4 absolute left-2 top-2.5 text-muted-foreground" />
-              <Input placeholder="Cari nama / NIM..." className="pl-8" />
+    <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
+      {/* TOOLBAR */}
+      <CardHeader className="p-4 space-y-4 bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <CardTitle className="text-base font-bold text-slate-800 dark:text-white px-1">Daftar Mahasiswa</CardTitle>
+          
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Input 
+                placeholder="Cari Mahasiswa..." 
+                className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" 
+              />
             </div>
-
-            {/* FILTER KELAS */}
             <Select defaultValue="all">
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[120px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                 <SelectValue placeholder="Kelas" />
               </SelectTrigger>
               <SelectContent>
@@ -45,121 +54,68 @@ export default function StudentTableSection() {
                 <SelectItem value="b">Kelas B</SelectItem>
               </SelectContent>
             </Select>
-
-            {/* FILTER STATUS */}
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="active">Aktif</SelectItem>
-                <SelectItem value="pending">Menunggu</SelectItem>
-                <SelectItem value="inactive">Nonaktif</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </CardHeader>
 
-      {/* TABLE */}
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Mahasiswa</TableHead>
-              <TableHead>NIM</TableHead>
-              <TableHead>Kelas</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Mahasiswa</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Kelas</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Email Kampus</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Opsi</TableHead>
+              </TableRow>
+            </TableHeader>
 
-          <TableBody>
-            {/* ACTIVE */}
-            <TableRow>
-              <TableCell className="font-medium">Andi Pratama</TableCell>
-              <TableCell>2021010001</TableCell>
-              <TableCell>A</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
-                andi@kampus.ac.id
-              </TableCell>
-              <TableCell>
-                <Badge>Aktif</Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
-                    Ubah
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    Nonaktif
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-
-            {/* PENDING */}
-            <TableRow>
-              <TableCell className="font-medium">Rizky Fauzan</TableCell>
-              <TableCell>2021010031</TableCell>
-              <TableCell>D</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
-                rizky@kampus.ac.id
-              </TableCell>
-              <TableCell>
-                <Badge variant="secondary">Menunggu</Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button size="sm">Verifikasi</Button>
-                  <Button size="sm" variant="destructive">
-                    Tolak
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-
-            {/* INACTIVE */}
-            <TableRow>
-              <TableCell className="font-medium">Budi Santoso</TableCell>
-              <TableCell>2021010015</TableCell>
-              <TableCell>A</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
-                budi@kampus.ac.id
-              </TableCell>
-              <TableCell>
-                <Badge variant="destructive">Nonaktif</Badge>
-              </TableCell>
-              <TableCell>
-                <Button size="sm" variant="outline">
-                  Aktifkan
-                </Button>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-
-        {/* PAGINATION */}
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-muted-foreground">
-            Menampilkan 5 dari 124 data
-          </p>
-
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              Sebelumnya
+            <TableBody>
+              {students.map((student, idx) => (
+                <TableRow key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
+                  <TableCell className="py-3.5 px-5">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">{student.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono tracking-wider">{student.id}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
+                      {student.class}
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-5">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{student.email}</span>
+                  </TableCell>
+                  <TableCell className="text-right px-5">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Edit Data">
+                        <Edit className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus Mahasiswa">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        
+        {/* FOOTER */}
+        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total 124 Mahasiswa</p>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="w-7 h-7 rounded-md text-slate-400" disabled>
+              <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button size="sm">1</Button>
-            <Button variant="outline" size="sm">
-              2
-            </Button>
-            <Button variant="outline" size="sm">
-              3
-            </Button>
-            <Button variant="outline" size="sm">
-              Berikutnya
+            <div className="flex items-center gap-1 px-1">
+              <span className="w-6 h-6 flex items-center justify-center text-[11px] font-bold bg-brand text-white rounded-md">1</span>
+              <span className="w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-400 hover:bg-slate-100 rounded-md cursor-pointer">2</span>
+            </div>
+            <Button variant="ghost" size="icon" className="w-7 h-7 rounded-md text-slate-400">
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

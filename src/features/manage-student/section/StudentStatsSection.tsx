@@ -1,23 +1,20 @@
 import StatCard from "@/components/common/StatCard";
+import { Users, UserCheck } from "lucide-react";
 
 export default function StudentStatsSection() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatCard value={124} label="Total Mahasiswa" />
-      <StatCard
-        value={118}
-        valueColor="text-green-600"
-        label="Akun Aktif"
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <StatCard 
+        icon={Users} 
+        value={124} 
+        label="Total Mahasiswa" 
+        variant="blue" 
       />
       <StatCard
-        value={5}
-        valueColor="text-yellow-500"
-        label="Menunggu Verifikasi"
-      />
-      <StatCard
-        value={1}
-        valueColor="text-red-500"
-        label="Akun Nonaktif"
+        icon={UserCheck}
+        value={124}
+        label="Mahasiswa Terdaftar"
+        variant="emerald"
       />
     </div>
   );

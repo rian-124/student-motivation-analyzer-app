@@ -6,14 +6,14 @@ import UploadGuideSection from "../section/UploadGuideSection";
 
 export default function UploadRecordingPage() {
   return (
-    <section className="p-6 space-y-6 w-full min-h-screen">
-      <PageHeader
-        title="Upload Rekaman Suara"
-        description="Upload file rekaman untuk dianalisis tingkat motivasinya"
-      />
+    <section className="p-6 lg:p-10 space-y-8 w-full min-h-screen bg-slate-50/30 dark:bg-slate-950">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <PageHeader
+          title="Upload Rekaman Suara"
+          description="Analisis fitur akustik (MFCC) dan teks (STT) untuk menentukan tingkat motivasi siswa."
+        />
 
-      <div className="w-full flex flex-col lg:flex-row gap-6">
-        <div className="flex-1 min-w-0">
+        <div className="space-y-8">
           <UploadZoneSection />
           <UploadGuideSection />
         </div>

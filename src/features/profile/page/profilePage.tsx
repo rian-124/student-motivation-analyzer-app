@@ -7,20 +7,22 @@ import SecuritySection from "../section/SecuritySection";
 
 export default function ProfilePage() {
   return (
-    <section className="p-6 space-y-6 w-full min-h-screen">
+    <div className="p-6 lg:p-8 space-y-8 max-w-6xl mx-auto">
       <PageHeader
-        title="Profil Saya"
-        description="Kelola informasi akun dan pengaturan"
+        title="Pengaturan Profil"
+        description="Kelola informasi akun, keamanan, dan preferensi pribadi Anda."
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <ProfileSummarySection />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="lg:col-span-4">
+          <ProfileSummarySection />
+        </div>
 
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-8">
           <PersonalInfoSection />
           <SecuritySection />
         </div>
       </div>
-    </section>
+    </div>
   );
 }
