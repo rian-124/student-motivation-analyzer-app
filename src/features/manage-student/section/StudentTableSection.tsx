@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EditStudentModal } from "../components/EditStudentModal";
+import { DeleteConfirmModal } from "@/components/common/DeleteConfirmModal";
 
 export default function StudentTableSection() {
   const students = [
@@ -89,12 +91,20 @@ export default function StudentTableSection() {
                   </TableCell>
                   <TableCell className="text-right px-5">
                     <div className="flex items-center justify-end gap-1">
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Edit Data">
-                        <Edit className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus Mahasiswa">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <EditStudentModal student={student}>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Edit Data">
+                          <Edit className="w-3.5 h-3.5" />
+                        </Button>
+                      </EditStudentModal>
+                      
+                      <DeleteConfirmModal 
+                        title="Hapus Mahasiswa?" 
+                        description={`Anda akan menghapus data ${student.name}.`}
+                      >
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus Mahasiswa">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </DeleteConfirmModal>
                     </div>
                   </TableCell>
                 </TableRow>

@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Search, Edit, Trash2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { EditLectureModal } from "../components/EditLectureModal";
+import { DeleteConfirmModal } from "@/components/common/DeleteConfirmModal";
 
 export default function LectureTableSection() {
   const lectures = [
@@ -72,12 +74,20 @@ export default function LectureTableSection() {
                   </TableCell>
                   <TableCell className="text-right px-5">
                     <div className="flex items-center justify-end gap-1">
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Ubah Data">
-                        <Edit className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus Dosen">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <EditLectureModal lecture={lecture}>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Ubah Data">
+                          <Edit className="w-3.5 h-3.5" />
+                        </Button>
+                      </EditLectureModal>
+                      
+                      <DeleteConfirmModal 
+                        title="Hapus Data Dosen?" 
+                        description={`Anda akan menghapus data ${lecture.name}.`}
+                      >
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus Dosen">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </DeleteConfirmModal>
                     </div>
                   </TableCell>
                 </TableRow>

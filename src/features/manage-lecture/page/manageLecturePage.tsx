@@ -6,6 +6,8 @@ import { UserPlus, Download } from "lucide-react";
 import LectureStatsSection from "../section/LectureStatsSection";
 import LectureTableSection from "../section/LectureTableSection";
 
+import { AddLectureModal } from "../components/AddLectureModal";
+
 export default function ManageLecturePage() {
   return (
     <div className="p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
@@ -18,10 +20,12 @@ export default function ManageLecturePage() {
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
-            <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl h-10 px-5 font-bold shadow-lg shadow-brand/20 transition-all active:scale-95">
-              <UserPlus className="w-4 h-4 mr-2" />
-              Tambah Dosen
-            </Button>
+            <AddLectureModal>
+              <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl h-10 px-5 font-bold shadow-lg shadow-brand/20 transition-all active:scale-95">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Tambah Dosen
+              </Button>
+            </AddLectureModal>
           </div>
         }
       />

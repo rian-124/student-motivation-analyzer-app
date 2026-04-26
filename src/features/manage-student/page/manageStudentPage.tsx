@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Download, UserPlus } from "lucide-react";
 import StudentStatsSection from "../section/StudentStatsSection";
 import StudentTableSection from "../section/StudentTableSection";
+import { AddStudentModal } from "../components/AddStudentModal";
 
 export default function ManageStudentPage() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
       <PageHeader
         title="Kelola Akun Mahasiswa"
         description="Manajemen data dan verifikasi akun mahasiswa"
@@ -18,10 +19,12 @@ export default function ManageStudentPage() {
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
-            <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl h-10 px-5 font-bold shadow-lg shadow-brand/20 transition-all active:scale-95">
-              <UserPlus className="w-4 h-4 mr-2" />
-              Tambah Mahasiswa
-            </Button>
+            <AddStudentModal>
+              <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl h-10 px-5 font-bold shadow-lg shadow-brand/20 transition-all active:scale-95">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Tambah Mahasiswa
+              </Button>
+            </AddStudentModal>
           </div>
         }
       />
