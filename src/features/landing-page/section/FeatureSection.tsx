@@ -1,55 +1,58 @@
 import CardFeature from "../components/CardFeature";
 
-
 export default function FeatureSection() {
   return (
-    <section className="w-full min-h-screen mt-30 mb-20">
-      <div className="my-12 flex justify-between">
-        <div className="w-[40rem] text-4xl font-bold ">
-          <h1 className="text-brand-secondary">What do you get at</h1>
-          <h1 className="text-brand">Student Motivation Analyze?</h1>
+    <section className="w-full py-24 relative overflow-hidden">
+      {/* Background Accent */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+          <div className="max-w-2xl space-y-4">
+            <div className="inline-block px-4 py-1 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs font-bold tracking-widest uppercase">
+              Modul Sistem
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+              <span className="text-brand-secondary">Metodologi Utama untuk</span><br />
+              <span className="bg-gradient-to-r from-brand to-indigo-600 bg-clip-text text-transparent">Analisis Keterlibatan.</span>
+            </h2>
+          </div>
+          <div className="lg:max-w-md">
+            <p className="text-brand-secondary/60 text-lg font-medium leading-relaxed">
+              Sistem ini memanfaatkan berbagai teknik pemrosesan data untuk mengklasifikasikan dan mengukur metrik keterlibatan mahasiswa melalui titik data multimodal.
+            </p>
+          </div>
         </div>
-        <div className="w-1/2 text-xs text-gray-500 text-justify">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero
-            voluptas neque blanditiis facilis. Autem blanditiis quaerat, et
-            beatae quo unde corporis delectus quis voluptatibus. Sequi,
-            molestias dicta? Pariatur architecto nihil repellat doloribus
-            laborum placeat odit accusantium nam vitae neque illo ab sapiente
-            minus ea iste enim unde, illum nisi incidunt?
-          </p>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-4 gap-6">
-        <CardFeature
-          title="Analisis Text (NLP)"
-          description="Memahami emosi dan motivasi dari refleksi teks mahasiswa secara otomatis."
-          imageSrc="/nlp.svg"
-        />
-        <CardFeature
-          title="Analisis Audio (Speech Emotion Recognition)"
-          description="Menganalisis emosi dari rekaman suara mahasiswa untuk wawasan lebih dalam."
-          imageSrc="/audio.svg"
-          className="col-span-2"
-        />
-        <CardFeature
-          title="Practice Quizzes"
-          description="Latihan soal untuk mengukur pemahaman dan kemampuan mahasiswa."
-          imageSrc="/quizzes.svg"
-        />
-        <CardFeature
-          title="Learning Materials"
-          description="Materi pembelajaran yang disusun secara sistematis dan mudah dipahami."
-          imageSrc="/materials.svg"
-          className="col-span-2"
-        />
-        <CardFeature
-          title="Personalized Feedback"
-          description="Umpan balik yang disesuaikan untuk membantu mahasiswa meningkatkan motivasi mereka."
-          imageSrc="/feedback.svg"
-          className="col-span-2"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <CardFeature
+            title="Pemrosesan Bahasa Alami (NLP)"
+            description="Analisis linguistik data teks untuk mengekstrak sentimen emosional dan mengidentifikasi indikator motivasi dari refleksi mahasiswa."
+            imageSrc="/nlp.svg"
+          />
+          <CardFeature
+            title="Pengenalan Emosi Suara (SER)"
+            description="Analisis akustik menggunakan pembelajaran mesin untuk mendeteksi keadaan emosional dari karakteristik vokal dalam audio kelas."
+            imageSrc="/audio.svg"
+          />
+          <CardFeature
+            title="Mesin Integrasi Data"
+            description="Mensintesis aliran data terpisah menjadi profil keterlibatan yang terpadu untuk memastikan reliabilitas analisis yang tinggi."
+            imageSrc="/quizzes.svg"
+          />
+          <CardFeature
+            title="Metrik Kuantitatif"
+            description="Pembuatan skor keterlibatan objektif berdasarkan kombinasi isyarat perilaku dan linguistik yang dianalisis."
+            imageSrc="/materials.svg"
+            className="md:col-span-2 lg:col-span-1"
+          />
+          <CardFeature
+            title="Pelaporan Analisis"
+            description="Visualisasi mendetail dari tren motivasi mahasiswa untuk memberikan wawasan berbasis data bagi riset pendidikan."
+            imageSrc="/feedback.svg"
+            className="md:col-span-2 lg:col-span-2"
+          />
+        </div>
       </div>
     </section>
   );

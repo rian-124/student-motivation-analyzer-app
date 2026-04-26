@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "Administrator SMA",
+    "email": "admin@sma.com",
+    "password": "admin123",
+    "role": "admin",
+    "avatar": "/avatars/admin.png"
+  },
+  {
+    "id": "2",
+    "name": "Dr. Ahmad Fauzi, M.T.",
+    "email": "dosen@sma.com",
+    "password": "dosen123",
+    "role": "lecture",
+    "avatar": "/avatars/dosen.png"
+  },
+  {
+    "id": "3",
+    "name": "Andi Pratama",
+    "email": "student@sma.com",
+    "password": "student123",
+    "role": "student",
+    "avatar": "/avatars/student.png"
+  }
+]

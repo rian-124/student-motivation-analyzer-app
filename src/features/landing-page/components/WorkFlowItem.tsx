@@ -15,38 +15,65 @@ export default function WorkFlowItem({
   subTitle,
   description,
 }: WorkFlowItemProps) {
+  const isRight = position === "right";
+
   return (
-    <li className="relative mb-10 w-full h-[200vh] md:text-right">
-      <div
-        className={`w-full flex flex-col md:flex ${
-          position === "right" ? "md:flex-row" : "md:flex-row-reverse"
-        } md:justify-between md:items-center sticky top-1/3`}
-      >
-        <div className="absolute  -left-7 top-1/2 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2 md:w-20 md:h-20 w-16 h-16 bg-brand rounded-full border-4 border-black p-3 flex justify-center items-center group">
-          <Workflow size={40} className="text-black" />
-        </div>
-        <div
-          className={`pl-10 md:gap-40 gap-4 md:px-0 w-full  ${
-            position === "right" ? "md:flex-row" : "md:flex-row-reverse"
-          } md:justify-between md:items-center flex flex-col`}
-        >
-          <div className="p-2 self-center bg-brand rounded-xl text-white w-full flex justify-center shadow-button">
-            <time className="mb-1 text-sm uppercase font-normal leading-none opacity-100 text-black">
-              {date}
-            </time>
+    <li className="relative w-full h-[100vh] md:h-[80vh]">
+      <div className="w-full h-full sticky top-0 flex items-center">
+        {/* Center Icon Badge */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 hidden md:block">
+          <div className="w-16 h-16 bg-white border-4 border-brand rounded-full flex justify-center items-center shadow-xl ring-8 ring-brand/5 group hover:scale-110 transition-transform duration-300">
+            <Workflow size={28} className="text-brand-secondary group-hover:rotate-12 transition-transform" />
           </div>
-          <div
-            className={`w-full md:p-10 p-5 rounded-xl text-start  space-y-2 shadow-button`}
-          >
-            <div className="space-y-2">
-              <h3 className="text-2xl text-black font-bold uppercase font-mono">
-                {title}
-              </h3>
-              <h3 className="text-lg text-black font-mono">{subTitle}</h3>
-            </div>
-            <p className="mb-4 md:text-sm text-xs font-normal text-justify text-black">
-              {description}
-            </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full h-full items-center">
+          {/* Left Slot */}
+          <div className={`flex justify-end px-6 md:pr-16 lg:pr-24 ${isRight ? "hidden md:flex md:invisible" : "z-20"}`}>
+            {!isRight && (
+              <div className="group p-8 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/20 shadow-2xl hover:bg-white/60 transition-all duration-500 hover:-translate-y-2 max-w-md w-full">
+                <div className="flex flex-col space-y-4 text-start">
+                  <div className="inline-block self-start px-3 py-1 rounded-lg bg-brand text-white text-xs font-bold shadow-md uppercase tracking-wider">
+                    {date}
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-2xl text-brand-secondary font-black tracking-tight leading-none group-hover:text-brand transition-colors">
+                      {title}
+                    </h3>
+                    <p className="text-brand-secondary/40 font-bold text-sm uppercase tracking-widest">
+                      {subTitle}
+                    </p>
+                  </div>
+                  <p className="text-brand-secondary/70 leading-relaxed text-sm md:text-base font-medium">
+                    {description}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Slot */}
+          <div className={`flex justify-start px-6 md:pl-16 lg:pl-24 ${!isRight ? "hidden md:flex md:invisible" : "z-20"}`}>
+            {isRight && (
+              <div className="group p-8 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/20 shadow-2xl hover:bg-white/60 transition-all duration-500 hover:-translate-y-2 max-w-md w-full">
+                <div className="flex flex-col space-y-4 text-start">
+                  <div className="inline-block self-start px-3 py-1 rounded-lg bg-brand text-white text-xs font-bold shadow-md uppercase tracking-wider">
+                    {date}
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-2xl text-brand-secondary font-black tracking-tight leading-none group-hover:text-brand transition-colors">
+                      {title}
+                    </h3>
+                    <p className="text-brand-secondary/40 font-bold text-sm uppercase tracking-widest">
+                      {subTitle}
+                    </p>
+                  </div>
+                  <p className="text-brand-secondary/70 leading-relaxed text-sm md:text-base font-medium">
+                    {description}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

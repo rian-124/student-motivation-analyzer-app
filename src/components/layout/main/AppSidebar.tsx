@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { UserRole } from "@/lib/types/Role.type"; 
 
 import {
@@ -28,6 +29,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { LogOut } from "lucide-react";
 
 export interface NavItem {
   title: string;
@@ -45,9 +48,9 @@ type NavCategory = {
 // Fungsi dinamis untuk membuat data sidebar
 const getSidebarData = (userRole: UserRole): NavCategory[] => {
   // Mapping khusus untuk path profile jika nama folder berbeda dengan role
+  // Mapping khusus untuk path profile jika nama folder berbeda dengan role
   const getProfilePath = (role: UserRole) => {
-    if (role === 'lecture') return '/lecturer/profile';
-    return `/${role}/profile`;
+    return "/profile";
   };
 
   return [
@@ -58,13 +61,13 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
         {
           title: "Upload Rekaman",
           icon: Mic,
-          href: "/student/upload-recording",
+          href: "/upload-recording",
           roles: ["student"],
         },
         {
           title: "Hasil Analisis",
           icon: FileText,
-          href: "/student/analysis-results",
+          href: "/analysis-results",
           roles: ["student"],
         },
       ],
@@ -131,7 +134,7 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
       label: "Akun",
       items: [
         {
-          title: "Profile Saya",
+          title: "Profil Saya",
           icon: UserIcon,
           // href dibuat dinamis berdasarkan role
           href: getProfilePath(userRole),
@@ -143,45 +146,45 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
 
 export function AppSidebar() {
   const pathname = usePathname();
-  // Nantinya ganti "student" ini dengan state dari Context/Auth
-  const userRole: UserRole = "lecture"; 
+  const { user, userRole, logout } = useAuth(); 
 
   // Panggil fungsi untuk mendapatkan data terbaru berdasarkan role
-  const sidebarData = getSidebarData(userRole);
+  const sidebarData = getSidebarData(userRole || "student");
 
   const isActive = (href: string) => pathname.startsWith(href);
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar text-brand-secondary">
+    <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white text-brand-secondary">
       {/* ── Logo ── */}
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo-icon.svg"
-            alt="Logo icon"
-            width={32}
-            height={32}
-            className="shrink-0"
-          />
-          <span className="font-bold text-brand group-data-[collapsible=icon]:hidden">Motivation Analyzer</span>
+      <SidebarHeader className="h-20 border-b border-slate-100 px-4 flex flex-row items-center shrink-0">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-secondary flex items-center justify-center text-white text-lg font-black shadow-lg shadow-brand/20 shrink-0">
+            M
+          </div>
+          <div className="flex flex-col leading-none group-data-[collapsible=icon]:hidden">
+            <span className="text-sm font-black text-brand-secondary tracking-tight">Motivation</span>
+            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">Analyzer</span>
+          </div>
         </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-2 pt-4">
         {sidebarData
           .filter(
             (category) =>
-              !category.roles || category.roles.includes(userRole)
+              !category.roles || (userRole && category.roles.includes(userRole))
           )
           .map((category) => (
-            <SidebarGroup key={category.label}>
-              <SidebarGroupLabel className="text-brand-secondary font-semibold">{category.label}</SidebarGroupLabel>
+            <SidebarGroup key={category.label} className="py-2">
+              <SidebarGroupLabel className="text-brand-secondary/40 font-black text-[10px] uppercase tracking-[0.2em] px-4">
+                {category.label}
+              </SidebarGroupLabel>
 
-              <SidebarMenu>
+              <SidebarMenu className="gap-1 mt-2">
                 {category.items
                   .filter(
                     (item) =>
-                      !item.roles || item.roles.includes(userRole)
+                      !item.roles || (userRole && item.roles.includes(userRole))
                   )
                   .map((item) => {
                     const active = item.href ? isActive(item.href) : false;
@@ -191,11 +194,17 @@ export function AppSidebar() {
                           asChild
                           tooltip={item.title}
                           isActive={active}
-                          className={active ? "bg-brand/10 text-brand hover:bg-brand/15 hover:text-brand" : "hover:bg-brand/5 hover:text-brand"}
+                          className={`
+                            h-11 rounded-xl px-4 transition-all duration-200
+                            ${active 
+                              ? "bg-brand text-white shadow-lg shadow-brand/20 hover:bg-brand hover:text-white" 
+                              : "text-brand-secondary/60 hover:bg-brand/5 hover:text-brand"
+                            }
+                          `}
                         >
                           <Link href={item.href || "#"}>
-                            <item.icon className="size-4" />
-                            <span>{item.title}</span>
+                            <item.icon className={`size-4 ${active ? "text-white" : ""}`} />
+                            <span className="font-bold text-sm">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -206,10 +215,44 @@ export function AppSidebar() {
           ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
-        <p className="text-xs text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden">
-          © 2025 SMA App
-        </p>
+      <SidebarFooter className="border-t border-slate-100 p-4">
+        <div className="group-data-[collapsible=icon]:hidden space-y-4">
+          {user && (
+            <div className="flex items-center gap-3 px-2 py-1">
+              <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs shrink-0 border border-slate-200">
+                {user.name.charAt(0)}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-bold text-brand-secondary truncate">{user.name}</span>
+                <span className="text-[10px] text-brand-secondary/40 font-medium truncate uppercase tracking-wider">{user.role}</span>
+              </div>
+            </div>
+          )}
+
+          <Button 
+            variant="ghost" 
+            onClick={logout}
+            className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl font-bold text-sm h-11 px-4"
+          >
+            <LogOut size={16} />
+            Keluar
+          </Button>
+        </div>
+        <div className="hidden group-data-[collapsible=icon]:flex justify-center flex-col items-center gap-4">
+          {user && (
+            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs border border-slate-200">
+              {user.name.charAt(0)}
+            </div>
+          )}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={logout}
+            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl"
+          >
+            <LogOut size={18} />
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

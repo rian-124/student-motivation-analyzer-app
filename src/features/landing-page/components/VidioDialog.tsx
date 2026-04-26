@@ -14,7 +14,7 @@ export default function VidioDialog() {
       </DialogTrigger>
 
       <DialogContent className="max-w-3xl">
-        <DialogTitle>Demo Vidio</DialogTitle>
+        <DialogTitle>Video Demo</DialogTitle>
         <div className="aspect-video overflow-hidden rounded-lg">
           <iframe
             className="h-full w-full"

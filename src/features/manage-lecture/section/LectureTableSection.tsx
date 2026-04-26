@@ -44,7 +44,7 @@ export default function LectureTableSection() {
               <TableCell>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline">
-                    Edit
+                    Ubah
                   </Button>
                   <Button size="sm" variant="destructive">
                     Nonaktif
@@ -67,7 +67,7 @@ export default function LectureTableSection() {
               <TableCell>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline">
-                    Edit
+                    Ubah
                   </Button>
                   <Button size="sm" variant="destructive">
                     Nonaktif
@@ -85,7 +85,7 @@ export default function LectureTableSection() {
               <TableCell>Jaringan Komputer</TableCell>
               <TableCell>F, G</TableCell>
               <TableCell>
-                <Badge variant="secondary">Pending</Badge>
+                <Badge variant="secondary">Menunggu</Badge>
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">

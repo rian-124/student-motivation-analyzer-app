@@ -54,7 +54,7 @@ export default function StudentTableSection() {
               <SelectContent>
                 <SelectItem value="all">Semua Status</SelectItem>
                 <SelectItem value="active">Aktif</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="pending">Menunggu</SelectItem>
                 <SelectItem value="inactive">Nonaktif</SelectItem>
               </SelectContent>
             </Select>
@@ -91,7 +91,7 @@ export default function StudentTableSection() {
               <TableCell>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline">
-                    Edit
+                    Ubah
                   </Button>
                   <Button size="sm" variant="destructive">
                     Nonaktif
@@ -109,7 +109,7 @@ export default function StudentTableSection() {
                 rizky@kampus.ac.id
               </TableCell>
               <TableCell>
-                <Badge variant="secondary">Pending</Badge>
+                <Badge variant="secondary">Menunggu</Badge>
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -149,7 +149,7 @@ export default function StudentTableSection() {
 
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
-              Prev
+              Sebelumnya
             </Button>
             <Button size="sm">1</Button>
             <Button variant="outline" size="sm">
@@ -159,7 +159,7 @@ export default function StudentTableSection() {
               3
             </Button>
             <Button variant="outline" size="sm">
-              Next
+              Berikutnya
             </Button>
           </div>
         </div>
