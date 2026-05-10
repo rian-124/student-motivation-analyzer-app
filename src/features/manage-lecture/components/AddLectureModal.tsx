@@ -12,35 +12,31 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, User, Mail, Hash, BookOpen, Save } from "lucide-react";
+import { UserPlus, User, Mail, Hash, Save, Lock, BookOpen } from "lucide-react";
 import { useState } from "react";
-import { Lecture } from "../page/manageLecturePage";
 
 interface AddLectureModalProps {
+  onAdd?: (data: any) => void;
   children: React.ReactNode;
-  onAdd?: (lecture: Lecture) => void;
 }
 
-export function AddLectureModal({ children, onAdd }: AddLectureModalProps) {
+export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
     nip: "",
-    subject: "",
-    email: ""
+    name: "",
+    email: "",
+    password: "",
+    department: "",
+    class: "",
   });
 
   const handleSave = () => {
-    if (onAdd && formData.name && formData.nip) {
-      onAdd({
-        name: formData.name,
-        nip: formData.nip,
-        subject: formData.subject || "Belum ditentukan",
-        classes: "0 Mhs"
-      });
-      setFormData({ name: "", nip: "", subject: "", email: "" });
-      setOpen(false);
+    if (onAdd) {
+      onAdd(formData);
     }
+    setFormData({ name: "", nip: "", department: "", email: "", password: "" });
+    setOpen(false);
   };
 
   return (
@@ -48,27 +44,27 @@ export function AddLectureModal({ children, onAdd }: AddLectureModalProps) {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl p-0 overflow-hidden bg-white dark:bg-slate-900">
+      <DialogContent className="sm:max-w-[450px] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl p-0 overflow-hidden bg-white dark:bg-slate-900">
         <DialogHeader className="p-5 pb-2">
           <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center mb-3">
             <UserPlus className="w-5 h-5 text-brand" />
           </div>
           <DialogTitle className="text-lg font-bold text-slate-800 dark:text-white leading-none">Tambah Dosen Wali</DialogTitle>
           <DialogDescription className="text-slate-400 text-[11px] mt-1.5 leading-relaxed">
-            Daftarkan akun dosen wali baru untuk manajemen bimbingan akademik.
+            Daftarkan akun dosen wali baru ke dalam sistem.
           </DialogDescription>
         </DialogHeader>
 
         <div className="p-5 space-y-4">
           {/* NAMA */}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Nama Lengkap & Gelar</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Nama Lengkap</Label>
             <div className="relative">
               <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input 
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="Contoh: Dr. Ahmad, M.T." 
+                placeholder="Nama dosen..." 
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>
@@ -83,22 +79,27 @@ export function AddLectureModal({ children, onAdd }: AddLectureModalProps) {
                 <Input 
                   value={formData.nip}
                   onChange={(e) => setFormData({...formData, nip: e.target.value})}
-                  placeholder="1985..." 
+                  placeholder="198501..." 
                   className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
             </div>
 
-            {/* MATA KULIAH */}
+            {/* DEPARTEMEN & KELAS */}
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Kelas Perwalian</Label>
-              <div className="relative">
-                <BookOpen className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Departemen & Kelas</Label>
+              <div className="grid grid-cols-2 gap-2">
                 <Input 
-                  value={formData.subject}
-                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  placeholder="Contoh: 2021-A" 
-                  className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
+                  value={formData.department}
+                  onChange={(e) => setFormData({...formData, department: e.target.value})}
+                  placeholder="Teknik..." 
+                  className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
+                />
+                <Input 
+                  value={formData.class}
+                  onChange={(e) => setFormData({...formData, class: e.target.value})}
+                  placeholder="Kelas..." 
+                  className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
             </div>
@@ -106,14 +107,29 @@ export function AddLectureModal({ children, onAdd }: AddLectureModalProps) {
 
           {/* EMAIL */}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Email Institusi</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Email</Label>
             <div className="relative">
               <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input 
-                type="email" 
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                placeholder="dosen@kampus.ac.id" 
+                type="email" 
+                placeholder="email@lecturer.com" 
+                className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
+              />
+            </div>
+          </div>
+
+          {/* PASSWORD */}
+          <div className="space-y-1.5">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Password</Label>
+            <div className="relative">
+              <Lock className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Input 
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                type="password" 
+                placeholder="********" 
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>

@@ -10,42 +10,40 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Search, Edit, Trash2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { Search, Edit, Trash2, ChevronLeft, ChevronRight, BookOpen, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EditLectureModal } from "../components/EditLectureModal";
 import { DeleteConfirmModal } from "@/components/common/DeleteConfirmModal";
-import { useState, useMemo } from "react";
-import { Lecture } from "../page/manageLecturePage";
+import { useState } from "react";
+import { Lecturer } from "@/lib/types/lecturer.type";
 
 interface LectureTableSectionProps {
-  lectures: Lecture[];
-  onEdit: (lecture: Lecture) => void;
-  onDelete: (nip: string) => void;
+  lectures: Lecturer[];
+  loading?: boolean;
+  pagination: {
+    page: number;
+    total: number;
+    lastPage: number;
+  };
+  onPageChange: (page: number) => void;
+  onEdit: (id: string, data: any) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function LectureTableSection({ lectures, onEdit, onDelete }: LectureTableSectionProps) {
+export default function LectureTableSection({ 
+  lectures, 
+  loading, 
+  pagination, 
+  onPageChange, 
+  onEdit, 
+  onDelete 
+}: LectureTableSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
-  const filteredLectures = useMemo(() => {
-    return lectures.filter((lecture) => {
-      return lecture.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-             lecture.nip.includes(searchQuery);
-    });
-  }, [lectures, searchQuery]);
-
-  const totalPages = Math.ceil(filteredLectures.length / itemsPerPage);
-  
-  const paginatedLectures = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredLectures.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredLectures, currentPage]);
-
-  // Reset to page 1 if filters change
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
+  const filteredLectures = lectures.filter((lecture) => {
+    return lecture.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           lecture.nip.includes(searchQuery);
+  });
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
@@ -67,27 +65,31 @@ export default function LectureTableSection({ lectures, onEdit, onDelete }: Lect
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="overflow-x-auto min-h-[300px]">
+        <div className="overflow-x-auto min-h-[300px] relative">
+          {loading && (
+            <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 z-10 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-brand" />
+            </div>
+          )}
           <Table>
             <TableHeader>
               <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
                 <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Dosen Wali</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Kelas Perwalian</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Total Mahasiswa</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Opsi</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Departemen</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5 text-right">Opsi</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {paginatedLectures.length === 0 ? (
+              {filteredLectures.length === 0 && !loading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={3} className="h-32 text-center text-slate-500">
                     Tidak ada data dosen yang ditemukan.
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedLectures.map((lecture, idx) => (
-                  <TableRow key={lecture.nip} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
+                filteredLectures.map((lecture) => (
+                  <TableRow key={lecture.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
                     <TableCell className="py-3.5 px-5">
                       <div className="flex flex-col">
                         <span className="font-semibold text-slate-800 dark:text-slate-200">{lecture.name}</span>
@@ -97,17 +99,12 @@ export default function LectureTableSection({ lectures, onEdit, onDelete }: Lect
                     <TableCell className="px-5">
                       <div className="flex items-center gap-2">
                         <BookOpen className="w-3 h-3 text-brand/50" />
-                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">{lecture.subject}</span>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">{lecture.department || '-'}</span>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                        {lecture.classes}
-                      </span>
                     </TableCell>
                     <TableCell className="text-right px-5">
                       <div className="flex items-center justify-end gap-1">
-                        <EditLectureModal lecture={lecture} onEdit={onEdit}>
+                        <EditLectureModal lecture={lecture} onEdit={(data) => onEdit(lecture.id, data)}>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Ubah Data">
                             <Edit className="w-3.5 h-3.5" />
                           </Button>
@@ -115,8 +112,8 @@ export default function LectureTableSection({ lectures, onEdit, onDelete }: Lect
                         
                         <DeleteConfirmModal 
                           title="Hapus Dosen Wali?" 
-                          description={`Anda akan menghapus data bimbingan ${lecture.name}.`}
-                          onConfirm={() => onDelete(lecture.nip)}
+                          description={`Anda akan menghapus data ${lecture.name}.`}
+                          onConfirm={() => onDelete(lecture.id)}
                         >
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus Dosen">
                             <Trash2 className="w-4 h-4" />
@@ -134,25 +131,25 @@ export default function LectureTableSection({ lectures, onEdit, onDelete }: Lect
         {/* FOOTER */}
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-            Total {filteredLectures.length} Dosen Wali Aktif
+            Total {pagination.total} Dosen Wali Aktif
           </p>
           <div className="flex items-center gap-1">
             <Button 
               variant="ghost" 
               size="icon" 
               className="w-7 h-7 rounded-md text-slate-400" 
-              disabled={currentPage === 1 || totalPages === 0}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={pagination.page === 1}
+              onClick={() => onPageChange(pagination.page - 1)}
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
             <div className="flex items-center gap-1 px-1">
-              {Array.from({ length: totalPages }).map((_, i) => (
+              {Array.from({ length: pagination.lastPage }).map((_, i) => (
                 <span 
                   key={i} 
-                  onClick={() => setCurrentPage(i + 1)}
+                  onClick={() => onPageChange(i + 1)}
                   className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
-                    ${currentPage === i + 1 
+                    ${pagination.page === i + 1 
                       ? 'bg-brand text-white' 
                       : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
@@ -165,8 +162,8 @@ export default function LectureTableSection({ lectures, onEdit, onDelete }: Lect
               variant="ghost" 
               size="icon" 
               className="w-7 h-7 rounded-md text-slate-400"
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={pagination.page === pagination.lastPage}
+              onClick={() => onPageChange(pagination.page + 1)}
             >
               <ChevronRight className="w-4 h-4" />
             </Button>

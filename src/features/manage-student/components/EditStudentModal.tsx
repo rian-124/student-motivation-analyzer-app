@@ -19,31 +19,73 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Edit, User, Mail, Hash, Save } from "lucide-react";
-import { useState } from "react";
-import { Student } from "../page/manageStudentPage";
+import { Edit, User, Mail, Hash, Save, Layers, Briefcase } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Student } from "@/lib/types/student.type";
+import { Lecturer } from "@/lib/types/lecturer.type";
+import { lecturerService } from "@/services/lecturer.service";
+import { useAuthStore } from "@/store/auth.store";
 
 interface EditStudentModalProps {
   student: Student;
-  onEdit?: (student: Student) => void;
+  onEdit?: (data: any) => void;
   children: React.ReactNode;
 }
 
 export function EditStudentModal({ student, onEdit, children }: EditStudentModalProps) {
   const [open, setOpen] = useState(false);
+  const userRole = useAuthStore((state) => state.user?.role.toUpperCase());
+  const isAdmin = userRole === "ADMIN";
+  
+  const [lecturers, setLecturers] = useState<Lecturer[]>([]);
+  
+  // Initialize with safe default values
   const [formData, setFormData] = useState({
-    name: student.name,
-    class: student.class,
-    email: student.email
+    name: "",
+    nim: "",
+    class: "",
+    email: "",
+    semester: "1",
+    lecturerId: "none"
   });
+
+  useEffect(() => {
+    if (open && isAdmin) {
+      fetchLecturers();
+    }
+  }, [open, isAdmin]);
+
+  // Sync data when student prop or open state changes
+  useEffect(() => {
+    if (student) {
+      setFormData({
+        name: student.name || "",
+        nim: student.nim || "",
+        class: student.class || "",
+        email: student.user?.email || "",
+        semester: student.semester || "1",
+        lecturerId: student.lecturerId || "none"
+      });
+    }
+  }, [student, open]);
+
+  const fetchLecturers = async () => {
+    try {
+      const response = await lecturerService.findAll(1, 100);
+      setLecturers(response.data);
+    } catch (error) {
+      console.error("Failed to fetch lecturers", error);
+    }
+  };
 
   const handleSave = () => {
     if (onEdit) {
       onEdit({
-        ...student,
         name: formData.name,
+        nim: formData.nim,
         class: formData.class.toUpperCase(),
-        email: formData.email
+        semester: formData.semester,
+        lecturerId: formData.lecturerId === "none" ? undefined : formData.lecturerId
       });
     }
     setOpen(false);
@@ -54,7 +96,7 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl p-0 overflow-hidden bg-white dark:bg-slate-900">
+      <DialogContent className="sm:max-w-[450px] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl p-0 overflow-hidden bg-white dark:bg-slate-900">
         <DialogHeader className="p-5 pb-2">
           <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center mb-3">
             <Edit className="w-5 h-5 text-brand" />
@@ -65,7 +107,8 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+          {/* NAMA */}
           <div className="space-y-1.5">
             <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Nama Lengkap</Label>
             <div className="relative">
@@ -79,44 +122,78 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
           </div>
 
           <div className="grid grid-cols-2 gap-3">
+            {/* NIM */}
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">NIM</Label>
               <div className="relative">
                 <Hash className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <Input 
-                  defaultValue={student.id}
-                  disabled
-                  className="pl-9 h-10 text-sm rounded-xl bg-slate-100 dark:bg-slate-800/50 border-none text-slate-500 italic"
+                  value={formData.nim}
+                  onChange={(e) => setFormData({...formData, nim: e.target.value})}
+                  className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Kelas</Label>
-              <Select value={formData.class.toLowerCase()} onValueChange={(val) => setFormData({...formData, class: val})}>
-                <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
-                  <SelectValue placeholder="Pilih" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-100">
-                  <SelectItem value="a">Kelas A</SelectItem>
-                  <SelectItem value="b">Kelas B</SelectItem>
-                  <SelectItem value="c">Kelas C</SelectItem>
-                  <SelectItem value="d">Kelas D</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* DOSEN WALI (ONLY ADMIN) */}
+            {isAdmin && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Dosen Wali</Label>
+                <Select value={formData.lecturerId} onValueChange={(val) => setFormData({...formData, lecturerId: val})}>
+                  <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
+                    <SelectValue placeholder="Pilih Dosen" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-100">
+                    <SelectItem value="none">Tanpa Dosen Wali</SelectItem>
+                    {lecturers.map(l => (
+                      <SelectItem key={l.id} value={l.id}>
+                        {l.name} ({l.class?.name || 'No Class'})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            {/* KELAS (ONLY SHOWN IF NO DOSEN SELECTED OR NOT ADMIN) */}
+            {(!isAdmin || formData.lecturerId === "none") && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Kelas Manual</Label>
+                <Input 
+                  value={formData.class}
+                  onChange={(e) => setFormData({...formData, class: e.target.value})}
+                  placeholder="A / B / C" 
+                  className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
+                />
+              </div>
+            )}
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Email Kampus</Label>
-            <div className="relative">
-              <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input 
-                type="email" 
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
-              />
+          <div className="grid grid-cols-2 gap-3">
+             {/* SEMESTER */}
+             <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Semester</Label>
+              <div className="relative">
+                <Layers className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Input 
+                  value={formData.semester}
+                  onChange={(e) => setFormData({...formData, semester: e.target.value})}
+                  className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
+                />
+              </div>
+            </div>
+
+            {/* EMAIL (READONLY) */}
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Email</Label>
+              <div className="relative">
+                <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Input 
+                  value={formData.email}
+                  disabled
+                  className="pl-9 h-10 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border-none text-slate-400 italic"
+                />
+              </div>
             </div>
           </div>
         </div>

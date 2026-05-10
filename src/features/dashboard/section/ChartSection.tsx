@@ -12,8 +12,11 @@ export default function ChartSection() {
   const { userRole, user } = useAuth();
   
   const isAdmin = userRole === "admin";
-  // @ts-ignore - assignedClass exists in dummy user data
-  const userClass = user?.assignedClass || "2021-A";
+  const isStudent = userRole === "student";
+  const isLecturer = userRole === "lecturer";
+  
+  // Get class info safely
+  const userClassName = isAdmin ? "Global" : (isStudent ? "TI-A" : "TI-B");
 
   const barData = isAdmin 
     ? CLASS_DATA.map(c => ({ label: c.label, value: c.value }))
@@ -27,7 +30,7 @@ export default function ChartSection() {
 
   const pieData = isAdmin 
     ? MOTIVATION_DISTRIBUTION.global 
-    : (MOTIVATION_DISTRIBUTION.classes as any)[userClass] || MOTIVATION_DISTRIBUTION.global;
+    : (MOTIVATION_DISTRIBUTION.classes as any)[userClassName] || MOTIVATION_DISTRIBUTION.global;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -36,12 +39,12 @@ export default function ChartSection() {
         <CardHeader className="p-6 pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
             <BarChart3 className="w-4 h-4 text-brand" />
-            {isAdmin ? "Motivasi per Kelas" : "Tren Motivasi Mingguan"}
+            {isAdmin ? "Motivasi per Kelas" : (isStudent ? "Tren Motivasi Saya" : "Tren Motivasi Kelas")}
           </CardTitle>
           <p className="text-xs text-slate-500">
             {isAdmin 
               ? "Rata-rata skor motivasi mahasiswa di tiap kelas bimbingan." 
-              : `Rata-rata motivasi harian untuk ${userClass}.`}
+              : `Statistik motivasi harian untuk kelas ${userClassName}.`}
           </p>
         </CardHeader>
         
@@ -55,7 +58,7 @@ export default function ChartSection() {
         <CardHeader className="p-6 pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
             <PieChart className="w-4 h-4 text-slate-400" />
-            {isAdmin ? "Distribusi Global" : `Distribusi ${userClass}`}
+            {isAdmin ? "Distribusi Global" : `Distribusi Kelas ${userClassName}`}
           </CardTitle>
           <p className="text-xs text-slate-500">
             {isAdmin 
@@ -68,7 +71,7 @@ export default function ChartSection() {
           <MotivationPieChart data={pieData} />
 
           <Button variant="ghost" size="sm" className="w-full mt-4 text-xs font-bold text-slate-400 hover:text-brand transition-all">
-            {isAdmin ? "Lihat Semua Kelas" : "Detail Mahasiswa"}
+            {isAdmin ? "Lihat Semua Kelas" : (isStudent ? "Hasil Analisis Saya" : "Detail Mahasiswa")}
             <ArrowRight className="w-3 h-3 ml-1.5" />
           </Button>
         </CardContent>

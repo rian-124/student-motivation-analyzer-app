@@ -6,44 +6,75 @@ import { UserPlus, Download } from "lucide-react";
 import LectureStatsSection from "../section/LectureStatsSection";
 import LectureTableSection from "../section/LectureTableSection";
 import { AddLectureModal } from "../components/AddLectureModal";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-
-export interface Lecture {
-  nip: string;
-  name: string;
-  subject: string;
-  classes: string;
-}
+import { lecturerService } from "@/services/lecturer.service";
+import { Lecturer } from "@/lib/types/lecturer.type";
 
 export default function ManageLecturePage() {
-  const [lectures, setLectures] = useState<Lecture[]>([
-    { name: "Dr. Ahmad Fauzi, M.T.", nip: "198501012010011001", subject: "Kelas 2021-A", classes: "42 Mhs" },
-    { name: "Dr. Sari Dewi, M.Kom.", nip: "198703152012012002", subject: "Kelas 2021-B", classes: "38 Mhs" },
-    { name: "M. Rizal, S.T., M.T.", nip: "199001202015011003", subject: "Kelas 2022-A", classes: "45 Mhs" },
-    { name: "Prof. Dr. Ir. Hadi", nip: "197505121998031002", subject: "Kelas 2022-C", classes: "40 Mhs" },
-  ]);
+  const [lectures, setLectures] = useState<Lecturer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    lastPage: 1,
+  });
 
-  const handleAddLecture = (newLecture: Lecture) => {
-    setLectures([newLecture, ...lectures]);
-    toast.success("Berhasil!", {
-      description: `Data dosen wali ${newLecture.name} berhasil ditambahkan.`,
-    });
+  const fetchLecturers = useCallback(async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const response = await lecturerService.findAll(page);
+      setLectures(response.data);
+      setPagination({
+        page: response.meta.page,
+        total: response.meta.total,
+        lastPage: response.meta.lastPage,
+      });
+    } catch (error) {
+      toast.error("Gagal mengambil data dosen");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLecturers();
+  }, [fetchLecturers]);
+
+  const handleAddLecture = async (data: any) => {
+    try {
+      await lecturerService.create(data);
+      fetchLecturers(pagination.page);
+      toast.success("Berhasil!", {
+        description: `Data dosen ${data.name} berhasil ditambahkan.`,
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal menambahkan dosen");
+    }
   };
 
-  const handleEditLecture = (updatedLecture: Lecture) => {
-    setLectures(lectures.map(l => l.nip === updatedLecture.nip ? updatedLecture : l));
-    toast.success("Diperbarui!", {
-      description: `Data dosen wali ${updatedLecture.name} berhasil diperbarui.`,
-    });
+  const handleEditLecture = async (id: string, data: any) => {
+    try {
+      await lecturerService.update(id, data);
+      fetchLecturers(pagination.page);
+      toast.success("Diperbarui!", {
+        description: `Data dosen ${data.name} berhasil diperbarui.`,
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal memperbarui dosen");
+    }
   };
 
-  const handleDeleteLecture = (nip: string) => {
-    const lectureName = lectures.find(l => l.nip === nip)?.name;
-    setLectures(lectures.filter(l => l.nip !== nip));
-    toast.success("Dihapus!", {
-      description: `Data dosen wali ${lectureName} berhasil dihapus.`,
-    });
+  const handleDeleteLecture = async (id: string) => {
+    try {
+      await lecturerService.remove(id);
+      fetchLecturers(pagination.page);
+      toast.success("Dihapus!", {
+        description: `Data dosen berhasil dihapus.`,
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal menghapus dosen");
+    }
   };
 
   return (
@@ -71,6 +102,9 @@ export default function ManageLecturePage() {
         <LectureStatsSection />
         <LectureTableSection 
           lectures={lectures} 
+          loading={loading}
+          pagination={pagination}
+          onPageChange={fetchLecturers}
           onEdit={handleEditLecture} 
           onDelete={handleDeleteLecture} 
         />

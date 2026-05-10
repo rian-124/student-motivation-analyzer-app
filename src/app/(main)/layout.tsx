@@ -4,29 +4,199 @@ import { AppSidebar } from "@/components/layout/main/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAuthStore } from "@/store/auth.store";
+import { authService } from "@/services/auth.service";
+import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+
+const ROLE_PERMISSIONS: Record<string, string[]> = {
+  ADMIN: ["/dashboard", "/manage-student", "/manage-lecture", "/graph-overall", "/graph-class", "/analysis-results"],
+  LECTURER: ["/dashboard", "/manage-student", "/graph-overall", "/graph-class", "/analysis-results"],
+  STUDENT: ["/graph-class", "/upload-recording", "/analysis-result"],
+};
+
+const DEFAULT_PAGES: Record<string, string> = {
+  ADMIN: "/dashboard",
+  LECTURER: "/dashboard",
+  STUDENT: "/upload-recording",
+};
+
+// --- SKELETON COMPONENTS ---
+
+const DashboardSkeleton = () => (
+  <div className="space-y-8 animate-pulse">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+      ))}
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2 h-96 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+      <div className="h-96 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+    </div>
+  </div>
+);
+
+const TableSkeleton = () => (
+  <div className="space-y-6 animate-pulse">
+    <div className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="p-4 border-b border-slate-50 flex justify-between">
+        <div className="h-8 w-48 bg-slate-100 rounded-lg" />
+        <div className="h-8 w-32 bg-slate-50 rounded-lg" />
+      </div>
+      <div className="p-0">
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} className="h-16 border-b border-slate-50 flex items-center px-6 gap-4">
+            <div className="h-10 w-10 rounded-full bg-slate-100" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-1/4 bg-slate-100 rounded" />
+              <div className="h-2 w-1/6 bg-slate-50 rounded" />
+            </div>
+            <div className="h-8 w-20 bg-slate-50 rounded-lg" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const UploadSkeleton = () => (
+  <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
+    <div className="h-24 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+    <div className="h-[450px] bg-white rounded-[2.5rem] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center space-y-4">
+      <div className="w-20 h-20 bg-slate-50 rounded-3xl" />
+      <div className="h-4 w-48 bg-slate-50 rounded" />
+      <div className="h-3 w-32 bg-slate-50 rounded" />
+    </div>
+  </div>
+);
+
+const SidebarSkeleton = () => (
+  <div className="p-4 space-y-6">
+    <div className="space-y-3">
+      <div className="h-2 w-20 bg-slate-100 rounded animate-pulse" />
+      <div className="space-y-2">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-10 w-full bg-slate-50 rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </div>
+    <div className="space-y-3">
+      <div className="h-2 w-24 bg-slate-100 rounded animate-pulse" />
+      <div className="space-y-2">
+        {[1, 2].map(i => (
+          <div key={i} className="h-10 w-full bg-slate-50 rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated } = useAuth();
+  const { accessToken, user, setUser, clearAuth } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Tunggu sebentar untuk hydration localStorage
-    const timeout = setTimeout(() => {
-      if (!isAuthenticated) {
-        router.push("/login");
-      }
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, [isAuthenticated, router]);
+    setIsMounted(true);
+  }, []);
 
-  if (!isAuthenticated) return null;
+  const checkAccess = useCallback((role: string, currentPath: string) => {
+    const normalizedRole = role.toUpperCase();
+    const allowedPaths = ROLE_PERMISSIONS[normalizedRole] || [];
+    const isAllowed = allowedPaths.some(path => currentPath === path || currentPath.startsWith(path + "/"));
+    
+    if (!isAllowed) {
+      const defaultPage = DEFAULT_PAGES[normalizedRole] || "/login";
+      router.replace(defaultPage);
+      return false;
+    }
+    return true;
+  }, [router]);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      if (!isMounted) return;
+      if (!accessToken) {
+        setIsLoading(false);
+        router.replace("/login");
+        return;
+      }
+      try {
+        let currentUser = user;
+        if (!currentUser) {
+          const response = await authService.getProfile();
+          currentUser = (response as any).data || response;
+          setUser(currentUser!);
+        }
+        if (currentUser) {
+          const hasAccess = checkAccess(currentUser.role, pathname);
+          if (hasAccess) {
+            setIsLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error("Auth initialization failed:", error);
+        clearAuth();
+        setIsLoading(false);
+        router.replace("/login");
+      }
+    };
+    initializeAuth();
+  }, [accessToken, user, isMounted, pathname, router, setUser, clearAuth, checkAccess]);
+
+  const getPageTitle = (path: string) => {
+    if (path.includes("dashboard")) return "Dashboard";
+    if (path.includes("manage-student")) return "Manajemen Mahasiswa";
+    if (path.includes("manage-lecture")) return "Manajemen Dosen";
+    if (path.includes("upload-recording")) return "Upload Rekaman";
+    if (path.includes("analysis-result")) return "Hasil Analisis";
+    return "Memuat...";
+  };
+
+  const renderPageSkeleton = () => {
+    if (pathname.includes("dashboard")) return <DashboardSkeleton />;
+    if (pathname.includes("manage-")) return <TableSkeleton />;
+    if (pathname.includes("upload-recording")) return <UploadSkeleton />;
+    return <DashboardSkeleton />; // Default
+  };
+
+  if (!isMounted || (isLoading && accessToken)) {
+    return (
+      <div className="flex min-h-screen w-full bg-slate-50">
+        <aside className="w-[280px] border-r border-slate-100 bg-white hidden lg:block">
+          <div className="h-20 border-b border-slate-100 px-6 flex items-center">
+             <div className="w-10 h-10 bg-slate-100 rounded-xl animate-pulse" />
+             <div className="ml-3 space-y-1.5">
+               <div className="h-3 w-24 bg-slate-100 rounded animate-pulse" />
+               <div className="h-2 w-16 bg-slate-50 rounded animate-pulse" />
+             </div>
+          </div>
+          <SidebarSkeleton />
+        </aside>
+
+        <div className="flex-1 flex flex-col">
+          <header className="h-20 flex items-center px-8 bg-white border-b border-slate-100 sticky top-0 z-30">
+            <div className="w-8 h-8 bg-slate-100 rounded-lg animate-pulse" />
+            <div className="ml-4 h-4 w-[1px] bg-slate-100" />
+            <div className="ml-4 h-3 w-32 bg-slate-50 rounded animate-pulse" />
+          </header>
+          <main className="p-8">
+            {renderPageSkeleton()}
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (!accessToken) return null;
 
   return (
     <TooltipProvider>
@@ -38,7 +208,7 @@ export default function MainLayout({
             <div className="ml-4 h-4 w-[1px] bg-slate-200" />
             <div className="ml-4">
               <span className="text-xs font-bold text-brand-secondary/40 uppercase tracking-widest">
-                Dashboard
+                {getPageTitle(pathname)}
               </span>
             </div>
           </header>

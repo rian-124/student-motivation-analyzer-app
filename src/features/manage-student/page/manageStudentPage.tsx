@@ -6,45 +6,75 @@ import { Download, UserPlus } from "lucide-react";
 import StudentStatsSection from "../section/StudentStatsSection";
 import StudentTableSection from "../section/StudentTableSection";
 import { AddStudentModal } from "../components/AddStudentModal";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-
-export interface Student {
-  id: string;
-  name: string;
-  class: string;
-  email: string;
-}
+import { studentService } from "@/services/student.service";
+import { Student } from "@/lib/types/student.type";
 
 export default function ManageStudentPage() {
-  const [students, setStudents] = useState<Student[]>([
-    { name: "Andi Pratama", id: "2021010001", class: "A", email: "andi@kampus.ac.id" },
-    { name: "Rizky Fauzan", id: "2021010031", class: "D", email: "rizky@kampus.ac.id" },
-    { name: "Budi Santoso", id: "2021010015", class: "A", email: "budi@kampus.ac.id" },
-    { name: "Dewi Kusuma", id: "2021010022", class: "C", email: "dewi@kampus.ac.id" },
-    { name: "Siti Rahayu", id: "2021010008", class: "B", email: "siti@kampus.ac.id" },
-  ]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    lastPage: 1,
+  });
 
-  const handleAddStudent = (newStudent: Student) => {
-    setStudents([newStudent, ...students]);
-    toast.success("Berhasil!", {
-      description: `Data mahasiswa ${newStudent.name} berhasil ditambahkan.`,
-    });
+  const fetchStudents = useCallback(async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const response = await studentService.findAll(page);
+      setStudents(response.data);
+      setPagination({
+        page: response.meta.page,
+        total: response.meta.total,
+        lastPage: response.meta.lastPage,
+      });
+    } catch (error) {
+      toast.error("Gagal mengambil data mahasiswa");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
+
+  const handleAddStudent = async (data: any) => {
+    try {
+      await studentService.create(data);
+      fetchStudents(pagination.page);
+      toast.success("Berhasil!", {
+        description: `Data mahasiswa ${data.name} berhasil ditambahkan.`,
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal menambahkan mahasiswa");
+    }
   };
 
-  const handleEditStudent = (updatedStudent: Student) => {
-    setStudents(students.map(s => s.id === updatedStudent.id ? updatedStudent : s));
-    toast.success("Diperbarui!", {
-      description: `Data mahasiswa ${updatedStudent.name} berhasil diperbarui.`,
-    });
+  const handleEditStudent = async (id: string, data: any) => {
+    try {
+      await studentService.update(id, data);
+      fetchStudents(pagination.page);
+      toast.success("Diperbarui!", {
+        description: `Data mahasiswa ${data.name} berhasil diperbarui.`,
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal memperbarui mahasiswa");
+    }
   };
 
-  const handleDeleteStudent = (id: string) => {
-    const studentName = students.find(s => s.id === id)?.name;
-    setStudents(students.filter(s => s.id !== id));
-    toast.success("Dihapus!", {
-      description: `Data mahasiswa ${studentName} berhasil dihapus.`,
-    });
+  const handleDeleteStudent = async (id: string) => {
+    try {
+      await studentService.remove(id);
+      fetchStudents(pagination.page);
+      toast.success("Dihapus!", {
+        description: `Data mahasiswa berhasil dihapus.`,
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Gagal menghapus mahasiswa");
+    }
   };
 
   return (
@@ -70,6 +100,9 @@ export default function ManageStudentPage() {
       <StudentStatsSection />
       <StudentTableSection 
         students={students} 
+        loading={loading}
+        pagination={pagination}
+        onPageChange={fetchStudents}
         onEdit={handleEditStudent} 
         onDelete={handleDeleteStudent} 
       />

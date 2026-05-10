@@ -33,23 +33,23 @@ export default function FeatureSection() {
           <CardFeature
             title="Pengenalan Emosi Suara (SER)"
             description="Analisis akustik menggunakan pembelajaran mesin untuk mendeteksi keadaan emosional dari karakteristik vokal dalam audio kelas."
-            imageSrc="/audio.svg"
+            imageSrc="/nlp.svg"
           />
           <CardFeature
             title="Mesin Integrasi Data"
             description="Mensintesis aliran data terpisah menjadi profil keterlibatan yang terpadu untuk memastikan reliabilitas analisis yang tinggi."
-            imageSrc="/quizzes.svg"
+            imageSrc="/logo-icon.svg"
           />
           <CardFeature
             title="Metrik Kuantitatif"
             description="Pembuatan skor keterlibatan objektif berdasarkan kombinasi isyarat perilaku dan linguistik yang dianalisis."
-            imageSrc="/materials.svg"
+            imageSrc="/file.svg"
             className="md:col-span-2 lg:col-span-1"
           />
           <CardFeature
             title="Pelaporan Analisis"
             description="Visualisasi mendetail dari tren motivasi mahasiswa untuk memberikan wawasan berbasis data bagi riset pendidikan."
-            imageSrc="/feedback.svg"
+            imageSrc="/window.svg"
             className="md:col-span-2 lg:col-span-2"
           />
         </div>

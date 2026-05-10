@@ -12,7 +12,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { UserRole } from "@/lib/types/Role.type"; 
 
 import {
   LucideIcon,
@@ -23,121 +22,102 @@ import {
   PieChart,
   FileText,
   Users,
-  LayoutDashboard
+  LayoutDashboard,
+  LogOut
 } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth.store";
+import { authService } from "@/services/auth.service";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
 
 export interface NavItem {
   title: string;
   icon: LucideIcon;
   href?: string;
-  roles?: UserRole[];
+  roles?: string[];
 }
 
 type NavCategory = {
   label: string;
-  roles?: UserRole[];
+  roles?: string[];
   items: NavItem[];
 };
 
-// Fungsi dinamis untuk membuat data sidebar
-const getSidebarData = (userRole: UserRole): NavCategory[] => {
-  // Mapping khusus untuk path profile jika nama folder berbeda dengan role
-  // Mapping khusus untuk path profile jika nama folder berbeda dengan role
-  const getProfilePath = (role: UserRole) => {
-    return "/profile";
-  };
+const getSidebarData = (userRole: string): NavCategory[] => {
+  const role = userRole.toUpperCase();
 
   return [
     {
-      label: "Menu",
-      roles: ["student"],
-      items: [
-        {
-          title: "Upload Rekaman",
-          icon: Mic,
-          href: "/upload-recording",
-          roles: ["student"],
-        },
-        {
-          title: "Hasil Analisis",
-          icon: FileText,
-          href: "/analysis-result",
-          roles: ["student"],
-        },
-      ],
-    },
-    {
-      label: "Menu",
-      roles: ["lecture"],
+      label: "Menu Utama",
+      roles: ["ADMIN", "LECTURER"],
       items: [
         {
           title: "Dashboard",
           icon: LayoutDashboard,
           href: "/dashboard",
         },
-        {
-          title: "Grafik Keseluruhan",
-          icon: PieChart,
-          href: "/graph-overall",
-        },
-        {
-          title: "Grafik Kelas",
-          icon: BarChart3,
-          href: "/graph-class",
-        },
       ],
     },
     {
-      label: "Analisis",
-      roles: ["lecture"],
+      label: "Mahasiswa",
+      roles: ["ADMIN", "LECTURER"],
       items: [
-        {
-          title: "Semua Hasil Analisis",
-          icon: Monitor,
-          href: "/analysis-results",
-        },
-        {
-          title: "Unduh Laporan",
-          icon: FileText,
-          href: "/download-report",
-        },
-      ],
-    },
-    {
-      label: "Admin",
-      roles: ["admin"],
-      items: [
-        {
-          title: "Dashboard Admin",
-          icon: LayoutDashboard,
-          href: "/dashboard",
-        },
         {
           title: "Manajemen Mahasiswa",
           icon: Users,
           href: "/manage-student",
         },
+      ],
+    },
+    {
+      label: "Analisis & Grafik",
+      roles: ["ADMIN", "LECTURER", "STUDENT"], 
+      items: [
+        ...(role === "ADMIN" ? [{
+          title: "Grafik Keseluruhan",
+          icon: PieChart,
+          href: "/graph-overall",
+        }] : []),
         {
-          title: "Manajemen Dosen Wali",
+          title: "Grafik Kelas",
+          icon: BarChart3,
+          href: "/graph-class",
+        },
+        ...(role !== "STUDENT" ? [{
+          title: "Semua Hasil Analisis",
+          icon: Monitor,
+          href: "/analysis-results",
+        }] : []),
+      ],
+    },
+    {
+      label: "Master Data",
+      roles: ["ADMIN"],
+      items: [
+        {
+          title: "Manajemen Dosen",
           icon: Users,
           href: "/manage-lecture",
         },
       ],
     },
     {
-      label: "Akun",
+      label: "Menu Mahasiswa",
+      roles: ["STUDENT"],
       items: [
         {
-          title: "Profil Saya",
-          icon: UserIcon,
-          // href dibuat dinamis berdasarkan role
-          href: getProfilePath(userRole),
+          title: "Upload Rekaman",
+          icon: Mic,
+          href: "/upload-recording",
+        },
+        {
+          title: "Hasil Analisis Saya",
+          icon: FileText,
+          href: "/analysis-result",
         },
       ],
     },
@@ -146,25 +126,38 @@ const getSidebarData = (userRole: UserRole): NavCategory[] => {
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { user, userRole, logout } = useAuth(); 
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
 
-  // Panggil fungsi untuk mendapatkan data terbaru berdasarkan role
-  const sidebarData = getSidebarData(userRole || "student");
+  const userRole = (user?.role || "STUDENT").toUpperCase();
+  const sidebarData = getSidebarData(userRole);
 
-  const isActive = (href: string) => pathname.startsWith(href);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
-  const getRoleLabel = (role: UserRole) => {
-    switch(role) {
-      case "admin": return "Administrator";
-      case "lecture": return "Dosen Wali";
-      case "student": return "Mahasiswa";
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      clearAuth();
+      toast.success("Berhasil keluar.");
+      router.push("/login");
+    } catch (error) {
+      clearAuth();
+      router.push("/login");
+    }
+  };
+
+  const getRoleLabel = (role: string) => {
+    switch(role.toUpperCase()) {
+      case "ADMIN": return "Administrator";
+      case "LECTURER": return "Dosen Wali";
+      case "STUDENT": return "Mahasiswa";
       default: return role;
     }
   };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white text-brand-secondary">
-      {/* ── Logo ── */}
       <SidebarHeader className="h-20 border-b border-slate-100 px-4 flex flex-row items-center shrink-0">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-secondary flex items-center justify-center text-white text-lg font-black shadow-lg shadow-brand/20 shrink-0">
@@ -181,7 +174,7 @@ export function AppSidebar() {
         {sidebarData
           .filter(
             (category) =>
-              !category.roles || (userRole && category.roles.includes(userRole))
+              !category.roles || category.roles.includes(userRole)
           )
           .map((category) => (
             <SidebarGroup key={category.label} className="py-2">
@@ -190,35 +183,30 @@ export function AppSidebar() {
               </SidebarGroupLabel>
 
               <SidebarMenu className="gap-1 mt-2">
-                {category.items
-                  .filter(
-                    (item) =>
-                      !item.roles || (userRole && item.roles.includes(userRole))
-                  )
-                  .map((item) => {
-                    const active = item.href ? isActive(item.href) : false;
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          tooltip={item.title}
-                          isActive={active}
-                          className={`
-                            h-11 rounded-xl px-4 transition-all duration-200
-                            ${active 
-                              ? "!bg-brand !text-white shadow-lg shadow-brand/30 hover:!bg-brand hover:!text-white" 
-                              : "text-brand-secondary/60 hover:bg-brand/5 hover:text-brand"
-                            }
-                          `}
-                        >
-                          <Link href={item.href || "#"}>
-                            <item.icon className={`size-4 !shrink-0 ${active ? "!text-white" : ""}`} />
-                            <span className="font-bold text-sm">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
+                {category.items.map((item) => {
+                  const active = item.href ? isActive(item.href) : false;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={item.title}
+                        isActive={active}
+                        className={`
+                          h-11 rounded-xl px-4 transition-all duration-200
+                          ${active 
+                            ? "!bg-brand !text-white shadow-lg shadow-brand/30 hover:!bg-brand hover:!text-white" 
+                            : "text-brand-secondary/60 hover:bg-brand/5 hover:text-brand"
+                          }
+                        `}
+                      >
+                        <Link href={item.href || "#"}>
+                          <item.icon className={`size-4 !shrink-0 ${active ? "!text-white" : ""}`} />
+                          <span className="font-bold text-sm">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroup>
           ))}
@@ -229,8 +217,8 @@ export function AppSidebar() {
           {user && (
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-[10px] shrink-0 border border-slate-200 overflow-hidden">
-                {user.avatar ? (
-                  <Image src={user.avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+                {(user as any).avatar ? (
+                  <Image src={(user as any).avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
                 ) : (
                   user.name.charAt(0)
                 )}
@@ -244,34 +232,50 @@ export function AppSidebar() {
             </div>
           )}
 
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={logout}
-            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg h-8 w-8 shrink-0"
-            title="Keluar"
+          <ConfirmModal
+            title="Keluar Aplikasi?"
+            description="Anda perlu masuk kembali untuk mengakses data Anda."
+            confirmText="Ya, Keluar"
+            variant="destructive"
+            onConfirm={handleLogout}
           >
-            <LogOut size={16} />
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg h-8 w-8 shrink-0"
+              title="Keluar"
+            >
+              <LogOut size={16} />
+            </Button>
+          </ConfirmModal>
         </div>
+        
+        {/* COLLAPSED VIEW */}
         <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-4">
           {user && (
             <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs border border-slate-200 overflow-hidden">
-              {user.avatar ? (
-                <Image src={user.avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+              {(user as any).avatar ? (
+                <Image src={(user as any).avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
               ) : (
                 user.name.charAt(0)
               )}
             </div>
           )}
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={logout}
-            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
+          <ConfirmModal
+            title="Keluar?"
+            description="Yakin ingin keluar?"
+            confirmText="Keluar"
+            variant="destructive"
+            onConfirm={handleLogout}
           >
-            <LogOut size={18} />
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
+            >
+              <LogOut size={18} />
+            </Button>
+          </ConfirmModal>
         </div>
       </SidebarFooter>
     </Sidebar>

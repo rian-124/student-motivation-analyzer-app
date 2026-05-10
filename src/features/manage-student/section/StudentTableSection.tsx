@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Edit, Trash2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,44 +21,43 @@ import {
 } from "@/components/ui/select";
 import { EditStudentModal } from "../components/EditStudentModal";
 import { DeleteConfirmModal } from "@/components/common/DeleteConfirmModal";
-import { useState, useMemo } from "react";
-
-import { Student } from "../page/manageStudentPage";
+import { useState } from "react";
+import { Student } from "@/lib/types/student.type";
 
 interface StudentTableSectionProps {
   students: Student[];
-  onEdit: (student: Student) => void;
+  loading?: boolean;
+  pagination: {
+    page: number;
+    total: number;
+    lastPage: number;
+  };
+  onPageChange: (page: number) => void;
+  onEdit: (id: string, student: any) => void;
   onDelete: (id: string) => void;
 }
 
-export default function StudentTableSection({ students, onEdit, onDelete }: StudentTableSectionProps) {
+export default function StudentTableSection({ 
+  students, 
+  loading, 
+  pagination, 
+  onPageChange, 
+  onEdit, 
+  onDelete 
+}: StudentTableSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [classFilter, setClassFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
-  const filteredStudents = useMemo(() => {
-    return students.filter((student) => {
-      const matchesSearch = 
-        student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        student.id.includes(searchQuery);
-      const matchesClass = classFilter === "all" || student.class.toLowerCase() === classFilter.toLowerCase();
-      
-      return matchesSearch && matchesClass;
-    });
-  }, [students, searchQuery, classFilter]);
-
-  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
-  
-  const paginatedStudents = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredStudents, currentPage]);
-
-  // Reset to page 1 if filters change
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [searchQuery, classFilter]);
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch = 
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      student.nim.includes(searchQuery);
+    
+    const studentClassName = student.class?.name || "";
+    const matchesClass = classFilter === "all" || studentClassName.toLowerCase() === classFilter.toLowerCase();
+    
+    return matchesSearch && matchesClass;
+  });
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
@@ -94,44 +93,62 @@ export default function StudentTableSection({ students, onEdit, onDelete }: Stud
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="overflow-x-auto min-h-[300px]">
+        <div className="overflow-x-auto min-h-[300px] relative">
+          {loading && (
+            <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 z-10 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-brand" />
+            </div>
+          )}
           <Table>
             <TableHeader>
               <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
                 <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Mahasiswa</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Kelas</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Email Kampus</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kelas</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Dosen Wali</TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Semester</TableHead>
                 <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Opsi</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {paginatedStudents.length === 0 ? (
+              {filteredStudents.length === 0 && !loading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={5} className="h-32 text-center text-slate-500">
                     Tidak ada data mahasiswa yang ditemukan.
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedStudents.map((student, idx) => (
+                filteredStudents.map((student) => (
                   <TableRow key={student.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
                     <TableCell className="py-3.5 px-5">
                       <div className="flex flex-col">
                         <span className="font-semibold text-slate-800 dark:text-slate-200">{student.name}</span>
-                        <span className="text-[10px] text-slate-400 font-mono tracking-wider">{student.id}</span>
+                        <span className="text-[10px] text-slate-400 font-mono tracking-wider">{student.nim}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
-                        {student.class}
-                      </span>
+                    <TableCell className="py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-lg bg-brand/5 text-brand text-[10px] font-black uppercase border border-brand/10 shadow-sm">
+                          {student.class?.name || '-'}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell className="px-5">
-                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{student.email}</span>
+                    <TableCell className="py-4">
+                      {student.lecturer ? (
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-slate-700">{student.lecturer.name}</span>
+                          <span className="text-[10px] text-slate-400 font-medium">NIP: {student.lecturer.id.substring(0, 8)}...</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-300 italic">Belum diset</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <span className="text-xs font-bold text-slate-600">Semester {student.semester || '1'}</span>
                     </TableCell>
                     <TableCell className="text-right px-5">
                       <div className="flex items-center justify-end gap-1">
-                        <EditStudentModal student={student} onEdit={onEdit}>
+                        <EditStudentModal student={student} onEdit={(data) => onEdit(student.id, data)}>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-brand hover:bg-brand/5" title="Edit Data">
                             <Edit className="w-3.5 h-3.5" />
                           </Button>
@@ -158,25 +175,25 @@ export default function StudentTableSection({ students, onEdit, onDelete }: Stud
         {/* FOOTER */}
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-            Total {filteredStudents.length} Mahasiswa
+            Total {pagination.total} Mahasiswa
           </p>
           <div className="flex items-center gap-1">
             <Button 
               variant="ghost" 
               size="icon" 
               className="w-7 h-7 rounded-md text-slate-400" 
-              disabled={currentPage === 1 || totalPages === 0}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={pagination.page === 1}
+              onClick={() => onPageChange(pagination.page - 1)}
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
             <div className="flex items-center gap-1 px-1">
-              {Array.from({ length: totalPages }).map((_, i) => (
+              {Array.from({ length: pagination.lastPage }).map((_, i) => (
                 <span 
                   key={i} 
-                  onClick={() => setCurrentPage(i + 1)}
+                  onClick={() => onPageChange(i + 1)}
                   className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
-                    ${currentPage === i + 1 
+                    ${pagination.page === i + 1 
                       ? 'bg-brand text-white' 
                       : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
@@ -189,8 +206,8 @@ export default function StudentTableSection({ students, onEdit, onDelete }: Stud
               variant="ghost" 
               size="icon" 
               className="w-7 h-7 rounded-md text-slate-400"
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={pagination.page === pagination.lastPage}
+              onClick={() => onPageChange(pagination.page + 1)}
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
@@ -200,4 +217,3 @@ export default function StudentTableSection({ students, onEdit, onDelete }: Stud
     </Card>
   );
 }
-

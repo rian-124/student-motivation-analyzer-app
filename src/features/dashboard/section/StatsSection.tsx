@@ -9,40 +9,68 @@ export default function StatsSection() {
   const { userRole, user } = useAuth();
   const isAdmin = userRole === "admin";
   
-  // @ts-ignore
-  const userClass = user?.assignedClass || "2021-A";
-  const classInfo = CLASS_DATA.find(c => c.label === userClass) || CLASS_DATA[0];
+  const isStudent = userRole === "student";
+  const isLecturer = userRole === "lecturer";
+  
+  // Get class info safely
+  // In a real app, this would come from the user's student or lecturer profile
+  const userClassName = isAdmin ? "Global" : (isStudent ? "TI-A" : "TI-B"); // Placeholder
+  const classInfo = CLASS_DATA.find(c => c.label === userClassName) || CLASS_DATA[0];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard 
-        icon={Users} 
-        label={isAdmin ? "Total Mahasiswa" : "Mahasiswa Bimbingan"} 
-        value={isAdmin ? GLOBAL_STATS.totalStudents : classInfo.students} 
-        variant="blue"
-        trend={{ value: isAdmin ? "+4" : "+2", isUp: true }}
-      />
+      {/* Total Students - Only for Admin/Lecturer */}
+      {isAdmin || isLecturer ? (
+        <StatCard 
+          icon={Users} 
+          label={isAdmin ? "Total Mahasiswa" : "Mahasiswa Bimbingan"} 
+          value={isAdmin ? GLOBAL_STATS.totalStudents : classInfo.students} 
+          variant="blue"
+          trend={{ value: isAdmin ? "+4" : "+2", isUp: true }}
+        />
+      ) : (
+        <StatCard 
+          icon={GraduationCap} 
+          label="Skor Motivasi Saya" 
+          value="84" 
+          variant="blue"
+          trend={{ value: "+5", isUp: true }}
+        />
+      )}
+
       <StatCard 
         icon={CheckCircle2} 
         label="Analisis Selesai" 
-        value={isAdmin ? 89 : Math.round(classInfo.students * 0.7)} 
+        value={isAdmin ? 89 : (isStudent ? 3 : Math.round(classInfo.students * 0.7))} 
         variant="emerald"
         trend={{ value: "12.5%", isUp: true }}
       />
+
       <StatCard 
         icon={AlertTriangle} 
-        label="Motivasi Rendah" 
-        value={isAdmin ? 14 : Math.round(classInfo.students * 0.15)} 
+        label={isStudent ? "Perlu Perhatian" : "Motivasi Rendah"} 
+        value={isAdmin ? 14 : (isStudent ? "Tidak" : Math.round(classInfo.students * 0.15))} 
         variant="rose"
-        trend={{ value: "2", isUp: false }}
+        trend={{ value: isStudent ? "Aman" : "2", isUp: isStudent ? true : false }}
       />
-      <StatCard 
-        icon={isAdmin ? BookOpen : GraduationCap} 
-        label={isAdmin ? "Kelas Terdaftar" : "Target Kelulusan"} 
-        value={isAdmin ? CLASS_DATA.length : "94%"} 
-        variant="amber"
-        trend={{ value: isAdmin ? "0" : "+2%", isUp: isAdmin ? null : true }}
-      />
+
+      {isAdmin ? (
+        <StatCard 
+          icon={BookOpen} 
+          label="Kelas Terdaftar" 
+          value={CLASS_DATA.length} 
+          variant="amber"
+          trend={{ value: "0", isUp: null }}
+        />
+      ) : (
+        <StatCard 
+          icon={GraduationCap} 
+          label="Rata-rata Kelas" 
+          value={`${classInfo.value}%`} 
+          variant="amber"
+          trend={{ value: "+2%", isUp: true }}
+        />
+      )}
     </div>
   );
 }
