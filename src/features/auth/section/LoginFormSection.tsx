@@ -31,40 +31,33 @@ export default function LoginFormSection() {
     setError("");
 
     try {
-      const authResponse = await authService.login({ email, password });
-      const dataWrapper = (authResponse as any).data || authResponse;
-      const tokens = dataWrapper.tokens || dataWrapper;
-      const { accessToken, refreshToken } = tokens;
-      
-      if (!accessToken || !refreshToken) {
-        throw new Error("Struktur token tidak valid dari server.");
-      }
+      // authService.login mengembalikan { accessToken, refreshToken } langsung
+      const { accessToken, refreshToken } = await authService.login({ email, password });
 
       setAuth(accessToken, refreshToken, null);
 
-      const profileResponse = await authService.getProfile();
-      const user = (profileResponse as any).data || profileResponse;
-      
+      // Ambil profil user (authService.getProfile juga sudah mengekstrak dari WebResponse.data)
+      const user = await authService.getProfile();
+
       setAuth(accessToken, refreshToken, user);
-      
+
       toast.success(`Selamat datang, ${user.name || 'User'}!`);
 
-      // Redirection logic sederhana - gunakan toUpperCase() agar aman dari perbedaan casing
-      if (user.role.toUpperCase() === 'STUDENT') {
+      // Role dari backend sudah lowercase: 'student', 'lecturer', 'admin'
+      if (user.role === 'student') {
         router.push("/upload-recording");
       } else {
-        // Admin dan Lecture masuk ke dashboard yang sama
         router.push("/dashboard");
       }
 
     } catch (err: unknown) {
       console.error("Login process error:", err);
       let message = "Terjadi kesalahan saat login.";
-      
+
       if (axios.isAxiosError(err)) {
         message = err.response?.data?.message || "Email atau password salah.";
       }
-      
+
       setError(message);
       toast.error(message);
       clearAuth();

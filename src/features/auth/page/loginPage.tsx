@@ -34,7 +34,7 @@ export default function LoginPage() {
         }
 
         if (currentUser) {
-          if (currentUser.role.toUpperCase() === "STUDENT") {
+          if (currentUser.role === 'student') {
             router.push("/upload-recording");
           } else {
             router.push("/dashboard");

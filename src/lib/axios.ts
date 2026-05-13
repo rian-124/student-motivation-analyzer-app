@@ -65,10 +65,8 @@ api.interceptors.response.use(
           headers: { Authorization: `Bearer ${refreshToken}` }
         });
 
-        // Handle wrapper 'data' dari backend
-        const dataWrapper = response.data.data || response.data;
-        const tokens = dataWrapper.tokens || dataWrapper;
-        const { accessToken, refreshToken: newRefreshToken } = tokens;
+        // Backend mengembalikan WebResponse<AuthTokens>, token ada di response.data.data
+        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
 
         useAuthStore.getState().setAuth(accessToken, newRefreshToken, useAuthStore.getState().user);
 
