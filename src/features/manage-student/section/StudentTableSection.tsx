@@ -23,6 +23,7 @@ import { EditStudentModal } from "../components/EditStudentModal";
 import { DeleteConfirmModal } from "@/components/common/DeleteConfirmModal";
 import { useState } from "react";
 import { Student } from "@/lib/types/student.type";
+import { useAuthStore } from "@/store/auth.store";
 
 interface StudentTableSectionProps {
   students: Student[];
@@ -48,7 +49,7 @@ export default function StudentTableSection({
   const [searchQuery, setSearchQuery] = useState("");
   const [classFilter, setClassFilter] = useState("all");
 
-  const filteredStudents = students.filter((student) => {
+  const filteredStudents = (students || []).filter((student) => {
     const matchesSearch = 
       student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       student.nim.includes(searchQuery);
@@ -58,6 +59,9 @@ export default function StudentTableSection({
     
     return matchesSearch && matchesClass;
   });
+
+  const { user } = useAuthStore();
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
@@ -76,18 +80,21 @@ export default function StudentTableSection({
                 className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" 
               />
             </div>
-            <Select value={classFilter} onValueChange={setClassFilter}>
-              <SelectTrigger className="w-[120px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-                <SelectValue placeholder="Kelas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Kelas</SelectItem>
-                <SelectItem value="a">Kelas A</SelectItem>
-                <SelectItem value="b">Kelas B</SelectItem>
-                <SelectItem value="c">Kelas C</SelectItem>
-                <SelectItem value="d">Kelas D</SelectItem>
-              </SelectContent>
-            </Select>
+            
+            {isAdmin && (
+              <Select value={classFilter} onValueChange={setClassFilter}>
+                <SelectTrigger className="w-[120px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                  <SelectValue placeholder="Kelas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kelas</SelectItem>
+                  <SelectItem value="a">Kelas A</SelectItem>
+                  <SelectItem value="b">Kelas B</SelectItem>
+                  <SelectItem value="c">Kelas C</SelectItem>
+                  <SelectItem value="d">Kelas D</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
       </CardHeader>

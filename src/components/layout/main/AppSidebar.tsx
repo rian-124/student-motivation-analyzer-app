@@ -86,6 +86,7 @@ const getSidebarData = (userRole: string): NavCategory[] => {
           title: "Grafik Kelas",
           icon: BarChart3,
           href: "/graph-class",
+          roles: ["LECTURER", "STUDENT"],
         },
         ...(role !== "STUDENT" ? [{
           title: "Semua Hasil Analisis",
@@ -117,7 +118,7 @@ const getSidebarData = (userRole: string): NavCategory[] => {
         {
           title: "Hasil Analisis Saya",
           icon: FileText,
-          href: "/analysis-result",
+          href: "/analysis-results",
         },
       ],
     },
@@ -183,7 +184,9 @@ export function AppSidebar() {
               </SidebarGroupLabel>
 
               <SidebarMenu className="gap-1 mt-2">
-                {category.items.map((item) => {
+                {category.items
+                  .filter((item) => !item.roles || item.roles.includes(userRole))
+                  .map((item) => {
                   const active = item.href ? isActive(item.href) : false;
                   return (
                     <SidebarMenuItem key={item.title}>

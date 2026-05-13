@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Download, Calendar, Sparkles } from "lucide-react";
 import StatsSection from "../section/StatsSection";
 import ChartSection from "../section/ChartSection";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/auth.store";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const currentYear = new Date().getFullYear();
 
   return (

@@ -19,21 +19,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, FileText, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { Search, FileText, ChevronLeft, ChevronRight, Filter, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useAuthStore } from "@/store/auth.store";
+import { motivationAnalysisService } from "@/services/motivation-analysis.service";
+import { toast } from "sonner";
+
 
 export default function HistoryTableSection() {
   const router = useRouter();
-  const data = [
-    { id: "2021010001", userId: "4", name: "Andi Pratama", class: "A", status: "High", score: 87.4, mfcc: 92.1, date: "18 Apr 2026", color: "emerald" },
-    { id: "2021010022", userId: "6", name: "Dewi Kusuma", class: "C", status: "High", score: 91.2, mfcc: 94.5, date: "17 Apr 2026", color: "emerald" },
-    { id: "2021010008", userId: "4", name: "Siti Rahayu", class: "B", status: "Medium", score: 63.1, mfcc: 67.3, date: "18 Apr 2026", color: "amber" }, // fallback userId for demo
-    { id: "2021010015", userId: "5", name: "Budi Santoso", class: "A", status: "Low", score: 31.8, mfcc: 28.4, date: "17 Apr 2026", color: "rose" }, // fallback userId for demo
-    { id: "2021010031", userId: "5", name: "Rizky Fauzan", class: "D", status: "Processing", score: null, mfcc: null, date: "19 Apr 2026", color: "slate" },
-  ];
+  const { user } = useAuthStore();
+  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [meta, setMeta] = useState<any>(null);
+  const [page, setPage] = useState(1);
 
-  const handleViewDetail = (userId: string) => {
-    router.push(`/analysis-result?studentId=${userId}`);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        if (user?.role === 'student' && user?.student?.id) {
+          const data = await motivationAnalysisService.findByStudent(user.student.id);
+          setHistoryData(data);
+        } else {
+          const response = await motivationAnalysisService.findAll(page);
+          setHistoryData(response.data);
+          setMeta(response.meta);
+        }
+      } catch (error) {
+        console.error("Failed to fetch history:", error);
+        toast.error("Gagal mengambil riwayat analisis.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [user, page]);
+
+  const handleViewDetail = (id: string) => {
+    router.push(`/analysis-result?id=${id}`);
+  };
+
+  const getStatusColor = (prediction: string) => {
+    switch (prediction) {
+      case 'Intrinsik': return 'emerald';
+      case 'Ekstrinsik': return 'amber';
+      case 'Amotivasi': return 'rose';
+      default: return 'slate';
+    }
   };
 
   return (
@@ -41,7 +76,9 @@ export default function HistoryTableSection() {
       {/* TOOLBAR */}
       <CardHeader className="p-4 space-y-4 bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <CardTitle className="text-base font-bold text-slate-800 dark:text-white px-1">Riwayat Analisis</CardTitle>
+          <CardTitle className="text-base font-bold text-slate-800 dark:text-white px-1">
+            {user?.role === 'student' ? 'Riwayat Unggahan Anda' : 'Riwayat Analisis'}
+          </CardTitle>
           
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
@@ -82,54 +119,96 @@ export default function HistoryTableSection() {
             </TableHeader>
 
             <TableBody>
-              {data.map((row, idx) => (
-                <TableRow key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
-                  <TableCell className="py-3.5 px-5">
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">{row.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono tracking-wider">{row.id}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
-                      {row.class}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge 
-                      variant="outline" 
-                      className={`rounded-full px-2.5 py-0 border-none font-bold text-[9px] uppercase tracking-widest
-                        ${row.color === 'emerald' ? 'bg-emerald-100/50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}
-                        ${row.color === 'amber' ? 'bg-amber-100/50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}
-                        ${row.color === 'rose' ? 'bg-rose-100/50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' : ''}
-                        ${row.color === 'slate' ? 'bg-slate-100/50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400' : ''}
-                      `}
-                    >
-                      {row.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right px-5">
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">
-                      {row.score ? row.score.toFixed(1) : "—"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-slate-500 text-xs px-5">
-                    {row.date}
-                  </TableCell>
-                  <TableCell className="text-right px-5">
-                    <Button 
-                      onClick={() => handleViewDetail(row.userId)}
-                      size="sm" 
-                      variant="outline" 
-                      className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"
-                      disabled={row.status === "Processing"}
-                    >
-                      <FileText className="w-3 h-3 mr-1.5" />
-                      Detail
-                    </Button>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={i} className="animate-pulse border-slate-50 dark:border-slate-800">
+                    <TableCell className="py-4 px-5">
+                      <div className="space-y-2">
+                        <div className="h-3 w-32 bg-slate-100 dark:bg-slate-800 rounded" />
+                        <div className="h-2 w-20 bg-slate-50 dark:bg-slate-800/50 rounded" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="h-4 w-12 bg-slate-100 dark:bg-slate-800 rounded mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="h-5 w-16 bg-slate-100 dark:bg-slate-800 rounded-full mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-right px-5">
+                      <div className="h-3 w-10 bg-slate-100 dark:bg-slate-800 rounded ml-auto" />
+                    </TableCell>
+                    <TableCell className="px-5">
+                      <div className="h-3 w-20 bg-slate-100 dark:bg-slate-800 rounded" />
+                    </TableCell>
+                    <TableCell className="text-right px-5">
+                      <div className="h-7 w-20 bg-slate-100 dark:bg-slate-800 rounded-lg ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : historyData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-40 text-center">
+                    <p className="text-sm text-slate-400 font-medium">Belum ada riwayat analisis.</p>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                historyData.map((row, idx) => {
+                  const color = getStatusColor(row.prediction);
+                  const formattedDate = new Date(row.createdAt).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                  });
+                  
+                  return (
+                    <TableRow key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
+                      <TableCell className="py-3.5 px-5">
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">{row.student?.name || 'Mahasiswa'}</span>
+                          <span className="text-[10px] text-slate-400 font-mono tracking-wider">{row.student?.nim || 'N/A'}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
+                          {row.student?.class?.name || '—'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge 
+                          variant="outline" 
+                          className={`rounded-full px-2.5 py-0 border-none font-bold text-[9px] uppercase tracking-widest
+                            ${color === 'emerald' ? 'bg-emerald-100/50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}
+                            ${color === 'amber' ? 'bg-amber-100/50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}
+                            ${color === 'rose' ? 'bg-rose-100/50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' : ''}
+                            ${color === 'slate' ? 'bg-slate-100/50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400' : ''}
+                          `}
+                        >
+                          {row.prediction}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right px-5">
+                        <span className="font-mono font-bold text-slate-900 dark:text-white">
+                          {(row.confidence * 100).toFixed(1)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-slate-500 text-xs px-5">
+                        {formattedDate}
+                      </TableCell>
+                      <TableCell className="text-right px-5">
+                        <Button 
+                          onClick={() => handleViewDetail(row.id)}
+                          size="sm" 
+                          variant="outline" 
+                          className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"
+                        >
+                          <FileText className="w-3 h-3 mr-1.5" />
+                          Detail
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </div>

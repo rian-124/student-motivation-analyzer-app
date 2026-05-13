@@ -8,8 +8,11 @@ import {
 
 export const studentService = {
   findAll: async (page: number = 1, limit: number = 10): Promise<StudentResponse> => {
-    const response = await api.get<{ data: StudentResponse }> (`/students?page=${page}&limit=${limit}`);
-    return response.data.data; // Unwrapping from TransformInterceptor
+    const response = await api.get<any>(`/students?page=${page}&limit=${limit}`);
+    return {
+      data: response.data.data,
+      meta: response.data.meta
+    };
   },
 
   findOne: async (id: string): Promise<Student> => {

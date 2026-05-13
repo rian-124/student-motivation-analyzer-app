@@ -1,7 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Share2 } from "lucide-react";
+import { ArrowLeft, Download, Share2, Loader2 } from "lucide-react";
+import { motivationAnalysisService } from "@/services/motivation-analysis.service";
 import TopStatsSection from "../section/TopStatsSection";
 import AnalysisGridSection from "../section/AnalysisGridSection";
 import { useAuth } from "@/context/AuthContext";
@@ -13,10 +16,60 @@ import { toast } from "sonner";
 export default function AnalysisResultPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
-  const studentId = searchParams.get("studentId") || user?.id;
-  
-  const studentData = studentId ? (STUDENT_RESULTS as any)[studentId] : (STUDENT_RESULTS as any)["4"];
-  const targetUser = usersData.find(u => u.id === studentId) || user;
+  const analysisId = searchParams.get("id");
+  const [analysisData, setAnalysisData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      if (!analysisId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const data = await motivationAnalysisService.findOne(analysisId);
+        setAnalysisData(data);
+      } catch (err: any) {
+        console.error("Failed to fetch analysis:", err);
+        setError("Gagal mengambil data analisis.");
+        toast.error("Gagal mengambil data analisis.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalysis();
+  }, [analysisId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-brand" />
+        <span className="ml-3 text-slate-500 font-medium">Memuat hasil analisis...</span>
+      </div>
+    );
+  }
+
+  if (error || !analysisData) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background space-y-4">
+        <p className="text-slate-500 font-medium">{error || "Data analisis tidak ditemukan."}</p>
+        <Button onClick={() => window.location.reload()} variant="outline">
+          Coba Lagi
+        </Button>
+      </div>
+    );
+  }
+
+  const targetUser = analysisData.student || user;
+  const formattedDate = new Date(analysisData.createdAt).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 
   return (
     <section className="p-6 lg:p-10 space-y-8 w-full min-h-screen bg-slate-50/30 dark:bg-slate-950">
@@ -24,7 +77,12 @@ export default function AnalysisResultPage() {
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <Button variant="ghost" size="sm" className="pl-0 text-slate-500 hover:text-brand transition-colors h-auto py-0">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => router.push('/analysis-results')}
+              className="pl-0 text-slate-500 hover:text-brand transition-colors h-auto py-0"
+            >
               <ArrowLeft className="w-3 h-3 mr-1.5" />
               Kembali ke Riwayat
             </Button>
@@ -32,7 +90,7 @@ export default function AnalysisResultPage() {
               Hasil Analisis Motivasi
             </h1>
             <p className="text-slate-500 text-sm">
-              Peserta: <span className="font-semibold text-slate-700 dark:text-slate-200">{targetUser?.name || "Mahasiswa"}</span> • 19 April 2026
+              Peserta: <span className="font-semibold text-slate-700 dark:text-slate-200">{targetUser?.name || "Mahasiswa"}</span> • {formattedDate}
             </p>
           </div>
           
@@ -54,13 +112,13 @@ export default function AnalysisResultPage() {
             <span className="text-white text-xs font-bold">✓</span>
           </div>
           <p className="text-sm text-emerald-800 dark:text-emerald-400 font-medium leading-tight">
-            Analisis berhasil diproses dengan akurasi 96.2%.
+            Analisis berhasil diproses dengan tingkat kepercayaan {(analysisData.confidence * 100).toFixed(1)}%.
           </p>
         </div>
 
         <div className="space-y-8">
-          <TopStatsSection data={studentData} />
-          <AnalysisGridSection data={studentData} />
+          <TopStatsSection data={analysisData} />
+          <AnalysisGridSection data={analysisData} />
         </div>
       </div>
     </section>

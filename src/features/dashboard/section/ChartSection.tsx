@@ -5,32 +5,51 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, PieChart, ArrowRight, BookOpen } from "lucide-react";
 import MotivationBarChart from "@/components/common/MotivationBarChart";
 import MotivationPieChart from "@/components/common/MotivationPieChart";
-import { useAuth } from "@/context/AuthContext";
-import { CLASS_DATA, MOTIVATION_DISTRIBUTION, GLOBAL_STATS } from "@/lib/data/dummyData";
+import { useAuthStore } from "@/store/auth.store";
+import { analyticsService, AnalyticsCharts } from "@/services/analytics.service";
+import { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ChartSection() {
-  const { userRole, user } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const userRole = (user?.role || "LECTURER").toUpperCase();
+  const [charts, setCharts] = useState<AnalyticsCharts | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  const isAdmin = userRole === "admin";
-  const isStudent = userRole === "student";
-  const isLecturer = userRole === "lecturer";
+  const isAdmin = userRole === "ADMIN";
+  const isStudent = userRole === "STUDENT";
+  const isLecturer = userRole === "LECTURER";
   
   // Get class info safely
-  const userClassName = isAdmin ? "Global" : (isStudent ? "TI-A" : "TI-B");
+  const lecturerClass = (user as any)?.lecturer?.class?.name;
+  const studentClass = (user as any)?.student?.class?.name;
+  const userClassName = isAdmin ? "Global" : (isStudent ? studentClass || "Kelas Anda" : lecturerClass || "Kelas Bimbingan");
 
-  const barData = isAdmin 
-    ? CLASS_DATA.map(c => ({ label: c.label, value: c.value }))
-    : [
-        { label: "Sen", value: 65 },
-        { label: "Sel", value: 72 },
-        { label: "Rab", value: 85 },
-        { label: "Kam", value: 78 },
-        { label: "Jum", value: 90 },
-      ];
+  useEffect(() => {
+    const fetchCharts = async () => {
+      try {
+        const data = await analyticsService.getCharts();
+        setCharts(data);
+      } catch (error) {
+        console.error("Failed to fetch analytics charts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCharts();
+  }, []);
 
-  const pieData = isAdmin 
-    ? MOTIVATION_DISTRIBUTION.global 
-    : (MOTIVATION_DISTRIBUTION.classes as any)[userClassName] || MOTIVATION_DISTRIBUTION.global;
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <Skeleton className="lg:col-span-8 h-[400px] rounded-xl" />
+        <Skeleton className="lg:col-span-4 h-[400px] rounded-xl" />
+      </div>
+    );
+  }
+
+  const barData = charts?.barChart || [];
+  const pieData = charts?.pieChart || [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -62,7 +81,7 @@ export default function ChartSection() {
           </CardTitle>
           <p className="text-xs text-slate-500">
             {isAdmin 
-              ? `Total ${GLOBAL_STATS.totalStudents} Mahasiswa terdaftar.` 
+              ? "Distribusi tingkat motivasi seluruh mahasiswa." 
               : "Berdasarkan hasil analisis bimbingan terbaru."}
           </p>
         </CardHeader>

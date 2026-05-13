@@ -4,14 +4,21 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Filter } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
 import HistoryTableSection from "../section/HistoryTableSection";
+import { useAuthStore } from "@/store/auth.store";
 
 export default function AnalysisResultsPage() {
+  const { user } = useAuthStore();
+  const isStudent = user?.role === 'student';
+
   return (
     <section className="p-6 lg:p-8 space-y-6 w-full min-h-screen bg-slate-50/50 dark:bg-slate-950/50">
       <div className="max-w-7xl mx-auto space-y-6">
         <PageHeader
-          title="Database Hasil Analisis"
-          description="Daftar riwayat analisis motivasi mahasiswa untuk kebutuhan manajemen data."
+          title={isStudent ? "Riwayat Analisis Saya" : "Database Hasil Analisis"}
+          description={isStudent 
+            ? "Daftar riwayat analisis motivasi yang telah Anda lakukan." 
+            : "Daftar riwayat analisis motivasi mahasiswa untuk kebutuhan manajemen data."
+          }
           actions={
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">

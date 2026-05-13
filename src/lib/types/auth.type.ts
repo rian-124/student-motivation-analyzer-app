@@ -3,6 +3,15 @@ export interface User {
   email: string;
   name: string;
   role: 'admin' | 'lecturer' | 'student';
+  student?: {
+    id: string;
+    nim: string;
+    classId?: string;
+  };
+  lecturer?: {
+    id: string;
+    nip: string;
+  };
 }
 
 export interface AuthTokens {

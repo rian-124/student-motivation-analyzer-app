@@ -10,9 +10,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
-  ADMIN: ["/dashboard", "/manage-student", "/manage-lecture", "/graph-overall", "/graph-class", "/analysis-results"],
+  ADMIN: ["/dashboard", "/manage-student", "/manage-lecture", "/graph-overall", "/analysis-results"],
   LECTURER: ["/dashboard", "/manage-student", "/graph-overall", "/graph-class", "/analysis-results"],
-  STUDENT: ["/graph-class", "/upload-recording", "/analysis-result"],
+  STUDENT: ["/graph-class", "/upload-recording", "/analysis-result", "/analysis-results"],
 };
 
 const DEFAULT_PAGES: Record<string, string> = {
@@ -38,21 +38,35 @@ const DashboardSkeleton = () => (
 );
 
 const TableSkeleton = () => (
-  <div className="space-y-6 animate-pulse">
-    <div className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+  <div className="space-y-8 animate-pulse">
+    {/* Page Header Skeleton */}
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="space-y-3">
+        <div className="h-9 w-64 bg-slate-200 rounded-xl" />
+        <div className="h-4 w-96 bg-slate-100 rounded-lg" />
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-24 bg-white rounded-xl border border-slate-100 shadow-sm" />
+        <div className="h-10 w-32 bg-brand/20 rounded-xl" />
+      </div>
+    </div>
+
+    {/* Table Content Skeleton */}
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      <div className="p-4 border-b border-slate-50 flex justify-between">
+      <div className="p-4 border-b border-slate-50 flex justify-between bg-slate-50/30">
         <div className="h-8 w-48 bg-slate-100 rounded-lg" />
-        <div className="h-8 w-32 bg-slate-50 rounded-lg" />
+        <div className="h-8 w-64 bg-slate-100 rounded-lg" />
       </div>
       <div className="p-0">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="h-16 border-b border-slate-50 flex items-center px-6 gap-4">
-            <div className="h-10 w-10 rounded-full bg-slate-100" />
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div key={i} className="h-16 border-b border-slate-50 flex items-center px-6 gap-6">
             <div className="flex-1 space-y-2">
               <div className="h-3 w-1/4 bg-slate-100 rounded" />
               <div className="h-2 w-1/6 bg-slate-50 rounded" />
             </div>
+            <div className="h-4 w-12 bg-slate-50 rounded" />
+            <div className="h-5 w-20 bg-slate-50 rounded-full" />
+            <div className="h-3 w-16 bg-slate-50 rounded" />
             <div className="h-8 w-20 bg-slate-50 rounded-lg" />
           </div>
         ))}
@@ -62,12 +76,31 @@ const TableSkeleton = () => (
 );
 
 const UploadSkeleton = () => (
-  <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
-    <div className="h-24 bg-white rounded-2xl border border-slate-100 shadow-sm" />
-    <div className="h-[450px] bg-white rounded-[2.5rem] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center space-y-4">
-      <div className="w-20 h-20 bg-slate-50 rounded-3xl" />
-      <div className="h-4 w-48 bg-slate-50 rounded" />
-      <div className="h-3 w-32 bg-slate-50 rounded" />
+  <div className="max-w-5xl mx-auto space-y-10 animate-pulse">
+    {/* Header Skeleton */}
+    <div className="space-y-3">
+      <div className="h-9 w-64 bg-slate-200 rounded-xl" />
+      <div className="h-4 w-[500px] bg-slate-100 rounded-lg" />
+    </div>
+
+    {/* Dropzone Skeleton */}
+    <div className="h-[450px] bg-white rounded-[2.5rem] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center space-y-6">
+      <div className="w-24 h-24 bg-slate-50 rounded-[2rem]" />
+      <div className="space-y-3 flex flex-col items-center">
+        <div className="h-5 w-48 bg-slate-50 rounded" />
+        <div className="h-3 w-32 bg-slate-50 rounded" />
+      </div>
+      <div className="h-12 w-40 bg-slate-100 rounded-xl" />
+    </div>
+
+    {/* Guide Skeleton */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-3">
+          <div className="h-8 w-8 bg-slate-50 rounded-lg" />
+          <div className="h-3 w-full bg-slate-50 rounded" />
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -157,13 +190,16 @@ export default function MainLayout({
     if (path.includes("manage-student")) return "Manajemen Mahasiswa";
     if (path.includes("manage-lecture")) return "Manajemen Dosen";
     if (path.includes("upload-recording")) return "Upload Rekaman";
-    if (path.includes("analysis-result")) return "Hasil Analisis";
-    return "Memuat...";
+    if (path.includes("analysis-results")) return "Riwayat Analisis";
+    if (path.includes("graph-class")) return "Grafik Kelas";
+    if (path.includes("graph-overall")) return "Grafik Keseluruhan";
+    return "Motivation Analyzer";
   };
 
   const renderPageSkeleton = () => {
     if (pathname.includes("dashboard")) return <DashboardSkeleton />;
     if (pathname.includes("manage-")) return <TableSkeleton />;
+    if (pathname.includes("analysis-results")) return <TableSkeleton />;
     if (pathname.includes("upload-recording")) return <UploadSkeleton />;
     return <DashboardSkeleton />; // Default
   };

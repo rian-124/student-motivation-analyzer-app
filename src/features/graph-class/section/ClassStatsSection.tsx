@@ -1,7 +1,48 @@
 import StatCard from "@/components/common/StatCard";
-import { Users, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Users, TrendingUp, TrendingDown, Minus, FileText, Activity, Award, BarChart } from "lucide-react";
 
-export default function ClassStatsSection() {
+interface ClassStatsSectionProps {
+  isStudent?: boolean;
+  stats?: {
+    latestStatus: string;
+    activityCount: number;
+    avgScore: number;
+    growth: number;
+  };
+}
+
+export default function ClassStatsSection({ isStudent, stats }: ClassStatsSectionProps) {
+  if (isStudent && stats) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard
+          icon={Activity}
+          value={`${stats.activityCount} Kali`}
+          label="Aktivitas Analisis"
+          variant="blue"
+          trend={{ value: "Total", isUp: true }}
+        />
+        <StatCard
+          icon={Award}
+          value={stats.avgScore.toFixed(1)}
+          label="Rata-rata Skor"
+          variant="emerald"
+          trend={{ value: "Akurasi", isUp: true }}
+        />
+        <StatCard
+          icon={BarChart}
+          value={`${stats.growth >= 0 ? '+' : ''}${stats.growth}%`}
+          label="Perkembangan"
+          variant="amber"
+          trend={{ 
+            value: stats.growth >= 0 ? "Meningkat" : "Menurun", 
+            isUp: stats.growth >= 0 
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <StatCard 
@@ -34,3 +75,4 @@ export default function ClassStatsSection() {
     </div>
   );
 }
+

@@ -4,20 +4,18 @@ import { MessageSquare, Clock, Zap, Target, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AnalysisGridSection({ data }: { data: any }) {
-  const score = data?.summary?.score || 0;
-  const dominant = data?.summary?.dominant || "Intrinsik";
+  const score = Math.round(data?.confidence * 100) || 0;
+  const dominant = data?.prediction || "Intrinsik";
+  const transcript = data?.transcription || "Tidak ada transkrip tersedia.";
   
   const mfccMetrics = [
-    { label: "Energi Suara", value: score > 70 ? 91 : score > 50 ? 65 : 42, color: "bg-brand", icon: <Zap className="w-4 h-4" /> },
-    { label: "Kecepatan Bicara", value: score > 70 ? 78 : score > 50 ? 60 : 45, color: "bg-brand-secondary", icon: <Clock className="w-4 h-4" /> },
-    { label: "Variasi Nada", value: score > 70 ? 85 : score > 50 ? 55 : 30, color: "bg-brand-accent", icon: <BarChart3 className="w-4 h-4" /> },
-    { label: "Kelancaran Bicara", value: score > 70 ? 88 : score > 50 ? 70 : 50, color: "bg-emerald-500", icon: <Target className="w-4 h-4" /> },
-    { label: "Kejelasan Artikulasi", value: score > 70 ? 94 : score > 50 ? 80 : 65, color: "bg-blue-500", icon: <MessageSquare className="w-4 h-4" /> },
+    { label: "Energi Suara", value: data?.metrics?.energy || 0, color: "bg-brand", icon: <Zap className="w-4 h-4" /> },
+    { label: "Kecepatan Bicara", value: data?.metrics?.speed || 0, color: "bg-brand-secondary", icon: <Clock className="w-4 h-4" /> },
+    { label: "Variasi Nada", value: data?.metrics?.pitch || 0, color: "bg-brand-accent", icon: <BarChart3 className="w-4 h-4" /> },
+    { label: "Kelancaran Bicara", value: data?.metrics?.fluency || 0, color: "bg-emerald-500", icon: <Target className="w-4 h-4" /> },
+    { label: "Kejelasan Artikulasi", value: data?.metrics?.articulation || 0, color: "bg-blue-500", icon: <MessageSquare className="w-4 h-4" /> },
   ];
 
-  const transcript = dominant === "Amotivasi" 
-    ? "Saya merasa kurang bersemangat akhir-akhir ini. Rasanya sulit untuk fokus pada materi kuliah dan saya tidak tahu tujuan saya belajar ini untuk apa sebenarnya..."
-    : "Saya sangat antusias dengan perkuliahan ini. Materi yang disampaikan sangat relevan dengan minat saya dan saya termotivasi untuk mengeksplorasi lebih dalam bidang ini.";
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -92,7 +90,7 @@ export default function AnalysisGridSection({ data }: { data: any }) {
             </div>
             <div className="p-4 rounded-xl bg-brand/5 border border-brand/10 space-y-1">
               <p className="text-[10px] font-bold text-brand uppercase tracking-widest">Akurasi AI</p>
-              <p className="text-xl font-black text-brand">96.2%</p>
+              <p className="text-xl font-black text-brand">{(data.confidence * 100).toFixed(1)}%</p>
             </div>
           </div>
 

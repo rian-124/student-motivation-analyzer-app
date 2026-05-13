@@ -3,9 +3,13 @@ import { Brain, Mic, TrendingUp, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function TopStatsSection({ data }: { data: any }) {
-  const score = data?.summary?.score || 0;
-  const status = data?.summary?.status || "N/A";
-  const dominant = data?.summary?.dominant || "N/A";
+  // Map real data to display fields
+  const score = Math.round(data?.confidence * 100) || 0;
+  const status = data?.prediction || "N/A"; // e.g. "Intrinsik"
+  const dominant = data?.prediction || "N/A";
+  const sttScore = 80; // Default placeholder for now
+  const mfccScore = Math.round(data?.confidence * 100);
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -86,7 +90,7 @@ export default function TopStatsSection({ data }: { data: any }) {
             <Brain className="w-7 h-7 text-white" />
           </div>
           <div className="space-y-1">
-            <div className="text-4xl font-black italic">92.1</div>
+            <div className="text-4xl font-black italic">{mfccScore}</div>
             <p className="text-sm font-bold text-white/70 uppercase tracking-tight">Akustik (MFCC)</p>
           </div>
           <p className="text-[10px] text-white/50 leading-tight">
@@ -104,7 +108,7 @@ export default function TopStatsSection({ data }: { data: any }) {
             <Mic className="w-7 h-7 text-brand-accent" />
           </div>
           <div className="space-y-1">
-            <div className="text-4xl font-black text-slate-900 dark:text-white italic">83.7</div>
+            <div className="text-4xl font-black text-slate-900 dark:text-white italic">{sttScore}</div>
             <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">Konten (STT)</p>
           </div>
           <p className="text-[10px] text-slate-400 leading-tight">

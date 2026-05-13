@@ -9,10 +9,20 @@ import { UploadCloud, Play, FileAudio, X, Music, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { motivationAnalysisService } from "@/services/motivation-analysis.service";
+import { useAuthStore } from "@/store/auth.store";
+import { MotivationAnalysis } from "@/lib/types/motivation-analysis.type";
 
-export default function UploadZoneSection() {
+interface UploadZoneSectionProps {
+  onSuccess?: (result: MotivationAnalysis) => void;
+}
+
+export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps) {
   const router = useRouter();
+  const { user } = useAuthStore();
+
   const fileRef = useRef<HTMLInputElement>(null);
+
   const [file, setFile] = useState<File | null>(null);
   const [waveformHeights, setWaveformHeights] = useState<number[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -55,32 +65,45 @@ export default function UploadZoneSection() {
     setWaveformHeights(heights);
   };
 
-  const handleStartAnalysis = () => {
-    if (!file) return;
-    setIsAnalyzing(true);
-    
-    const steps = [
-      "Mengunggah berkas ke server...",
-      "Ekstraksi fitur akustik (MFCC)...",
-      "Transkripsi Speech-to-Text (STT)...",
-      "Analisis sentimen dan intonasi...",
-      "Menghitung skor motivasi...",
-      "Menyusun laporan hasil..."
-    ];
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      if (currentStep < steps.length) {
-        setAnalysisStep(steps[currentStep]);
-        currentStep++;
-      } else {
-        clearInterval(interval);
-        toast.success("Analisis Selesai", {
-          description: "Berkas berhasil diproses. Membuka laporan hasil...",
+  const handleStartAnalysis = async () => {
+    if (!file || !user?.student?.id) {
+      if (!user?.student?.id) {
+        toast.error("Profil Siswa Tidak Ditemukan", {
+          description: "Harap hubungi admin jika ini adalah kesalahan.",
         });
-        router.push("/analysis-result");
       }
-    }, 800);
+      return;
+    }
+    
+    setIsAnalyzing(true);
+    setAnalysisStep("Menyiapkan berkas...");
+
+    try {
+      setAnalysisStep("Mengunggah dan menganalisis berkas ke server...");
+      
+      const result = await motivationAnalysisService.uploadAndAnalyze({
+        file,
+        studentId: user.student.id,
+      });
+
+      toast.success("Analisis Selesai", {
+        description: "Berkas berhasil diproses.",
+      });
+
+      if (onSuccess) {
+        onSuccess(result);
+      }
+      
+      // Reset state for new upload if needed, or keep it
+      setFile(null);
+      setIsAnalyzing(false);
+    } catch (error: any) {
+      console.error("Analysis failed:", error);
+      toast.error("Gagal Melakukan Analisis", {
+        description: error.response?.data?.message || "Terjadi kesalahan pada server AI.",
+      });
+      setIsAnalyzing(false);
+    }
   };
 
   const removeFile = (e: React.MouseEvent) => {
