@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Filter } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
 import HistoryTableSection from "../section/HistoryTableSection";
+import StudentAnalysisListSection from "../section/StudentAnalysisListSection";
 import { useAuthStore } from "@/store/auth.store";
 
 export default function AnalysisResultsPage() {
@@ -17,7 +18,7 @@ export default function AnalysisResultsPage() {
           title={isStudent ? "Riwayat Analisis Saya" : "Database Hasil Analisis"}
           description={isStudent 
             ? "Daftar riwayat analisis motivasi yang telah Anda lakukan." 
-            : "Daftar riwayat analisis motivasi mahasiswa untuk kebutuhan manajemen data."
+            : "Pilih mahasiswa untuk melihat daftar riwayat analisis motivasinya."
           }
           actions={
             <div className="flex items-center gap-2">
@@ -34,7 +35,7 @@ export default function AnalysisResultsPage() {
         />
 
         <div className="w-full">
-          <HistoryTableSection />
+          {isStudent ? <HistoryTableSection /> : <StudentAnalysisListSection />}
         </div>
       </div>
     </section>

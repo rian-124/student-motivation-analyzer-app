@@ -18,7 +18,7 @@ import { useState } from "react";
 import { Lecturer } from "@/lib/types/lecturer.type";
 
 interface LectureTableSectionProps {
-  lectures: Lecturer[];
+  lectures?: Lecturer[];
   loading?: boolean;
   pagination: {
     page: number;
@@ -40,9 +40,11 @@ export default function LectureTableSection({
 }: LectureTableSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredLectures = lectures.filter((lecture) => {
-    return lecture.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-           lecture.nip.includes(searchQuery);
+  const filteredLectures = (lectures ?? []).filter((lecture) => {
+    return (
+      lecture.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lecture.nip.includes(searchQuery)
+    );
   });
 
   return (

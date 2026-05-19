@@ -19,12 +19,17 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-// Generic API wrapper matching backend WebResponse<T>
+// Generic API wrapper matching backend TransformInterceptor / WebResponse<T>
 export interface WebResponse<T> {
   statusCode: number;
   message: string;
   data: T;
   errors?: string;
+  meta?: {
+    total: number;
+    page: number;
+    lastPage: number;
+  };
 }
 
 export interface LoginCredentials {

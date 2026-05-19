@@ -22,6 +22,9 @@ export interface Student {
     email: string;
     role: string;
   };
+  _count?: {
+    analyses: number;
+  };
   createdAt: string;
   updatedAt: string;
 }

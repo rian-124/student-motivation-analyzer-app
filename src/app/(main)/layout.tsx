@@ -10,8 +10,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
-  ADMIN: ["/dashboard", "/manage-student", "/manage-lecture", "/graph-overall", "/analysis-results"],
-  LECTURER: ["/dashboard", "/manage-student", "/graph-overall", "/graph-class", "/analysis-results"],
+  ADMIN: ["/dashboard", "/manage-student", "/manage-lecture", "/graph-overall", "/analysis-results", "/analysis-result"],
+  LECTURER: ["/dashboard", "/manage-student", "/graph-overall", "/graph-class", "/analysis-results", "/analysis-result"],
   STUDENT: ["/graph-class", "/upload-recording", "/analysis-result", "/analysis-results"],
 };
 

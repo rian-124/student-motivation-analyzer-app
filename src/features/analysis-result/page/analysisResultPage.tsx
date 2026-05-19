@@ -7,14 +7,14 @@ import { ArrowLeft, Download, Share2, Loader2 } from "lucide-react";
 import { motivationAnalysisService } from "@/services/motivation-analysis.service";
 import TopStatsSection from "../section/TopStatsSection";
 import AnalysisGridSection from "../section/AnalysisGridSection";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/auth.store";
 import { STUDENT_RESULTS } from "@/lib/data/dummyData";
 import usersData from "@/lib/data/users.json";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 export default function AnalysisResultPage() {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const searchParams = useSearchParams();
   const analysisId = searchParams.get("id");
   const [analysisData, setAnalysisData] = useState<any>(null);

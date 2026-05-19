@@ -27,7 +27,11 @@ import { motivationAnalysisService } from "@/services/motivation-analysis.servic
 import { toast } from "sonner";
 
 
-export default function HistoryTableSection() {
+interface HistoryTableSectionProps {
+  studentId?: string;
+}
+
+export default function HistoryTableSection({ studentId }: HistoryTableSectionProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const [historyData, setHistoryData] = useState<any[]>([]);
@@ -39,24 +43,31 @@ export default function HistoryTableSection() {
     const fetchHistory = async () => {
       try {
         setLoading(true);
-        if (user?.role === 'student' && user?.student?.id) {
+        if (studentId) {
+          // If a specific studentId is provided (e.g. admin viewing a student)
+          const data = await motivationAnalysisService.findByStudent(studentId);
+          setHistoryData(Array.isArray(data) ? data : []);
+        } else if (user?.role === 'student' && user?.student?.id) {
+          // If the logged in user is a student
           const data = await motivationAnalysisService.findByStudent(user.student.id);
-          setHistoryData(data);
+          setHistoryData(Array.isArray(data) ? data : []);
         } else {
+          // Fallback, fetch all (though we changed the flow to use StudentAnalysisListSection for admins)
           const response = await motivationAnalysisService.findAll(page);
-          setHistoryData(response.data);
+          setHistoryData(Array.isArray(response.data) ? response.data : []);
           setMeta(response.meta);
         }
       } catch (error) {
         console.error("Failed to fetch history:", error);
         toast.error("Gagal mengambil riwayat analisis.");
+        setHistoryData([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchHistory();
-  }, [user, page]);
+  }, [user, page, studentId]);
 
   const handleViewDetail = (id: string) => {
     router.push(`/analysis-result?id=${id}`);
@@ -215,19 +226,46 @@ export default function HistoryTableSection() {
         
         {/* FOOTER / PAGINATION */}
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total 128 Record</p>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="w-7 h-7 rounded-md text-slate-400" disabled>
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center gap-1 px-1">
-              <span className="w-6 h-6 flex items-center justify-center text-[11px] font-bold bg-brand text-white rounded-md">1</span>
-              <span className="w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-400 hover:bg-slate-100 rounded-md cursor-pointer">2</span>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+            Total {meta?.total ?? historyData.length} Record
+          </p>
+          {meta && meta.lastPage > 1 && (
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-7 h-7 rounded-md text-slate-400"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <div className="flex items-center gap-1 px-1">
+                {Array.from({ length: meta.lastPage }).map((_, i) => (
+                  <span
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
+                      ${page === i + 1
+                        ? 'bg-brand text-white'
+                        : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
+                  >
+                    {i + 1}
+                  </span>
+                ))}
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-7 h-7 rounded-md text-slate-400"
+                disabled={page === meta.lastPage}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
             </div>
-            <Button variant="ghost" size="icon" className="w-7 h-7 rounded-md text-slate-400">
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>
