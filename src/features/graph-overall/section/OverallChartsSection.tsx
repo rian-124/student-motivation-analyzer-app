@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
+import MotivationBarChart from "@/components/common/MotivationBarChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
-import MotivationBarChart from "@/components/common/MotivationBarChart";
 
 export default function OverallChartsSection() {
   const barData = [
@@ -23,9 +23,11 @@ export default function OverallChartsSection() {
           <BarChart3 className="w-4 h-4 text-brand" />
           Perbandingan Rata-rata Skor per Kelas
         </CardTitle>
-        <p className="text-xs text-slate-500">Distribusi rata-rata motivasi mahasiswa di seluruh kelas terdaftar.</p>
+        <p className="text-xs text-slate-500">
+          Distribusi rata-rata motivasi mahasiswa di seluruh kelas terdaftar.
+        </p>
       </CardHeader>
-      
+
       <CardContent className="p-6">
         <MotivationBarChart data={barData} color="#5841EA" />
       </CardContent>

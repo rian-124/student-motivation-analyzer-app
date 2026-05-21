@@ -1,8 +1,13 @@
 "use client";
 
-import { PlayCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PlayCircle } from "lucide-react";
 
 export default function VidioDialog() {
   return (

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { FileAudio, Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight, FileAudio, Sparkles } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import VidioDialog from "../components/VidioDialog";
 
 export default function HeroSection() {
@@ -22,31 +22,43 @@ export default function HeroSection() {
           {/* Main Title */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-brand-secondary leading-[1.1]">
             Multimodal Student <br />
-            <span className="bg-gradient-to-r from-brand via-indigo-600 to-indigo-800 bg-clip-text text-transparent">Motivation Analysis.</span>
+            <span className="bg-gradient-to-r from-brand via-indigo-600 to-indigo-800 bg-clip-text text-transparent">
+              Motivation Analysis.
+            </span>
           </h1>
 
           {/* Subtext */}
           <p className="text-brand-secondary/60 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
-            Implementasi kecerdasan buatan multimodal untuk mengukur dan menganalisis tingkat keterlibatan mahasiswa menggunakan Pemrosesan Bahasa Alami dan Analisis Sentimen Audio.
+            Implementasi kecerdasan buatan multimodal untuk mengukur dan
+            menganalisis tingkat keterlibatan mahasiswa menggunakan Pemrosesan
+            Bahasa Alami dan Analisis Sentimen Audio.
           </p>
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center gap-6 pt-4 w-full justify-center">
-            <Button asChild size="lg" className="h-16 px-10 rounded-2xl bg-brand hover:bg-brand-hover text-white font-bold text-lg shadow-2xl shadow-brand/20 transition-all hover:scale-105 group w-full sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              className="h-16 px-10 rounded-2xl bg-brand hover:bg-brand-hover text-white font-bold text-lg shadow-2xl shadow-brand/20 transition-all hover:scale-105 group w-full sm:w-auto"
+            >
               <Link href="/login" className="flex items-center gap-2">
                 Mulai Analisis
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight
+                  size={20}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </Link>
             </Button>
-            
+
             <div className="flex items-center gap-3 group cursor-pointer">
               <VidioDialog />
-              <span className="text-brand-secondary/70 font-bold text-sm uppercase tracking-widest group-hover:text-brand transition-colors border-b-2 border-transparent hover:border-brand">Demonstrasi Sistem</span>
+              <span className="text-brand-secondary/70 font-bold text-sm uppercase tracking-widest group-hover:text-brand transition-colors border-b-2 border-transparent hover:border-brand">
+                Demonstrasi Sistem
+              </span>
             </div>
           </div>
 
           {/* Visual Preview / Mockup */}
-        
         </div>
       </div>
     </section>

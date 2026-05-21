@@ -1,5 +1,5 @@
-import api from '@/lib/axios';
-import { WebResponse } from '@/lib/types/auth.type';
+import api from "@/lib/axios";
+import type { WebResponse } from "@/lib/types/auth.type";
 
 export interface AnalyticsStats {
   totalStudents: number;
@@ -16,12 +16,16 @@ export interface AnalyticsCharts {
 
 export const analyticsService = {
   getStats: async (): Promise<AnalyticsStats> => {
-    const response = await api.get<WebResponse<AnalyticsStats>>('/motivation-stats/stats');
+    const response = await api.get<WebResponse<AnalyticsStats>>(
+      "/motivation-stats/stats",
+    );
     return response.data.data;
   },
 
   getCharts: async (): Promise<AnalyticsCharts> => {
-    const response = await api.get<WebResponse<AnalyticsCharts>>('/motivation-stats/charts');
+    const response = await api.get<WebResponse<AnalyticsCharts>>(
+      "/motivation-stats/charts",
+    );
     return response.data.data;
   },
 };

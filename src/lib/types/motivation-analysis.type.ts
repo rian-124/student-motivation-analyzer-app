@@ -1,4 +1,4 @@
-import { Student } from "./student.type";
+import type { Student } from "./student.type";
 
 export interface MotivationAnalysis {
   id: string;

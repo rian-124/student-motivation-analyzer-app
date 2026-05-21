@@ -23,13 +23,18 @@ export default function WorkFlowItem({
         {/* Center Icon Badge */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 hidden md:block">
           <div className="w-16 h-16 bg-white border-4 border-brand rounded-full flex justify-center items-center shadow-xl ring-8 ring-brand/5 group hover:scale-110 transition-transform duration-300">
-            <Workflow size={28} className="text-brand-secondary group-hover:rotate-12 transition-transform" />
+            <Workflow
+              size={28}
+              className="text-brand-secondary group-hover:rotate-12 transition-transform"
+            />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 w-full h-full items-center">
           {/* Left Slot */}
-          <div className={`flex justify-end px-6 md:pr-16 lg:pr-24 ${isRight ? "hidden md:flex md:invisible" : "z-20"}`}>
+          <div
+            className={`flex justify-end px-6 md:pr-16 lg:pr-24 ${isRight ? "hidden md:flex md:invisible" : "z-20"}`}
+          >
             {!isRight && (
               <div className="group p-8 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/20 shadow-2xl hover:bg-white/60 transition-all duration-500 hover:-translate-y-2 max-w-md w-full">
                 <div className="flex flex-col space-y-4 text-start">
@@ -53,7 +58,9 @@ export default function WorkFlowItem({
           </div>
 
           {/* Right Slot */}
-          <div className={`flex justify-start px-6 md:pl-16 lg:pl-24 ${!isRight ? "hidden md:flex md:invisible" : "z-20"}`}>
+          <div
+            className={`flex justify-start px-6 md:pl-16 lg:pl-24 ${!isRight ? "hidden md:flex md:invisible" : "z-20"}`}
+          >
             {isRight && (
               <div className="group p-8 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/20 shadow-2xl hover:bg-white/60 transition-all duration-500 hover:-translate-y-2 max-w-md w-full">
                 <div className="flex flex-col space-y-4 text-start">

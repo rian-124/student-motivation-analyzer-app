@@ -1,10 +1,10 @@
-import axios from 'axios';
-import { useAuthStore } from '@/store/auth.store';
+import { useAuthStore } from "@/store/auth.store";
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -17,7 +17,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Flag untuk mencegah loop refresh token
@@ -61,14 +61,21 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${api.defaults.baseURL}/auth/refresh`, {}, {
-          headers: { Authorization: `Bearer ${refreshToken}` }
-        });
+        const response = await axios.post(
+          `${api.defaults.baseURL}/auth/refresh`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${refreshToken}` },
+          },
+        );
 
         // Backend mengembalikan WebResponse<AuthTokens>, token ada di response.data.data
-        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        const { accessToken, refreshToken: newRefreshToken } =
+          response.data.data;
 
-        useAuthStore.getState().setAuth(accessToken, newRefreshToken, useAuthStore.getState().user);
+        useAuthStore
+          .getState()
+          .setAuth(accessToken, newRefreshToken, useAuthStore.getState().user);
 
         processQueue(null, accessToken);
 
@@ -77,8 +84,8 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         useAuthStore.getState().clearAuth();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
         }
         return Promise.reject(refreshError);
       } finally {
@@ -87,7 +94,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

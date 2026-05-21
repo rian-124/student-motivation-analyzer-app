@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Mic, TrendingUp, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Award, Brain, Mic, TrendingUp } from "lucide-react";
 
 export default function TopStatsSection({ data }: { data: any }) {
   // Map real data to display fields
@@ -10,15 +10,16 @@ export default function TopStatsSection({ data }: { data: any }) {
   const sttScore = 80; // Default placeholder for now
   const mfccScore = Math.round(data?.confidence * 100);
 
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       {/* MAIN SCORE CIRCULAR */}
       <Card className="md:col-span-6 border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden relative group">
         <div className="absolute top-0 right-0 p-4">
-          <Badge className="bg-brand/10 text-brand border-none px-3 py-1">Kategori: {status}</Badge>
+          <Badge className="bg-brand/10 text-brand border-none px-3 py-1">
+            Kategori: {status}
+          </Badge>
         </div>
-        
+
         <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
           {/* Circular Score Visual */}
           <div className="relative w-40 h-40 shrink-0">
@@ -46,33 +47,51 @@ export default function TopStatsSection({ data }: { data: any }) {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-slate-900 dark:text-white">{score}</span>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Skor Total</span>
+              <span className="text-4xl font-black text-slate-900 dark:text-white">
+                {score}
+              </span>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Skor Total
+              </span>
             </div>
           </div>
 
           <div className="space-y-4 text-center md:text-left">
             <div className="space-y-1">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center justify-center md:justify-start gap-2">
-                Motivasi {score > 70 ? "Luar Biasa!" : score > 50 ? "Cukup Baik" : "Perlu Ditingkatkan"}
+                Motivasi{" "}
+                {score > 70
+                  ? "Luar Biasa!"
+                  : score > 50
+                    ? "Cukup Baik"
+                    : "Perlu Ditingkatkan"}
                 <Award className="w-6 h-6 text-brand-accent fill-brand-accent/20" />
               </h2>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-                Dominasi motivasi Anda adalah <span className="font-bold text-brand">{dominant}</span>. 
-                {score > 70 ? " Pertahankan ritme dan antusiasme Anda!" : " Cobalah untuk menemukan tujuan baru yang lebih personal."}
+                Dominasi motivasi Anda adalah{" "}
+                <span className="font-bold text-brand">{dominant}</span>.
+                {score > 70
+                  ? " Pertahankan ritme dan antusiasme Anda!"
+                  : " Cobalah untuk menemukan tujuan baru yang lebih personal."}
               </p>
             </div>
-            
+
             <div className="flex items-center justify-center md:justify-start gap-4">
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-slate-400 uppercase">Status</span>
-                <span className={`text-sm font-bold ${score > 70 ? "text-emerald-500" : score > 50 ? "text-amber-500" : "text-rose-500"}`}>
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Status
+                </span>
+                <span
+                  className={`text-sm font-bold ${score > 70 ? "text-emerald-500" : score > 50 ? "text-amber-500" : "text-rose-500"}`}
+                >
                   {status.toUpperCase()}
                 </span>
               </div>
               <div className="w-px h-8 bg-slate-100 dark:bg-slate-800" />
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-slate-400 uppercase">Fokus Utama</span>
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Fokus Utama
+                </span>
                 <span className="text-sm font-bold text-brand flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
                   {dominant}
@@ -91,7 +110,9 @@ export default function TopStatsSection({ data }: { data: any }) {
           </div>
           <div className="space-y-1">
             <div className="text-4xl font-black italic">{mfccScore}</div>
-            <p className="text-sm font-bold text-white/70 uppercase tracking-tight">Akustik (MFCC)</p>
+            <p className="text-sm font-bold text-white/70 uppercase tracking-tight">
+              Akustik (MFCC)
+            </p>
           </div>
           <p className="text-[10px] text-white/50 leading-tight">
             Menganalisis frekuensi suara dan ritme vokal Anda.
@@ -108,8 +129,12 @@ export default function TopStatsSection({ data }: { data: any }) {
             <Mic className="w-7 h-7 text-brand-accent" />
           </div>
           <div className="space-y-1">
-            <div className="text-4xl font-black text-slate-900 dark:text-white italic">{sttScore}</div>
-            <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">Konten (STT)</p>
+            <div className="text-4xl font-black text-slate-900 dark:text-white italic">
+              {sttScore}
+            </div>
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">
+              Konten (STT)
+            </p>
           </div>
           <p className="text-[10px] text-slate-400 leading-tight">
             Menganalisis pilihan kata dan sentimen dalam ucapan.

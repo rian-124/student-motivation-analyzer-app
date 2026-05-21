@@ -1,22 +1,29 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface DataItem {
-  label: string
-  value: number
+  label: string;
+  value: number;
 }
 
 interface MotivationBarChartProps {
-  data: DataItem[]
-  label?: string
-  color?: string
+  data: DataItem[];
+  label?: string;
+  color?: string;
 }
 
 export default function MotivationBarChart({
@@ -29,15 +36,19 @@ export default function MotivationBarChart({
       label: label,
       color: color,
     },
-  } satisfies ChartConfig
+  } satisfies ChartConfig;
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-      <BarChart 
-        data={data} 
+      <BarChart
+        data={data}
         margin={{ top: 20, right: 20, left: -20, bottom: 20 }}
       >
-        <CartesianGrid vertical={false} strokeDasharray="3 3" strokeOpacity={0.1} />
+        <CartesianGrid
+          vertical={false}
+          strokeDasharray="3 3"
+          strokeOpacity={0.1}
+        />
         <XAxis
           dataKey="label"
           tickLine={false}
@@ -56,16 +67,16 @@ export default function MotivationBarChart({
           tickFormatter={(value) => `${value}`}
         />
         <ChartTooltip
-          cursor={{ fill: 'rgba(0,0,0,0.05)', radius: 4 }}
+          cursor={{ fill: "rgba(0,0,0,0.05)", radius: 4 }}
           content={<ChartTooltipContent hideLabel />}
         />
-        <Bar 
-          dataKey="value" 
-          fill={color} 
-          radius={[4, 4, 0, 0]} 
+        <Bar
+          dataKey="value"
+          fill={color}
+          radius={[4, 4, 0, 0]}
           maxBarSize={45}
         />
       </BarChart>
     </ChartContainer>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -20,8 +20,12 @@ export default function Footer() {
                 M
               </div>
               <div className="flex flex-col leading-none">
-                <span className="text-xl font-black text-brand-secondary tracking-tight">Motivation</span>
-                <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">Analyzer</span>
+                <span className="text-xl font-black text-brand-secondary tracking-tight">
+                  Motivation
+                </span>
+                <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">
+                  Analyzer
+                </span>
               </div>
             </Link>
             <p className="text-brand-secondary/60 text-sm font-medium leading-relaxed max-w-[240px]">
@@ -32,26 +36,79 @@ export default function Footer() {
           {/* Quick Links */}
           <div className="flex flex-col gap-6">
             <ul className="space-y-4">
-              <li><Link href="/" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">Beranda</Link></li>
-              <li><Link href="#features" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">Metodologi</Link></li>
-              <li><Link href="#flow" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">Alur Sistem</Link></li>
-              <li><Link href="#contact" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">Informasi Proyek</Link></li>
+              <li>
+                <Link
+                  href="/"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  Beranda
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#features"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  Metodologi
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#flow"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  Alur Sistem
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#contact"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  Informasi Proyek
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Legal Information */}
           <div className="flex flex-col gap-6">
             <ul className="space-y-4">
-              <li><Link href="#" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">Ketentuan Penggunaan</Link></li>
-              <li><Link href="#" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">Privasi Data</Link></li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  Ketentuan Penggunaan
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  Privasi Data
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div className="flex flex-col gap-6">
             <ul className="space-y-4">
-              <li><Link href="mailto:research@university.edu" className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors">research@university.edu</Link></li>
-              <li><span className="text-brand-secondary text-sm font-bold">Tahun Akademik 2024/2025</span></li>
+              <li>
+                <Link
+                  href="mailto:research@university.edu"
+                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
+                >
+                  research@university.edu
+                </Link>
+              </li>
+              <li>
+                <span className="text-brand-secondary text-sm font-bold">
+                  Tahun Akademik 2024/2025
+                </span>
+              </li>
             </ul>
           </div>
         </div>
@@ -62,9 +119,13 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-brand-secondary text-xs font-bold">
-            © {year} Proyek Analisis Motivasi Mahasiswa. Hak cipta dilindungi undang-undang.
+            © {year} Proyek Analisis Motivasi Mahasiswa. Hak cipta dilindungi
+            undang-undang.
           </p>
-          <Link href="#" className="text-brand-secondary text-xs font-bold hover:text-brand transition-colors">
+          <Link
+            href="#"
+            className="text-brand-secondary text-xs font-bold hover:text-brand transition-colors"
+          >
             Pengaturan Cookie
           </Link>
         </div>

@@ -1,5 +1,5 @@
 import StatCard from "@/components/common/StatCard";
-import { Users, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Minus, TrendingDown, TrendingUp, Users } from "lucide-react";
 
 export default function OverallStatsSection() {
   return (

@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import OverallStatsSection from "../section/OverallStatsSection";
 import OverallChartsSection from "../section/OverallChartsSection";
+import OverallStatsSection from "../section/OverallStatsSection";
 import TopLowClassesSection from "../section/TopLowClassesSection";
 
 export default function GraphOverallPage() {
@@ -30,7 +30,7 @@ export default function GraphOverallPage() {
           </Select>
         }
       />
-      
+
       {/* Stats Cards */}
       <OverallStatsSection />
 

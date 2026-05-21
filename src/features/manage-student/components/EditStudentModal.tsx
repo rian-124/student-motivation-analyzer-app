@@ -1,5 +1,6 @@
-"use client"
+"use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,12 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Edit, User, Mail, Hash, Save, Layers, Briefcase } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Student } from "@/lib/types/student.type";
-import { Lecturer } from "@/lib/types/lecturer.type";
+import type { Lecturer } from "@/lib/types/lecturer.type";
+import type { Student } from "@/lib/types/student.type";
 import { lecturerService } from "@/services/lecturer.service";
 import { useAuthStore } from "@/store/auth.store";
+import { Briefcase, Edit, Hash, Layers, Mail, Save, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface EditStudentModalProps {
   student: Student;
@@ -32,13 +32,17 @@ interface EditStudentModalProps {
   children: React.ReactNode;
 }
 
-export function EditStudentModal({ student, onEdit, children }: EditStudentModalProps) {
+export function EditStudentModal({
+  student,
+  onEdit,
+  children,
+}: EditStudentModalProps) {
   const [open, setOpen] = useState(false);
   const userRole = useAuthStore((state) => state.user?.role.toUpperCase());
   const isAdmin = userRole === "ADMIN";
-  
+
   const [lecturers, setLecturers] = useState<Lecturer[]>([]);
-  
+
   // Initialize with safe default values
   const [formData, setFormData] = useState({
     name: "",
@@ -46,7 +50,7 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
     class: "",
     email: "",
     semester: "1",
-    lecturerId: "none"
+    lecturerId: "none",
   });
 
   useEffect(() => {
@@ -64,7 +68,7 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
         class: student.class || "",
         email: student.user?.email || "",
         semester: student.semester || "1",
-        lecturerId: student.lecturerId || "none"
+        lecturerId: student.lecturerId || "none",
       });
     }
   }, [student, open]);
@@ -85,7 +89,8 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
         nim: formData.nim,
         class: formData.class.toUpperCase(),
         semester: formData.semester,
-        lecturerId: formData.lecturerId === "none" ? undefined : formData.lecturerId
+        lecturerId:
+          formData.lecturerId === "none" ? undefined : formData.lecturerId,
       });
     }
     setOpen(false);
@@ -93,15 +98,15 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[450px] rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl p-0 overflow-hidden bg-white dark:bg-slate-900">
         <DialogHeader className="p-5 pb-2">
           <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center mb-3">
             <Edit className="w-5 h-5 text-brand" />
           </div>
-          <DialogTitle className="text-lg font-bold text-slate-800 dark:text-white leading-none">Ubah Data Mahasiswa</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-slate-800 dark:text-white leading-none">
+            Ubah Data Mahasiswa
+          </DialogTitle>
           <DialogDescription className="text-slate-400 text-[11px] mt-1.5 leading-relaxed">
             Perbarui informasi detail untuk mahasiswa ini.
           </DialogDescription>
@@ -110,12 +115,16 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
         <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
           {/* NAMA */}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Nama Lengkap</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+              Nama Lengkap
+            </Label>
             <div className="relative">
               <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input 
+              <Input
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>
@@ -124,12 +133,16 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
           <div className="grid grid-cols-2 gap-3">
             {/* NIM */}
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">NIM</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                NIM
+              </Label>
               <div className="relative">
                 <Hash className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input 
+                <Input
                   value={formData.nim}
-                  onChange={(e) => setFormData({...formData, nim: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nim: e.target.value })
+                  }
                   className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
@@ -138,31 +151,42 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
             {/* DOSEN WALI (ONLY ADMIN) */}
             {isAdmin && (
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Dosen Wali</Label>
-                <Select value={formData.lecturerId} onValueChange={(val) => setFormData({...formData, lecturerId: val})}>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                  Dosen Wali
+                </Label>
+                <Select
+                  value={formData.lecturerId}
+                  onValueChange={(val) =>
+                    setFormData({ ...formData, lecturerId: val })
+                  }
+                >
                   <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
                     <SelectValue placeholder="Pilih Dosen" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-100">
                     <SelectItem value="none">Tanpa Dosen Wali</SelectItem>
-                    {lecturers.map(l => (
+                    {lecturers.map((l) => (
                       <SelectItem key={l.id} value={l.id}>
-                        {l.name} ({l.class?.name || 'No Class'})
+                        {l.name} ({l.class?.name || "No Class"})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            
+
             {/* KELAS (ONLY SHOWN IF NO DOSEN SELECTED OR NOT ADMIN) */}
             {(!isAdmin || formData.lecturerId === "none") && (
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Kelas Manual</Label>
-                <Input 
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                  Kelas Manual
+                </Label>
+                <Input
                   value={formData.class}
-                  onChange={(e) => setFormData({...formData, class: e.target.value})}
-                  placeholder="A / B / C" 
+                  onChange={(e) =>
+                    setFormData({ ...formData, class: e.target.value })
+                  }
+                  placeholder="A / B / C"
                   className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
@@ -170,14 +194,18 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-             {/* SEMESTER */}
-             <div className="space-y-1.5">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Semester</Label>
+            {/* SEMESTER */}
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                Semester
+              </Label>
               <div className="relative">
                 <Layers className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input 
+                <Input
                   value={formData.semester}
-                  onChange={(e) => setFormData({...formData, semester: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, semester: e.target.value })
+                  }
                   className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
@@ -185,10 +213,12 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
 
             {/* EMAIL (READONLY) */}
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Email</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                Email
+              </Label>
               <div className="relative">
                 <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input 
+                <Input
                   value={formData.email}
                   disabled
                   className="pl-9 h-10 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border-none text-slate-400 italic"
@@ -199,10 +229,17 @@ export function EditStudentModal({ student, onEdit, children }: EditStudentModal
         </div>
 
         <DialogFooter className="p-6 pt-2 border-none">
-          <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl text-xs font-bold text-slate-400 h-9">
+          <Button
+            variant="ghost"
+            onClick={() => setOpen(false)}
+            className="rounded-xl text-xs font-bold text-slate-400 h-9"
+          >
             Batal
           </Button>
-          <Button onClick={handleSave} className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95">
+          <Button
+            onClick={handleSave}
+            className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95"
+          >
             <Save className="w-3.5 h-3.5 mr-2" />
             Simpan Perubahan
           </Button>

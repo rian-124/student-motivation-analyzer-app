@@ -1,17 +1,19 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LogIn } from "lucide-react";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 
+import { ROUTES } from "@/lib/constants";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/auth.store";
 
@@ -19,7 +21,7 @@ export default function LoginFormSection() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
   const clearAuth = useAuthStore((state) => state.clearAuth);
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,10 @@ export default function LoginFormSection() {
 
     try {
       // authService.login mengembalikan { accessToken, refreshToken } langsung
-      const { accessToken, refreshToken } = await authService.login({ email, password });
+      const { accessToken, refreshToken } = await authService.login({
+        email,
+        password,
+      });
 
       setAuth(accessToken, refreshToken, null);
 
@@ -41,15 +46,14 @@ export default function LoginFormSection() {
 
       setAuth(accessToken, refreshToken, user);
 
-      toast.success(`Selamat datang, ${user.name || 'User'}!`);
+      toast.success(`Selamat datang, ${user.name || "User"}!`);
 
       // Role dari backend sudah lowercase: 'student', 'lecturer', 'admin'
-      if (user.role === 'student') {
-        router.push("/upload-recording");
+      if (user.role === "student") {
+        router.push(ROUTES.UPLOAD_RECORDING);
       } else {
-        router.push("/dashboard");
+        router.push(ROUTES.DASHBOARD);
       }
-
     } catch (err: unknown) {
       console.error("Login process error:", err);
       let message = "Terjadi kesalahan saat login.";
@@ -78,28 +82,28 @@ export default function LoginFormSection() {
 
           <div className="space-y-2">
             <Label>Email / NIM</Label>
-            <Input 
+            <Input
               type="email"
-              placeholder="Masukkan email atau NIM" 
+              placeholder="Masukkan email atau NIM"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required 
+              required
             />
           </div>
 
           <div className="space-y-2">
             <Label>Password</Label>
-            <Input 
-              type="password" 
-              placeholder="Masukkan password" 
+            <Input
+              type="password"
+              placeholder="Masukkan password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required 
+              required
             />
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={loading}
             className="w-full gap-2 bg-brand! hover:bg-brand-hover! shadow-lg shadow-brand/20"
           >

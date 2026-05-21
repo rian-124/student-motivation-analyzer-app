@@ -1,6 +1,16 @@
-"use client"
+"use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -9,29 +19,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search, FileText, ChevronLeft, ChevronRight, Filter, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useAuthStore } from "@/store/auth.store";
 import { motivationAnalysisService } from "@/services/motivation-analysis.service";
+import { useAuthStore } from "@/store/auth.store";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Filter,
+  Loader2,
+  Search,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 
 interface HistoryTableSectionProps {
   studentId?: string;
 }
 
-export default function HistoryTableSection({ studentId }: HistoryTableSectionProps) {
+export default function HistoryTableSection({
+  studentId,
+}: HistoryTableSectionProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const [historyData, setHistoryData] = useState<any[]>([]);
@@ -47,9 +55,11 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
           // If a specific studentId is provided (e.g. admin viewing a student)
           const data = await motivationAnalysisService.findByStudent(studentId);
           setHistoryData(Array.isArray(data) ? data : []);
-        } else if (user?.role === 'student' && user?.student?.id) {
+        } else if (user?.role === "student" && user?.student?.id) {
           // If the logged in user is a student
-          const data = await motivationAnalysisService.findByStudent(user.student.id);
+          const data = await motivationAnalysisService.findByStudent(
+            user.student.id,
+          );
           setHistoryData(Array.isArray(data) ? data : []);
         } else {
           // Fallback, fetch all (though we changed the flow to use StudentAnalysisListSection for admins)
@@ -75,10 +85,14 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
 
   const getStatusColor = (prediction: string) => {
     switch (prediction) {
-      case 'Intrinsik': return 'emerald';
-      case 'Ekstrinsik': return 'amber';
-      case 'Amotivasi': return 'rose';
-      default: return 'slate';
+      case "Intrinsik":
+        return "emerald";
+      case "Ekstrinsik":
+        return "amber";
+      case "Amotivasi":
+        return "rose";
+      default:
+        return "slate";
     }
   };
 
@@ -88,15 +102,17 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
       <CardHeader className="p-4 space-y-4 bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <CardTitle className="text-base font-bold text-slate-800 dark:text-white px-1">
-            {user?.role === 'student' ? 'Riwayat Unggahan Anda' : 'Riwayat Analisis'}
+            {user?.role === "student"
+              ? "Riwayat Unggahan Anda"
+              : "Riwayat Analisis"}
           </CardTitle>
-          
+
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input 
-                placeholder="Cari Mahasiswa/NIM..." 
-                className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" 
+              <Input
+                placeholder="Cari Mahasiswa/NIM..."
+                className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
               />
             </div>
             <Select defaultValue="all">
@@ -120,19 +136,34 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
           <Table>
             <TableHeader>
               <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Info Mahasiswa</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Kelas</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Status</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Skor</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Tanggal</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Opsi</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">
+                  Info Mahasiswa
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">
+                  Kelas
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">
+                  Status
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">
+                  Skor
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">
+                  Tanggal
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">
+                  Opsi
+                </TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i} className="animate-pulse border-slate-50 dark:border-slate-800">
+                  <TableRow
+                    key={i}
+                    className="animate-pulse border-slate-50 dark:border-slate-800"
+                  >
                     <TableCell className="py-4 px-5">
                       <div className="space-y-2">
                         <div className="h-3 w-32 bg-slate-100 dark:bg-slate-800 rounded" />
@@ -159,39 +190,50 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
               ) : historyData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-40 text-center">
-                    <p className="text-sm text-slate-400 font-medium">Belum ada riwayat analisis.</p>
+                    <p className="text-sm text-slate-400 font-medium">
+                      Belum ada riwayat analisis.
+                    </p>
                   </TableCell>
                 </TableRow>
               ) : (
                 historyData.map((row, idx) => {
                   const color = getStatusColor(row.prediction);
-                  const formattedDate = new Date(row.createdAt).toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
+                  const formattedDate = new Date(
+                    row.createdAt,
+                  ).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
                   });
-                  
+
                   return (
-                    <TableRow key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
+                    <TableRow
+                      key={idx}
+                      className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors"
+                    >
                       <TableCell className="py-3.5 px-5">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-slate-800 dark:text-slate-200">{row.student?.name || 'Mahasiswa'}</span>
-                          <span className="text-[10px] text-slate-400 font-mono tracking-wider">{row.student?.nim || 'N/A'}</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            {row.student?.name || "Mahasiswa"}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono tracking-wider">
+                            {row.student?.nim || "N/A"}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
                         <span className="text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
-                          {row.student?.class?.name || '—'}
+                          {row.student?.class?.name || "—"}
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`rounded-full px-2.5 py-0 border-none font-bold text-[9px] uppercase tracking-widest
-                            ${color === 'emerald' ? 'bg-emerald-100/50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}
-                            ${color === 'amber' ? 'bg-amber-100/50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}
-                            ${color === 'rose' ? 'bg-rose-100/50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' : ''}
-                            ${color === 'slate' ? 'bg-slate-100/50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400' : ''}
+                            ${color === "emerald" ? "bg-emerald-100/50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400" : ""}
+                            ${color === "amber" ? "bg-amber-100/50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400" : ""}
+                            ${color === "rose" ? "bg-rose-100/50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400" : ""}
+                            ${color === "slate" ? "bg-slate-100/50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400" : ""}
                           `}
                         >
                           {row.prediction}
@@ -206,10 +248,10 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
                         {formattedDate}
                       </TableCell>
                       <TableCell className="text-right px-5">
-                        <Button 
+                        <Button
                           onClick={() => handleViewDetail(row.id)}
-                          size="sm" 
-                          variant="outline" 
+                          size="sm"
+                          variant="outline"
                           className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"
                         >
                           <FileText className="w-3 h-3 mr-1.5" />
@@ -223,7 +265,7 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
             </TableBody>
           </Table>
         </div>
-        
+
         {/* FOOTER / PAGINATION */}
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
@@ -246,9 +288,10 @@ export default function HistoryTableSection({ studentId }: HistoryTableSectionPr
                     key={i}
                     onClick={() => setPage(i + 1)}
                     className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
-                      ${page === i + 1
-                        ? 'bg-brand text-white'
-                        : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ${
+                        page === i + 1
+                          ? "bg-brand text-white"
+                          : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                       }`}
                   >
                     {i + 1}

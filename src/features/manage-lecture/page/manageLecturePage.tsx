@@ -2,14 +2,14 @@
 
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Download } from "lucide-react";
+import type { Lecturer } from "@/lib/types/lecturer.type";
+import { lecturerService } from "@/services/lecturer.service";
+import { Download, UserPlus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { AddLectureModal } from "../components/AddLectureModal";
 import LectureStatsSection from "../section/LectureStatsSection";
 import LectureTableSection from "../section/LectureTableSection";
-import { AddLectureModal } from "../components/AddLectureModal";
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { lecturerService } from "@/services/lecturer.service";
-import { Lecturer } from "@/lib/types/lecturer.type";
 
 export default function ManageLecturePage() {
   const [lectures, setLectures] = useState<Lecturer[]>([]);
@@ -20,7 +20,7 @@ export default function ManageLecturePage() {
     lastPage: 1,
   });
 
-  const fetchLecturers = useCallback(async (page: number = 1) => {
+  const fetchLecturers = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const response = await lecturerService.findAll(page);
@@ -84,7 +84,10 @@ export default function ManageLecturePage() {
         description="Kelola data dosen wali dan penugasan kelas perwalian mahasiswa."
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="rounded-xl border-slate-200 h-10 px-5 font-bold text-slate-600 hover:bg-slate-50 transition-all">
+            <Button
+              variant="outline"
+              className="rounded-xl border-slate-200 h-10 px-5 font-bold text-slate-600 hover:bg-slate-50 transition-all"
+            >
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
@@ -97,16 +100,16 @@ export default function ManageLecturePage() {
           </div>
         }
       />
-      
+
       <div className="space-y-8">
         <LectureStatsSection />
-        <LectureTableSection 
-          lectures={lectures} 
+        <LectureTableSection
+          lectures={lectures}
           loading={loading}
           pagination={pagination}
           onPageChange={fetchLecturers}
-          onEdit={handleEditLecture} 
-          onDelete={handleDeleteLecture} 
+          onEdit={handleEditLecture}
+          onDelete={handleDeleteLecture}
         />
       </div>
     </div>

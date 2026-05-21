@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,9 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileDown, Settings2, FileText, Table as TableIcon, FileJson } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import {
+  FileDown,
+  FileJson,
+  FileText,
+  Settings2,
+  Table as TableIcon,
+} from "lucide-react";
+import { useState } from "react";
 
 export default function ReportConfigSection() {
   const [format, setFormat] = useState("pdf");
@@ -24,13 +30,17 @@ export default function ReportConfigSection() {
           <Settings2 className="w-4 h-4 text-brand" />
           Konfigurasi Laporan
         </CardTitle>
-        <p className="text-xs text-slate-500">Sesuaikan data yang ingin Anda sertakan dalam laporan.</p>
+        <p className="text-xs text-slate-500">
+          Sesuaikan data yang ingin Anda sertakan dalam laporan.
+        </p>
       </CardHeader>
-      
+
       <CardContent className="p-6 space-y-6">
         {/* JENIS LAPORAN */}
         <div className="space-y-3">
-          <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Jenis Laporan</Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Jenis Laporan
+          </Label>
           <Select defaultValue="all">
             <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
               <SelectValue placeholder="Pilih jenis laporan" />
@@ -39,7 +49,9 @@ export default function ReportConfigSection() {
               <SelectItem value="all">Laporan Keseluruhan (Summary)</SelectItem>
               <SelectItem value="class">Laporan Detail Per Kelas</SelectItem>
               <SelectItem value="student">Laporan Riwayat Mahasiswa</SelectItem>
-              <SelectItem value="compare">Analisis Komparatif Semester</SelectItem>
+              <SelectItem value="compare">
+                Analisis Komparatif Semester
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -47,7 +59,9 @@ export default function ReportConfigSection() {
         {/* PERIODE & KELAS */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-3">
-            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Periode</Label>
+            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Periode
+            </Label>
             <Select defaultValue="genap">
               <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
                 <SelectValue placeholder="Semester" />
@@ -59,7 +73,9 @@ export default function ReportConfigSection() {
             </Select>
           </div>
           <div className="space-y-3">
-            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Kelas</Label>
+            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Kelas
+            </Label>
             <Select defaultValue="all">
               <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
                 <SelectValue placeholder="Kelas" />
@@ -75,21 +91,41 @@ export default function ReportConfigSection() {
 
         {/* FORMAT FILE */}
         <div className="space-y-3">
-          <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Format Ekspor</Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Format Ekspor
+          </Label>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { id: "pdf", label: "PDF", icon: FileText, color: "text-rose-500", bg: "bg-rose-50" },
-              { id: "excel", label: "Excel", icon: TableIcon, color: "text-emerald-500", bg: "bg-emerald-50" },
-              { id: "json", label: "JSON", icon: FileJson, color: "text-amber-500", bg: "bg-amber-50" },
+              {
+                id: "pdf",
+                label: "PDF",
+                icon: FileText,
+                color: "text-rose-500",
+                bg: "bg-rose-50",
+              },
+              {
+                id: "excel",
+                label: "Excel",
+                icon: TableIcon,
+                color: "text-emerald-500",
+                bg: "bg-emerald-50",
+              },
+              {
+                id: "json",
+                label: "JSON",
+                icon: FileJson,
+                color: "text-amber-500",
+                bg: "bg-amber-50",
+              },
             ].map((item) => (
               <button
                 key={item.id}
                 onClick={() => setFormat(item.id)}
                 className={cn(
                   "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all gap-2",
-                  format === item.id 
-                    ? "border-brand bg-brand/5" 
-                    : "border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700"
+                  format === item.id
+                    ? "border-brand bg-brand/5"
+                    : "border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700",
                 )}
               >
                 <item.icon className={cn("w-5 h-5", item.color)} />
@@ -106,7 +142,8 @@ export default function ReportConfigSection() {
             Generate & Unduh Sekarang
           </Button>
           <p className="text-[10px] text-center text-slate-400 mt-3 px-4">
-            Proses generate laporan mungkin membutuhkan waktu beberapa detik tergantung pada volume data.
+            Proses generate laporan mungkin membutuhkan waktu beberapa detik
+            tergantung pada volume data.
           </p>
         </div>
       </CardContent>

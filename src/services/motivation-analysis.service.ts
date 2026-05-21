@@ -1,25 +1,27 @@
-import api from '@/lib/axios';
-import {
+import api from "@/lib/axios";
+import type { WebResponse } from "@/lib/types/auth.type";
+import type {
+  CreateAnalysisPayload,
   MotivationAnalysis,
   MotivationAnalysisResponse,
-  CreateAnalysisPayload,
-} from '@/lib/types/motivation-analysis.type';
-import { WebResponse } from '@/lib/types/auth.type';
+} from "@/lib/types/motivation-analysis.type";
 
 export const motivationAnalysisService = {
   /** POST /motivation-analysis/upload */
-  uploadAndAnalyze: async (payload: CreateAnalysisPayload): Promise<MotivationAnalysis> => {
+  uploadAndAnalyze: async (
+    payload: CreateAnalysisPayload,
+  ): Promise<MotivationAnalysis> => {
     const formData = new FormData();
-    formData.append('file', payload.file);
-    formData.append('studentId', payload.studentId);
+    formData.append("file", payload.file);
+    formData.append("studentId", payload.studentId);
     if (payload.description) {
-      formData.append('description', payload.description);
+      formData.append("description", payload.description);
     }
 
     const response = await api.post<WebResponse<MotivationAnalysis>>(
-      '/motivation-analysis/upload',
+      "/motivation-analysis/upload",
       formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } },
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return response.data.data;
   },
@@ -41,7 +43,10 @@ export const motivationAnalysisService = {
   },
 
   /** GET /motivation-analysis?page=&limit= */
-  findAll: async (page: number = 1, limit: number = 10): Promise<MotivationAnalysisResponse> => {
+  findAll: async (
+    page = 1,
+    limit = 10,
+  ): Promise<MotivationAnalysisResponse> => {
     // Response struktur: { statusCode, message, data: { data: [], meta: {} } }
     // meta ada di dalam data, bukan di root envelope
     const response = await api.get<WebResponse<MotivationAnalysisResponse>>(

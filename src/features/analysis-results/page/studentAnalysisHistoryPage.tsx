@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileDown, Filter } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
-import HistoryTableSection from "../section/HistoryTableSection";
+import { Button } from "@/components/ui/button";
+import type { Student } from "@/lib/types/student.type";
+import { studentService } from "@/services/student.service";
+import { ArrowLeft, FileDown, Filter } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { studentService } from "@/services/student.service";
-import { Student } from "@/lib/types/student.type";
+import HistoryTableSection from "../section/HistoryTableSection";
 
 export default function StudentAnalysisHistoryPage() {
   const params = useParams();
@@ -56,7 +56,10 @@ export default function StudentAnalysisHistoryPage() {
                 <Filter className="w-4 h-4 mr-2" />
                 Filter
               </Button>
-              <Button size="sm" className="bg-brand hover:bg-brand/90 text-white rounded-lg shadow-sm">
+              <Button
+                size="sm"
+                className="bg-brand hover:bg-brand/90 text-white rounded-lg shadow-sm"
+              >
                 <FileDown className="w-4 h-4 mr-2" />
                 Ekspor Data
               </Button>

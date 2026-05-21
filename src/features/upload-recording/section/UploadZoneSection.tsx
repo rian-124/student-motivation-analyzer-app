@@ -1,23 +1,25 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { UploadCloud, Play, FileAudio, X, Music, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import type { MotivationAnalysis } from "@/lib/types/motivation-analysis.type";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { motivationAnalysisService } from "@/services/motivation-analysis.service";
 import { useAuthStore } from "@/store/auth.store";
-import { MotivationAnalysis } from "@/lib/types/motivation-analysis.type";
+import { FileAudio, Loader2, Music, Play, UploadCloud, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface UploadZoneSectionProps {
   onSuccess?: (result: MotivationAnalysis) => void;
 }
 
-export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps) {
+export default function UploadZoneSection({
+  onSuccess,
+}: UploadZoneSectionProps) {
   const router = useRouter();
   const { user } = useAuthStore();
 
@@ -37,20 +39,25 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
 
   const processFile = (selectedFile: File) => {
     // Validasi file
-    const validTypes = ['audio/wav', 'audio/mpeg', 'audio/ogg', 'audio/flac'];
-    const validExtensions = ['.wav', '.mp3', '.ogg', '.flac'];
-    
-    const isValidType = validTypes.includes(selectedFile.type) || 
-                        validExtensions.some(ext => selectedFile.name.toLowerCase().endsWith(ext));
-    
+    const validTypes = ["audio/wav", "audio/mpeg", "audio/ogg", "audio/flac"];
+    const validExtensions = [".wav", ".mp3", ".ogg", ".flac"];
+
+    const isValidType =
+      validTypes.includes(selectedFile.type) ||
+      validExtensions.some((ext) =>
+        selectedFile.name.toLowerCase().endsWith(ext),
+      );
+
     if (!isValidType) {
       toast.error("Format Berkas Tidak Valid", {
-        description: "Harap unggah berkas dengan format WAV, MP3, OGG, atau FLAC.",
+        description:
+          "Harap unggah berkas dengan format WAV, MP3, OGG, atau FLAC.",
       });
       return;
     }
 
-    if (selectedFile.size > 50 * 1024 * 1024) { // 50MB max
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      // 50MB max
       toast.error("Ukuran Berkas Terlalu Besar", {
         description: "Maksimal ukuran berkas yang diizinkan adalah 50MB.",
       });
@@ -60,7 +67,7 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
     setFile(selectedFile);
     const heights = Array.from(
       { length: 30 },
-      () => Math.floor(Math.random() * 70) + 30
+      () => Math.floor(Math.random() * 70) + 30,
     );
     setWaveformHeights(heights);
   };
@@ -74,13 +81,13 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
       }
       return;
     }
-    
+
     setIsAnalyzing(true);
     setAnalysisStep("Menyiapkan berkas...");
 
     try {
       setAnalysisStep("Mengunggah dan menganalisis berkas ke server...");
-      
+
       const result = await motivationAnalysisService.uploadAndAnalyze({
         file,
         studentId: user.student.id,
@@ -93,14 +100,15 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
       if (onSuccess) {
         onSuccess(result);
       }
-      
+
       // Reset state for new upload if needed, or keep it
       setFile(null);
       setIsAnalyzing(false);
     } catch (error: any) {
       console.error("Analysis failed:", error);
       toast.error("Gagal Melakukan Analisis", {
-        description: error.response?.data?.message || "Terjadi kesalahan pada server AI.",
+        description:
+          error.response?.data?.message || "Terjadi kesalahan pada server AI.",
       });
       setIsAnalyzing(false);
     }
@@ -135,13 +143,16 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
   return (
     <Card className="w-full border-none shadow-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand via-brand-accent to-brand-secondary" />
-      
+
       <CardHeader className="pb-2 pt-5">
         <div className="flex items-center justify-between px-2">
           <CardTitle className="text-xl font-bold tracking-tight text-brand-secondary dark:text-white">
             Panel Unggah Rekaman
           </CardTitle>
-          <Badge variant="outline" className="border-brand/20 text-brand font-medium text-[10px]">
+          <Badge
+            variant="outline"
+            className="border-brand/20 text-brand font-medium text-[10px]"
+          >
             Sistem Cerdas v1.0
           </Badge>
         </div>
@@ -157,10 +168,10 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
           className={cn(
             "relative group border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ease-in-out",
             isAnalyzing ? "cursor-wait opacity-80" : "cursor-pointer",
-            isDragging 
-              ? "border-brand bg-brand/5 scale-[1.01]" 
+            isDragging
+              ? "border-brand bg-brand/5 scale-[1.01]"
               : "border-slate-100 dark:border-slate-800 hover:border-brand/40 hover:bg-slate-50/50 dark:hover:bg-slate-800/50",
-            file && "border-brand/40 bg-brand/5"
+            file && "border-brand/40 bg-brand/5",
           )}
         >
           <Input
@@ -199,8 +210,11 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
                 </p>
               </div>
               <div className="flex justify-center gap-1.5 pt-1">
-                {['WAV', 'MP3', 'OGG', 'FLAC'].map((ext) => (
-                  <span key={ext} className="px-2 py-0.5 rounded-full bg-slate-50 dark:bg-slate-800 text-[9px] font-bold text-slate-400">
+                {["WAV", "MP3", "OGG", "FLAC"].map((ext) => (
+                  <span
+                    key={ext}
+                    className="px-2 py-0.5 rounded-full bg-slate-50 dark:bg-slate-800 text-[9px] font-bold text-slate-400"
+                  >
                     {ext}
                   </span>
                 ))}
@@ -220,24 +234,27 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
                     {(file.size / 1024 / 1024).toFixed(2)} MB • Siap Dianalisis
                   </p>
                 </div>
-                
+
                 {/* WAVEFORM ANIMATION */}
                 <div className="flex items-end justify-center gap-[2px] h-12 w-full max-w-xs mx-auto mt-2 px-6">
                   {waveformHeights.map((height, i) => (
                     <div
                       key={i}
                       className="flex-1 min-w-[2px] bg-brand/40 rounded-full transition-all duration-500"
-                      style={{ 
-                        height: isAnalyzing ? `${Math.random() * 80 + 20}%` : `${height}%`,
-                        backgroundColor: i % 3 === 0 ? 'var(--color-brand)' : undefined,
-                        opacity: 0.4 + (height / 100) * 0.6
+                      style={{
+                        height: isAnalyzing
+                          ? `${Math.random() * 80 + 20}%`
+                          : `${height}%`,
+                        backgroundColor:
+                          i % 3 === 0 ? "var(--color-brand)" : undefined,
+                        opacity: 0.4 + (height / 100) * 0.6,
                       }}
                     />
                   ))}
                 </div>
 
                 {!isAnalyzing && (
-                  <button 
+                  <button
                     onClick={removeFile}
                     className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-red-500 transition-colors font-bold"
                   >
@@ -248,21 +265,21 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
               </div>
             </div>
           )}
-          
+
           {/* Decorative background elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl -z-10" />
         </div>
 
         {/* ACTIONS */}
         <div className="pt-1">
-          <Button 
+          <Button
             disabled={!file || isAnalyzing}
             onClick={handleStartAnalysis}
             className={cn(
               "w-full h-12 text-sm font-bold rounded-xl transition-all duration-300 shadow-lg",
               file && !isAnalyzing
-                ? "bg-brand hover:bg-brand-hover text-white shadow-brand/20 scale-[1.01]" 
-                : "bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
+                ? "bg-brand hover:bg-brand-hover text-white shadow-brand/20 scale-[1.01]"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed",
             )}
           >
             {isAnalyzing ? (
@@ -279,7 +296,7 @@ export default function UploadZoneSection({ onSuccess }: UploadZoneSectionProps)
               "Pilih File Untuk Memulai"
             )}
           </Button>
-          
+
           {file && !isAnalyzing && (
             <p className="text-center text-[10px] text-slate-400 mt-3 flex items-center justify-center gap-1.5">
               <Music className="w-3 h-3" />

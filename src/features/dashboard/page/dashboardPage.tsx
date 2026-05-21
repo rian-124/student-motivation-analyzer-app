@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download, Calendar, Sparkles } from "lucide-react";
-import StatsSection from "../section/StatsSection";
-import ChartSection from "../section/ChartSection";
 import { useAuthStore } from "@/store/auth.store";
+import { Calendar, Download, Sparkles } from "lucide-react";
+import ChartSection from "../section/ChartSection";
+import StatsSection from "../section/StatsSection";
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -23,15 +23,18 @@ export default function Dashboard() {
               Berikut ringkasan performa motivasi mahasiswa periode ini.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
               <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                Semester Genap {currentYear-1}/{currentYear % 100}
+                Semester Genap {currentYear - 1}/{currentYear % 100}
               </span>
             </div>
-            <Button size="sm" className="bg-brand hover:bg-brand-hover text-white rounded-lg shadow-sm font-semibold">
+            <Button
+              size="sm"
+              className="bg-brand hover:bg-brand-hover text-white rounded-lg shadow-sm font-semibold"
+            >
               <Download className="w-4 h-4 mr-2" />
               Unduh Laporan
             </Button>

@@ -30,11 +30,12 @@ export const MOTIVATION_DISTRIBUTION = {
       { category: "Motivasi Sedang", value: 40, fill: "#f59e0b" },
       { category: "Motivasi Rendah", value: 15, fill: "#f43f5e" },
     ],
-  }
+  },
 };
 
 export const STUDENT_RESULTS = {
-  "4": { // Andi Pratama
+  "4": {
+    // Andi Pratama
     summary: {
       score: 84,
       status: "Tinggi",
@@ -49,9 +50,10 @@ export const STUDENT_RESULTS = {
       { date: "12 Apr", score: 78 },
       { date: "15 Apr", score: 80 },
       { date: "19 Apr", score: 84 },
-    ]
+    ],
   },
-  "5": { // Rizky Fauzan
+  "5": {
+    // Rizky Fauzan
     summary: {
       score: 45,
       status: "Rendah",
@@ -66,6 +68,6 @@ export const STUDENT_RESULTS = {
       { date: "12 Apr", score: 55 },
       { date: "15 Apr", score: 50 },
       { date: "19 Apr", score: 45 },
-    ]
-  }
+    ],
+  },
 };

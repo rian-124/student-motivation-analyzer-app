@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Navbar from "./Navbar";
 import { Button } from "../../ui/button";
+import Navbar from "./Navbar";
 
 export default function Header() {
   return (
@@ -12,8 +12,12 @@ export default function Header() {
             M
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-lg font-black text-brand-secondary tracking-tight">Motivation</span>
-            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">Analyzer</span>
+            <span className="text-lg font-black text-brand-secondary tracking-tight">
+              Motivation
+            </span>
+            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">
+              Analyzer
+            </span>
           </div>
         </Link>
 
