@@ -21,6 +21,8 @@ body {
   font-family: var(--font-raleway), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 * {
