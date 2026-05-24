@@ -34,7 +34,7 @@ export interface StudentResponse {
   meta: {
     total: number;
     page: number;
-    lastPage: number;
+    limit: number;
   };
 }
 
@@ -43,7 +43,7 @@ export interface CreateStudentPayload {
   name: string;
   email: string;
   password: string;
-  class?: string;
+  classId?: string;
   semester?: string;
   lecturerId?: string;
 }
@@ -51,7 +51,7 @@ export interface CreateStudentPayload {
 export interface UpdateStudentPayload {
   nim?: string;
   name?: string;
-  class?: string;
+  classId?: string;
   semester?: string;
   lecturerId?: string;
 }

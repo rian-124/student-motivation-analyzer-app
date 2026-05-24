@@ -1,5 +1,14 @@
 import StatCard from "@/components/common/StatCard";
-import { Users, TrendingUp, TrendingDown, Minus, FileText, Activity, Award, BarChart } from "lucide-react";
+import {
+  Activity,
+  Award,
+  BarChart,
+  FileText,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
 interface ClassStatsSectionProps {
   isStudent?: boolean;
@@ -11,7 +20,10 @@ interface ClassStatsSectionProps {
   };
 }
 
-export default function ClassStatsSection({ isStudent, stats }: ClassStatsSectionProps) {
+export default function ClassStatsSection({
+  isStudent,
+  stats,
+}: ClassStatsSectionProps) {
   if (isStudent && stats) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -31,12 +43,12 @@ export default function ClassStatsSection({ isStudent, stats }: ClassStatsSectio
         />
         <StatCard
           icon={BarChart}
-          value={`${stats.growth >= 0 ? '+' : ''}${stats.growth}%`}
+          value={`${stats.growth >= 0 ? "+" : ""}${stats.growth}%`}
           label="Perkembangan"
           variant="amber"
-          trend={{ 
-            value: stats.growth >= 0 ? "Meningkat" : "Menurun", 
-            isUp: stats.growth >= 0 
+          trend={{
+            value: stats.growth >= 0 ? "Meningkat" : "Menurun",
+            isUp: stats.growth >= 0,
           }}
         />
       </div>
@@ -45,11 +57,11 @@ export default function ClassStatsSection({ isStudent, stats }: ClassStatsSectio
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatCard 
-        icon={Users} 
-        value={32} 
-        label="Total Mahasiswa" 
-        variant="blue" 
+      <StatCard
+        icon={Users}
+        value={32}
+        label="Total Mahasiswa"
+        variant="blue"
       />
       <StatCard
         icon={TrendingUp}
@@ -75,4 +87,3 @@ export default function ClassStatsSection({ isStudent, stats }: ClassStatsSectio
     </div>
   );
 }
-

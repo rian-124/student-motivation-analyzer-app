@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -11,28 +12,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 import {
-  LucideIcon,
+  BarChart3,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  type LucideIcon,
   Mic,
   Monitor,
-  UserIcon,
-  BarChart3,
   PieChart,
-  FileText,
+  UserIcon,
   Users,
-  LayoutDashboard,
-  LogOut
 } from "lucide-react";
 
+import { ConfirmModal } from "@/components/common/ConfirmModal";
+import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/store/auth.store";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/auth.store";
-import { authService } from "@/services/auth.service";
 import { toast } from "sonner";
-import { ConfirmModal } from "@/components/common/ConfirmModal";
 
 export interface NavItem {
   title: string;
@@ -53,7 +53,7 @@ const getSidebarData = (userRole: string): NavCategory[] => {
   return [
     {
       label: "Menu Utama",
-      roles: ["ADMIN", "LECTURER"],
+      roles: ["ADMIN", "LECTURER", "STUDENT"],
       items: [
         {
           title: "Dashboard",
@@ -75,24 +75,22 @@ const getSidebarData = (userRole: string): NavCategory[] => {
     },
     {
       label: "Analisis & Grafik",
-      roles: ["ADMIN", "LECTURER", "STUDENT"], 
+      roles: ["ADMIN", "LECTURER", "STUDENT"],
       items: [
-        ...(role === "ADMIN" ? [{
-          title: "Grafik Keseluruhan",
-          icon: PieChart,
-          href: "/graph-overall",
-        }] : []),
         {
-          title: "Grafik Kelas",
+          title: "Leaderboard Motivasi",
           icon: BarChart3,
-          href: "/graph-class",
-          roles: ["LECTURER", "STUDENT"],
+          href: "/leaderboard",
         },
-        ...(role !== "STUDENT" ? [{
-          title: "Semua Hasil Analisis",
-          icon: Monitor,
-          href: "/analysis-results",
-        }] : []),
+        ...(role !== "STUDENT"
+          ? [
+              {
+                title: "Semua Hasil Analisis",
+                icon: Monitor,
+                href: "/analysis-results",
+              },
+            ]
+          : []),
       ],
     },
     {
@@ -134,7 +132,8 @@ export function AppSidebar() {
   const userRole = (user?.role || "STUDENT").toUpperCase();
   const sidebarData = getSidebarData(userRole);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   const handleLogout = async () => {
     try {
@@ -149,24 +148,35 @@ export function AppSidebar() {
   };
 
   const getRoleLabel = (role: string) => {
-    switch(role.toUpperCase()) {
-      case "ADMIN": return "Administrator";
-      case "LECTURER": return "Dosen Wali";
-      case "STUDENT": return "Mahasiswa";
-      default: return role;
+    switch (role.toUpperCase()) {
+      case "ADMIN":
+        return "Administrator";
+      case "LECTURER":
+        return "Dosen Wali";
+      case "STUDENT":
+        return "Mahasiswa";
+      default:
+        return role;
     }
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white text-brand-secondary">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-slate-100 bg-white text-brand-secondary"
+    >
       <SidebarHeader className="h-20 border-b border-slate-100 px-4 flex flex-row items-center shrink-0">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-secondary flex items-center justify-center text-white text-lg font-black shadow-lg shadow-brand/20 shrink-0">
             M
           </div>
           <div className="flex flex-col leading-none group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-black text-brand-secondary tracking-tight">Motivation</span>
-            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">Analyzer</span>
+            <span className="text-sm font-black text-brand-secondary tracking-tight">
+              Motivation
+            </span>
+            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] -mt-0.5">
+              Analyzer
+            </span>
           </div>
         </Link>
       </SidebarHeader>
@@ -174,8 +184,7 @@ export function AppSidebar() {
       <SidebarContent className="px-2 pt-4">
         {sidebarData
           .filter(
-            (category) =>
-              !category.roles || category.roles.includes(userRole)
+            (category) => !category.roles || category.roles.includes(userRole),
           )
           .map((category) => (
             <SidebarGroup key={category.label} className="py-2">
@@ -185,31 +194,38 @@ export function AppSidebar() {
 
               <SidebarMenu className="gap-1 mt-2">
                 {category.items
-                  .filter((item) => !item.roles || item.roles.includes(userRole))
+                  .filter(
+                    (item) => !item.roles || item.roles.includes(userRole),
+                  )
                   .map((item) => {
-                  const active = item.href ? isActive(item.href) : false;
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        tooltip={item.title}
-                        isActive={active}
-                        className={`
+                    const active = item.href ? isActive(item.href) : false;
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          tooltip={item.title}
+                          isActive={active}
+                          className={`
                           h-11 rounded-xl px-4 transition-all duration-200
-                          ${active 
-                            ? "!bg-brand !text-white shadow-lg shadow-brand/30 hover:!bg-brand hover:!text-white" 
-                            : "text-brand-secondary/60 hover:bg-brand/5 hover:text-brand"
+                          ${
+                            active
+                              ? "!bg-brand !text-white shadow-lg shadow-brand/30 hover:!bg-brand hover:!text-white"
+                              : "text-brand-secondary/60 hover:bg-brand/5 hover:text-brand"
                           }
                         `}
-                      >
-                        <Link href={item.href || "#"}>
-                          <item.icon className={`size-4 !shrink-0 ${active ? "!text-white" : ""}`} />
-                          <span className="font-bold text-sm">{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                        >
+                          <Link href={item.href || "#"}>
+                            <item.icon
+                              className={`size-4 !shrink-0 ${active ? "!text-white" : ""}`}
+                            />
+                            <span className="font-bold text-sm">
+                              {item.title}
+                            </span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
               </SidebarMenu>
             </SidebarGroup>
           ))}
@@ -220,14 +236,22 @@ export function AppSidebar() {
           {user && (
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-[10px] shrink-0 border border-slate-200 overflow-hidden">
-                {(user as any).avatar ? (
-                  <Image src={(user as any).avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+                {user.avatar ? (
+                  <Image
+                    src={user.avatar}
+                    alt={user.name}
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   user.name.charAt(0)
                 )}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-[12px] font-bold text-brand-secondary truncate leading-tight">{user.name}</span>
+                <span className="text-[12px] font-bold text-brand-secondary truncate leading-tight">
+                  {user.name}
+                </span>
                 <span className="text-[9px] text-brand-secondary/40 font-black uppercase tracking-tight">
                   {getRoleLabel(user.role)}
                 </span>
@@ -242,8 +266,8 @@ export function AppSidebar() {
             variant="destructive"
             onConfirm={handleLogout}
           >
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg h-8 w-8 shrink-0"
               title="Keluar"
@@ -252,13 +276,19 @@ export function AppSidebar() {
             </Button>
           </ConfirmModal>
         </div>
-        
+
         {/* COLLAPSED VIEW */}
         <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-4">
           {user && (
             <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-brand-secondary font-bold text-xs border border-slate-200 overflow-hidden">
-              {(user as any).avatar ? (
-                <Image src={(user as any).avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+              {user.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt={user.name}
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 user.name.charAt(0)
               )}
@@ -271,8 +301,8 @@ export function AppSidebar() {
             variant="destructive"
             onConfirm={handleLogout}
           >
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
             >

@@ -1,5 +1,6 @@
-"use client"
+"use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,29 +10,60 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, BookOpen, Briefcase } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Lecturer } from "@/lib/types/lecturer.type";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Class } from "@/lib/types/class.type";
+import type {
+  Lecturer,
+  UpdateLecturerPayload,
+} from "@/lib/types/lecturer.type";
+import { classesService } from "@/services/classes.service";
+import { BookOpen, Briefcase, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface EditLectureModalProps {
   lecturer: Lecturer;
-  onUpdate: (data: any) => void;
+  onUpdate: (data: UpdateLecturerPayload) => void;
   children: React.ReactNode;
 }
 
-export function EditLectureModal({ lecturer, onUpdate, children }: EditLectureModalProps) {
+export function EditLectureModal({
+  lecturer,
+  onUpdate,
+  children,
+}: EditLectureModalProps) {
   const [open, setOpen] = useState(false);
-  
+  const [classes, setClasses] = useState<Class[]>([]);
+
   // Gunakan nilai default kosong untuk mencegah error saat lecturer belum ada
   const [formData, setFormData] = useState({
     name: "",
     nip: "",
     department: "",
-    class: "",
+    classId: "none",
   });
+
+  useEffect(() => {
+    if (open) {
+      fetchClasses();
+    }
+  }, [open]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await classesService.findAll();
+      setClasses(response.data);
+    } catch (error) {
+      console.error("Failed to fetch classes", error);
+    }
+  };
 
   // Update formData saat lecturer berubah atau modal dibuka
   useEffect(() => {
@@ -40,21 +72,26 @@ export function EditLectureModal({ lecturer, onUpdate, children }: EditLectureMo
         name: lecturer.name || "",
         nip: lecturer.nip || "",
         department: lecturer.department || "",
-        class: lecturer.class?.name || "",
+        classId: lecturer.classId || "none",
       });
     }
-  }, [lecturer, open]);
+  }, [lecturer]);
 
   const handleSave = () => {
-    onUpdate(formData);
+    const payload: UpdateLecturerPayload = {
+      nip: formData.nip || undefined,
+      name: formData.name || undefined,
+      department: formData.department || undefined,
+      class: formData.classId === "none" ? undefined : formData.classId,
+    };
+
+    onUpdate(payload);
     setOpen(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[450px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden bg-white dark:bg-slate-900">
         <DialogHeader className="p-8 pb-4 bg-gradient-to-br from-brand/5 to-transparent">
           <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center mb-4">
@@ -71,13 +108,17 @@ export function EditLectureModal({ lecturer, onUpdate, children }: EditLectureMo
         <div className="p-8 pt-2 space-y-5">
           {/* NAMA */}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Nama Lengkap</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+              Nama Lengkap
+            </Label>
             <div className="relative">
               <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input 
+              <Input
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="Nama lengkap..." 
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Nama lengkap..."
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>
@@ -85,13 +126,17 @@ export function EditLectureModal({ lecturer, onUpdate, children }: EditLectureMo
 
           {/* NIP */}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">NIP</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+              NIP
+            </Label>
             <div className="relative">
               <Briefcase className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input 
+              <Input
                 value={formData.nip}
-                onChange={(e) => setFormData({...formData, nip: e.target.value})}
-                placeholder="NIP dosen..." 
+                onChange={(e) =>
+                  setFormData({ ...formData, nip: e.target.value })
+                }
+                placeholder="NIP dosen..."
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
             </div>
@@ -99,23 +144,39 @@ export function EditLectureModal({ lecturer, onUpdate, children }: EditLectureMo
 
           {/* DEPARTEMEN & KELAS */}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Departemen & Kelas</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+              Departemen & Kelas
+            </Label>
             <div className="grid grid-cols-2 gap-2">
               <div className="relative">
                 <BookOpen className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input 
+                <Input
                   value={formData.department}
-                  onChange={(e) => setFormData({...formData, department: e.target.value})}
-                  placeholder="Departemen..." 
+                  onChange={(e) =>
+                    setFormData({ ...formData, department: e.target.value })
+                  }
+                  placeholder="Departemen..."
                   className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
               </div>
-              <Input 
-                value={formData.class}
-                onChange={(e) => setFormData({...formData, class: e.target.value})}
-                placeholder="Kelas..." 
-                className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
-              />
+              <Select
+                value={formData.classId}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, classId: val })
+                }
+              >
+                <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
+                  <SelectValue placeholder="Pilih Kelas" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-100">
+                  <SelectItem value="none">Tanpa Kelas</SelectItem>
+                  {classes.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.studyProgram?.name} — {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

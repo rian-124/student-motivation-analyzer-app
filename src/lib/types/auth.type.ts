@@ -2,15 +2,24 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'lecturer' | 'student';
+  role: "admin" | "lecturer" | "student";
+  avatar?: string;
   student?: {
     id: string;
     nim: string;
     classId?: string;
+    class?: {
+      id: string;
+      name: string;
+    };
   };
   lecturer?: {
     id: string;
     nip: string;
+    class?: {
+      id: string;
+      name: string;
+    };
   };
 }
 
@@ -21,6 +30,7 @@ export interface AuthTokens {
 
 // Generic API wrapper matching backend TransformInterceptor / WebResponse<T>
 export interface WebResponse<T> {
+  success: boolean;
   statusCode: number;
   message: string;
   data: T;
@@ -28,7 +38,7 @@ export interface WebResponse<T> {
   meta?: {
     total: number;
     page: number;
-    lastPage: number;
+    limit: number;
   };
 }
 

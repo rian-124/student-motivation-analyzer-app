@@ -2,14 +2,18 @@
 
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
+import type {
+  CreateStudentPayload,
+  Student,
+  UpdateStudentPayload,
+} from "@/lib/types/student.type";
+import { studentService } from "@/services/student.service";
 import { Download, UserPlus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { AddStudentModal } from "../components/AddStudentModal";
 import StudentStatsSection from "../section/StudentStatsSection";
 import StudentTableSection from "../section/StudentTableSection";
-import { AddStudentModal } from "../components/AddStudentModal";
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { studentService } from "@/services/student.service";
-import { Student } from "@/lib/types/student.type";
 
 export default function ManageStudentPage() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -20,7 +24,7 @@ export default function ManageStudentPage() {
     lastPage: 1,
   });
 
-  const fetchStudents = useCallback(async (page: number = 1) => {
+  const fetchStudents = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const response = await studentService.findAll(page);
@@ -28,7 +32,8 @@ export default function ManageStudentPage() {
       setPagination({
         page: response.meta.page,
         total: response.meta.total,
-        lastPage: response.meta.lastPage,
+        lastPage:
+          Math.ceil(response.meta.total / (response.meta.limit || 10)) || 1,
       });
     } catch (error) {
       toast.error("Gagal mengambil data mahasiswa");
@@ -41,27 +46,29 @@ export default function ManageStudentPage() {
     fetchStudents();
   }, [fetchStudents]);
 
-  const handleAddStudent = async (data: any) => {
+  const handleAddStudent = async (data: CreateStudentPayload) => {
     try {
       await studentService.create(data);
       fetchStudents(pagination.page);
       toast.success("Berhasil!", {
         description: `Data mahasiswa ${data.name} berhasil ditambahkan.`,
       });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal menambahkan mahasiswa");
+    } catch (error: unknown) {
+      toast.error("Gagal menambahkan mahasiswa");
+      console.error(error);
     }
   };
 
-  const handleEditStudent = async (id: string, data: any) => {
+  const handleEditStudent = async (id: string, data: UpdateStudentPayload) => {
     try {
       await studentService.update(id, data);
       fetchStudents(pagination.page);
       toast.success("Diperbarui!", {
-        description: `Data mahasiswa ${data.name} berhasil diperbarui.`,
+        description: `Data mahasiswa ${data.name ?? id} berhasil diperbarui.`,
       });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal memperbarui mahasiswa");
+    } catch (error: unknown) {
+      toast.error("Gagal memperbarui mahasiswa");
+      console.error(error);
     }
   };
 
@@ -70,10 +77,11 @@ export default function ManageStudentPage() {
       await studentService.remove(id);
       fetchStudents(pagination.page);
       toast.success("Dihapus!", {
-        description: `Data mahasiswa berhasil dihapus.`,
+        description: "Data mahasiswa berhasil dihapus.",
       });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal menghapus mahasiswa");
+    } catch (error: unknown) {
+      toast.error("Gagal menghapus mahasiswa");
+      console.error(error);
     }
   };
 
@@ -84,10 +92,6 @@ export default function ManageStudentPage() {
         description="Manajemen data mahasiswa dan penempatan kelas perwalian."
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="rounded-xl border-slate-200 h-10 px-5 font-bold text-slate-600 hover:bg-slate-50 transition-all">
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
-            </Button>
             <AddStudentModal onAdd={handleAddStudent}>
               <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl h-10 px-5 font-bold shadow-lg shadow-brand/20 transition-all active:scale-95">
                 <UserPlus className="w-4 h-4 mr-2" />
@@ -98,13 +102,13 @@ export default function ManageStudentPage() {
         }
       />
       <StudentStatsSection />
-      <StudentTableSection 
-        students={students} 
+      <StudentTableSection
+        students={students}
         loading={loading}
         pagination={pagination}
         onPageChange={fetchStudents}
-        onEdit={handleEditStudent} 
-        onDelete={handleDeleteStudent} 
+        onEdit={handleEditStudent}
+        onDelete={handleDeleteStudent}
       />
     </div>
   );

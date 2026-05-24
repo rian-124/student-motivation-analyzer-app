@@ -4,21 +4,43 @@ import { AppSidebar } from "@/components/layout/main/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { useAuthStore } from "@/store/auth.store";
+import type { User } from "@/lib/types/auth.type";
 import { authService } from "@/services/auth.service";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useAuthStore } from "@/store/auth.store";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
-  ADMIN: ["/dashboard", "/manage-student", "/manage-lecture", "/graph-overall", "/analysis-results", "/analysis-result"],
-  LECTURER: ["/dashboard", "/manage-student", "/graph-overall", "/graph-class", "/analysis-results", "/analysis-result"],
-  STUDENT: ["/graph-class", "/upload-recording", "/analysis-result", "/analysis-results"],
+  ADMIN: [
+    "/dashboard",
+    "/manage-student",
+    "/manage-lecture",
+    "/leaderboard",
+    "/graph-overall",
+    "/analysis-results",
+    "/analysis-result",
+  ],
+  LECTURER: [
+    "/dashboard",
+    "/manage-student",
+    "/leaderboard",
+    "/graph-overall",
+    "/analysis-results",
+    "/analysis-result",
+  ],
+  STUDENT: [
+    "/dashboard",
+    "/leaderboard",
+    "/upload-recording",
+    "/analysis-result",
+    "/analysis-results",
+  ],
 };
 
 const DEFAULT_PAGES: Record<string, string> = {
   ADMIN: "/dashboard",
   LECTURER: "/dashboard",
-  STUDENT: "/upload-recording",
+  STUDENT: "/dashboard",
 };
 
 // --- SKELETON COMPONENTS ---
@@ -26,8 +48,11 @@ const DEFAULT_PAGES: Record<string, string> = {
 const DashboardSkeleton = () => (
   <div className="space-y-8 animate-pulse">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {[1, 2, 3, 4].map(i => (
-        <div key={i} className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm" />
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm"
+        />
       ))}
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -58,8 +83,11 @@ const TableSkeleton = () => (
         <div className="h-8 w-64 bg-slate-100 rounded-lg" />
       </div>
       <div className="p-0">
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="h-16 border-b border-slate-50 flex items-center px-6 gap-6">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div
+            key={i}
+            className="h-16 border-b border-slate-50 flex items-center px-6 gap-6"
+          >
             <div className="flex-1 space-y-2">
               <div className="h-3 w-1/4 bg-slate-100 rounded" />
               <div className="h-2 w-1/6 bg-slate-50 rounded" />
@@ -95,8 +123,11 @@ const UploadSkeleton = () => (
 
     {/* Guide Skeleton */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {[1, 2, 3].map(i => (
-        <div key={i} className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="h-32 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-3"
+        >
           <div className="h-8 w-8 bg-slate-50 rounded-lg" />
           <div className="h-3 w-full bg-slate-50 rounded" />
         </div>
@@ -110,16 +141,22 @@ const SidebarSkeleton = () => (
     <div className="space-y-3">
       <div className="h-2 w-20 bg-slate-100 rounded animate-pulse" />
       <div className="space-y-2">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="h-10 w-full bg-slate-50 rounded-xl animate-pulse" />
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-10 w-full bg-slate-50 rounded-xl animate-pulse"
+          />
         ))}
       </div>
     </div>
     <div className="space-y-3">
       <div className="h-2 w-24 bg-slate-100 rounded animate-pulse" />
       <div className="space-y-2">
-        {[1, 2].map(i => (
-          <div key={i} className="h-10 w-full bg-slate-50 rounded-xl animate-pulse" />
+        {[1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-10 w-full bg-slate-50 rounded-xl animate-pulse"
+          />
         ))}
       </div>
     </div>
@@ -141,18 +178,23 @@ export default function MainLayout({
     setIsMounted(true);
   }, []);
 
-  const checkAccess = useCallback((role: string, currentPath: string) => {
-    const normalizedRole = role.toUpperCase();
-    const allowedPaths = ROLE_PERMISSIONS[normalizedRole] || [];
-    const isAllowed = allowedPaths.some(path => currentPath === path || currentPath.startsWith(path + "/"));
-    
-    if (!isAllowed) {
-      const defaultPage = DEFAULT_PAGES[normalizedRole] || "/login";
-      router.replace(defaultPage);
-      return false;
-    }
-    return true;
-  }, [router]);
+  const checkAccess = useCallback(
+    (role: string, currentPath: string) => {
+      const normalizedRole = role.toUpperCase();
+      const allowedPaths = ROLE_PERMISSIONS[normalizedRole] || [];
+      const isAllowed = allowedPaths.some(
+        (path) => currentPath === path || currentPath.startsWith(`${path}/`),
+      );
+
+      if (!isAllowed) {
+        const defaultPage = DEFAULT_PAGES[normalizedRole] || "/login";
+        router.replace(defaultPage);
+        return false;
+      }
+      return true;
+    },
+    [router],
+  );
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -163,11 +205,10 @@ export default function MainLayout({
         return;
       }
       try {
-        let currentUser = user;
+        let currentUser: User | null = user;
         if (!currentUser) {
-          const response = await authService.getProfile();
-          currentUser = (response as any).data || response;
-          setUser(currentUser!);
+          currentUser = await authService.getProfile();
+          setUser(currentUser);
         }
         if (currentUser) {
           const hasAccess = checkAccess(currentUser.role, pathname);
@@ -183,7 +224,16 @@ export default function MainLayout({
       }
     };
     initializeAuth();
-  }, [accessToken, user, isMounted, pathname, router, setUser, clearAuth, checkAccess]);
+  }, [
+    accessToken,
+    user,
+    isMounted,
+    pathname,
+    router,
+    setUser,
+    clearAuth,
+    checkAccess,
+  ]);
 
   const getPageTitle = (path: string) => {
     if (path.includes("dashboard")) return "Dashboard";
@@ -191,7 +241,7 @@ export default function MainLayout({
     if (path.includes("manage-lecture")) return "Manajemen Dosen";
     if (path.includes("upload-recording")) return "Upload Rekaman";
     if (path.includes("analysis-results")) return "Riwayat Analisis";
-    if (path.includes("graph-class")) return "Grafik Kelas";
+    if (path.includes("leaderboard")) return "Leaderboard Motivasi";
     if (path.includes("graph-overall")) return "Grafik Keseluruhan";
     return "Motivation Analyzer";
   };
@@ -209,11 +259,11 @@ export default function MainLayout({
       <div className="flex min-h-screen w-full bg-slate-50">
         <aside className="w-[280px] border-r border-slate-100 bg-white hidden lg:block">
           <div className="h-20 border-b border-slate-100 px-6 flex items-center">
-             <div className="w-10 h-10 bg-slate-100 rounded-xl animate-pulse" />
-             <div className="ml-3 space-y-1.5">
-               <div className="h-3 w-24 bg-slate-100 rounded animate-pulse" />
-               <div className="h-2 w-16 bg-slate-50 rounded animate-pulse" />
-             </div>
+            <div className="w-10 h-10 bg-slate-100 rounded-xl animate-pulse" />
+            <div className="ml-3 space-y-1.5">
+              <div className="h-3 w-24 bg-slate-100 rounded animate-pulse" />
+              <div className="h-2 w-16 bg-slate-50 rounded animate-pulse" />
+            </div>
           </div>
           <SidebarSkeleton />
         </aside>
@@ -224,9 +274,7 @@ export default function MainLayout({
             <div className="ml-4 h-4 w-[1px] bg-slate-100" />
             <div className="ml-4 h-3 w-32 bg-slate-50 rounded animate-pulse" />
           </header>
-          <main className="p-8">
-            {renderPageSkeleton()}
-          </main>
+          <main className="p-8">{renderPageSkeleton()}</main>
         </div>
       </div>
     );
@@ -248,9 +296,7 @@ export default function MainLayout({
               </span>
             </div>
           </header>
-          <div className="p-6">
-            {children}
-          </div>
+          <div className="p-6">{children}</div>
         </main>
       </SidebarProvider>
     </TooltipProvider>

@@ -25,7 +25,7 @@ export interface LecturerResponse {
   meta: {
     total: number;
     page: number;
-    lastPage: number;
+    limit: number;
   };
 }
 

@@ -2,14 +2,18 @@
 
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Download } from "lucide-react";
+import type {
+  CreateLecturerPayload,
+  Lecturer,
+  UpdateLecturerPayload,
+} from "@/lib/types/lecturer.type";
+import { lecturerService } from "@/services/lecturer.service";
+import { UserPlus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { AddLectureModal } from "../components/AddLectureModal";
 import LectureStatsSection from "../section/LectureStatsSection";
 import LectureTableSection from "../section/LectureTableSection";
-import { AddLectureModal } from "../components/AddLectureModal";
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { lecturerService } from "@/services/lecturer.service";
-import { Lecturer } from "@/lib/types/lecturer.type";
 
 export default function ManageLecturePage() {
   const [lectures, setLectures] = useState<Lecturer[]>([]);
@@ -20,7 +24,7 @@ export default function ManageLecturePage() {
     lastPage: 1,
   });
 
-  const fetchLecturers = useCallback(async (page: number = 1) => {
+  const fetchLecturers = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const response = await lecturerService.findAll(page);
@@ -28,7 +32,8 @@ export default function ManageLecturePage() {
       setPagination({
         page: response.meta.page,
         total: response.meta.total,
-        lastPage: response.meta.lastPage,
+        lastPage:
+          Math.ceil(response.meta.total / (response.meta.limit || 10)) || 1,
       });
     } catch (error) {
       toast.error("Gagal mengambil data dosen");
@@ -41,27 +46,29 @@ export default function ManageLecturePage() {
     fetchLecturers();
   }, [fetchLecturers]);
 
-  const handleAddLecture = async (data: any) => {
+  const handleAddLecture = async (data: CreateLecturerPayload) => {
     try {
       await lecturerService.create(data);
       fetchLecturers(pagination.page);
       toast.success("Berhasil!", {
         description: `Data dosen ${data.name} berhasil ditambahkan.`,
       });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal menambahkan dosen");
+    } catch (error: unknown) {
+      toast.error("Gagal menambahkan dosen");
+      console.error(error);
     }
   };
 
-  const handleEditLecture = async (id: string, data: any) => {
+  const handleEditLecture = async (id: string, data: UpdateLecturerPayload) => {
     try {
       await lecturerService.update(id, data);
       fetchLecturers(pagination.page);
       toast.success("Diperbarui!", {
-        description: `Data dosen ${data.name} berhasil diperbarui.`,
+        description: `Data dosen ${data.name ?? id} berhasil diperbarui.`,
       });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal memperbarui dosen");
+    } catch (error: unknown) {
+      toast.error("Gagal memperbarui dosen");
+      console.error(error);
     }
   };
 
@@ -70,10 +77,11 @@ export default function ManageLecturePage() {
       await lecturerService.remove(id);
       fetchLecturers(pagination.page);
       toast.success("Dihapus!", {
-        description: `Data dosen berhasil dihapus.`,
+        description: "Data dosen berhasil dihapus.",
       });
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Gagal menghapus dosen");
+    } catch (error: unknown) {
+      toast.error("Gagal menghapus dosen");
+      console.error(error);
     }
   };
 
@@ -84,10 +92,6 @@ export default function ManageLecturePage() {
         description="Kelola data dosen wali dan penugasan kelas perwalian mahasiswa."
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="rounded-xl border-slate-200 h-10 px-5 font-bold text-slate-600 hover:bg-slate-50 transition-all">
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
-            </Button>
             <AddLectureModal onAdd={handleAddLecture}>
               <Button className="bg-brand hover:bg-brand-hover text-white rounded-xl h-10 px-5 font-bold shadow-lg shadow-brand/20 transition-all active:scale-95">
                 <UserPlus className="w-4 h-4 mr-2" />
@@ -97,16 +101,16 @@ export default function ManageLecturePage() {
           </div>
         }
       />
-      
+
       <div className="space-y-8">
         <LectureStatsSection />
-        <LectureTableSection 
-          lectures={lectures} 
+        <LectureTableSection
+          lectures={lectures}
           loading={loading}
           pagination={pagination}
           onPageChange={fetchLecturers}
-          onEdit={handleEditLecture} 
-          onDelete={handleDeleteLecture} 
+          onEdit={handleEditLecture}
+          onDelete={handleDeleteLecture}
         />
       </div>
     </div>

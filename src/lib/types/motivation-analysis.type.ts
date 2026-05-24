@@ -1,4 +1,4 @@
-import { Student } from "./student.type";
+import type { Student } from "./student.type";
 
 export interface MotivationAnalysis {
   id: string;
@@ -9,6 +9,13 @@ export interface MotivationAnalysis {
   confidence: number;
   probabilities: Record<string, number>;
   mfcc?: number[][];
+  metrics?: {
+    energy: number;
+    speed: number;
+    pitch: number;
+    fluency: number;
+    articulation: number;
+  };
   createdAt: string;
   updatedAt: string;
   student?: Student;
@@ -19,7 +26,7 @@ export interface MotivationAnalysisResponse {
   meta: {
     total: number;
     page: number;
-    lastPage: number;
+    limit: number;
   };
 }
 
