@@ -2,10 +2,9 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import type { Class } from "@/lib/types/class.type";
 import { cn } from "@/lib/utils";
-import { AlertCircle, Award, Users } from "lucide-react";
+import { Award, Crown, Users } from "lucide-react";
 
 type Props = {
   items: Class[];
@@ -26,15 +25,14 @@ export default function ClassLeaderboardSection({
           Leaderboard Kelas
         </CardTitle>
         <p className="text-xs text-slate-500">
-          Urutan kelas berdasarkan rata-rata skor motivasi. Data dummy
-          menampilkan prodi dan kelas untuk review UI.
+          Urutan kelas berdasarkan rata-rata skor motivasi.
         </p>
       </CardHeader>
 
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-6 space-y-4 h-[375px] overflow-y-auto pr-3">
         {items.map((row, idx) => {
           const active = selectedClassId === row.id;
-          const variant = "outline";
+          const rank = row.rank ?? idx + 1;
 
           return (
             <button
@@ -51,14 +49,26 @@ export default function ClassLeaderboardSection({
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-bold text-slate-800 dark:text-white truncate">
-                      {row.studyProgram?.name} — {row.name}
+                    <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
+                      #{rank}
                     </span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-white truncate">
+                      {row.studyProgram?.name} - {row.name}
+                    </span>
+                    {rank === 1 && (
+                      <Badge className="h-5 px-2 text-[10px] font-bold bg-amber-100 text-amber-700 border-none dark:bg-amber-500/10 dark:text-amber-400">
+                        <Crown className="w-3 h-3 mr-1" />
+                        TOP
+                      </Badge>
+                    )}
                   </div>
                   <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-500">
                     <span className="inline-flex items-center gap-1">
                       <Users className="w-3.5 h-3.5" />
                       {row._count?.students ?? 0} Mahasiswa
+                    </span>
+                    <span className="font-semibold text-slate-600 dark:text-slate-300">
+                      Skor {row.averageScore ?? 0}
                     </span>
                   </div>
                 </div>

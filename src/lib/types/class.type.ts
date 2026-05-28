@@ -18,6 +18,8 @@ export interface Class {
     students: number;
     lecturers: number;
   };
+  averageScore?: number;
+  rank?: number;
   createdAt: string;
   updatedAt: string;
 }

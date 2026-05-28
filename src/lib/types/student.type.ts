@@ -43,7 +43,7 @@ export interface CreateStudentPayload {
   name: string;
   email: string;
   password: string;
-  classId?: string;
+  classId: string;
   semester?: string;
   lecturerId?: string;
 }
@@ -54,4 +54,5 @@ export interface UpdateStudentPayload {
   classId?: string;
   semester?: string;
   lecturerId?: string;
+  password?: string;
 }

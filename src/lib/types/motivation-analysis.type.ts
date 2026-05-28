@@ -6,9 +6,38 @@ export interface MotivationAnalysis {
   description?: string;
   transcription: string;
   prediction: string;
+  predictionCode?: string;
   confidence: number;
-  probabilities: Record<string, number>;
-  mfcc?: number[][];
+  confidencePercent?: number;
+  probabilities: {
+    code: string;
+    label: string;
+    value: number;
+    percentage: number;
+  }[];
+  result?: {
+    code: string;
+    label: string;
+    confidence: number;
+    confidencePercent: number;
+    probabilities: {
+      code: string;
+      label: string;
+      value: number;
+      percentage: number;
+    }[];
+  };
+  acoustic?: {
+    mfcc?: number[] | number[][];
+    metrics: {
+      energy: number;
+      speed: number;
+      pitch: number;
+      fluency: number;
+      articulation: number;
+    };
+  };
+  mfcc?: number[] | number[][];
   metrics?: {
     energy: number;
     speed: number;
@@ -18,7 +47,11 @@ export interface MotivationAnalysis {
   };
   createdAt: string;
   updatedAt: string;
-  student?: Student;
+  student?: Student & {
+    className?: string | null;
+    studyProgramName?: string | null;
+    lecturerName?: string | null;
+  };
 }
 
 export interface MotivationAnalysisResponse {

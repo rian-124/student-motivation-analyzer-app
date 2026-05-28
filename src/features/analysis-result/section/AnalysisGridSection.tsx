@@ -8,8 +8,9 @@ export default function AnalysisGridSection({
 }: {
   data: MotivationAnalysis | null;
 }) {
-  const score = Math.round((data?.confidence || 0) * 100) || 0;
-  const dominant = data?.prediction || "Intrinsik";
+  const score =
+    data?.confidencePercent ?? Math.round((data?.confidence || 0) * 100);
+  const dominant = data?.result?.label || data?.prediction || "Intrinsik";
   const transcript = data?.transcription || "Tidak ada transkrip tersedia.";
 
   const mfccMetrics = [
@@ -147,7 +148,10 @@ export default function AnalysisGridSection({
                 Akurasi AI
               </p>
               <p className="text-xl font-black text-brand">
-                {((data?.confidence || 0) * 100).toFixed(1)}%
+                {(
+                  data?.confidencePercent ?? (data?.confidence || 0) * 100
+                ).toFixed(1)}
+                %
               </p>
             </div>
           </div>

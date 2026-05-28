@@ -25,18 +25,8 @@ import type { CreateStudentPayload } from "@/lib/types/student.type";
 import { classesService } from "@/services/classes.service";
 import { lecturerService } from "@/services/lecturer.service";
 import { useAuthStore } from "@/store/auth.store";
-import {
-  Briefcase,
-  Hash,
-  Lock,
-  Mail,
-  Save,
-  User,
-  UserPlus,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-
-const SEMESTER_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+import { Hash, Lock, Mail, Save, User, UserPlus } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 interface AddStudentModalProps {
   onAdd?: (data: CreateStudentPayload) => void;
@@ -63,9 +53,7 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
   useEffect(() => {
     if (open) {
       fetchClasses();
-      if (isAdmin) {
-        fetchLecturers();
-      }
+      if (isAdmin) fetchLecturers();
     }
   }, [open, isAdmin]);
 
@@ -87,20 +75,36 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
     }
   };
 
+  const selectedLecturer = useMemo(
+    () => lecturers.find((lecturer) => lecturer.id === formData.lecturerId),
+    [lecturers, formData.lecturerId],
+  );
+
+  const filteredClasses = useMemo(() => {
+    if (!isAdmin) return classes;
+    if (!selectedLecturer) return [];
+    const supervised = selectedLecturer.supervisedClassIds || [];
+    return classes.filter((classItem) => supervised.includes(classItem.id));
+  }, [classes, isAdmin, selectedLecturer]);
+
+  const classSelectDisabled = isAdmin && formData.lecturerId === "none";
+
   const handleSave = () => {
-    if (onAdd) {
-      const payload: CreateStudentPayload = {
-        name: formData.name,
-        nim: formData.nim,
-        email: formData.email,
-        password: formData.password,
-        classId: formData.classId === "none" ? undefined : formData.classId,
-        semester: formData.semester,
-        lecturerId:
-          formData.lecturerId === "none" ? undefined : formData.lecturerId,
-      };
-      onAdd(payload);
-    }
+    if (formData.classId === "none") return;
+
+    const payload: CreateStudentPayload = {
+      name: formData.name,
+      nim: formData.nim,
+      email: formData.email,
+      password: formData.password,
+      classId: formData.classId,
+      semester: formData.semester,
+      lecturerId:
+        formData.lecturerId === "none" ? undefined : formData.lecturerId,
+    };
+
+    onAdd?.(payload);
+
     setFormData({
       name: "",
       nim: "",
@@ -130,7 +134,6 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
         </DialogHeader>
 
         <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
-          {/* NAMA */}
           <div className="space-y-1.5">
             <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
               Nama Lengkap
@@ -148,8 +151,7 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {/* NIM */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
                 NIM
@@ -167,87 +169,6 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
               </div>
             </div>
 
-            {/* DOSEN WALI (ONLY ADMIN) */}
-            {isAdmin && (
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
-                  Dosen Wali
-                </Label>
-                <Select
-                  value={formData.lecturerId}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, lecturerId: val })
-                  }
-                >
-                  <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
-                    <SelectValue placeholder="Pilih Dosen" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-100">
-                    <SelectItem value="none">Tanpa Dosen Wali</SelectItem>
-                    {lecturers.map((l) => (
-                      <SelectItem key={l.id} value={l.id}>
-                        {l.name} ({l.class?.name || "No Class"})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {/* KELAS (ONLY SHOWN IF NO DOSEN SELECTED OR NOT ADMIN) */}
-            {(!isAdmin || formData.lecturerId === "none") && (
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
-                  Pilih Kelas
-                </Label>
-                <Select
-                  value={formData.classId}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, classId: val })
-                  }
-                >
-                  <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
-                    <SelectValue placeholder="Pilih Kelas" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-100">
-                    <SelectItem value="none">Tanpa Kelas</SelectItem>
-                    {classes.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.studyProgram?.name} — {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {/* SEMESTER */}
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
-                Semester
-              </Label>
-              <Select
-                value={formData.semester}
-                onValueChange={(val) =>
-                  setFormData({ ...formData, semester: val })
-                }
-              >
-                <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
-                  <SelectValue placeholder="Pilih Semester" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-100">
-                  {SEMESTER_OPTIONS.map((semester) => (
-                    <SelectItem key={semester} value={semester}>
-                      Semester {semester}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* EMAIL */}
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
                 Email
@@ -267,7 +188,95 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
             </div>
           </div>
 
-          {/* PASSWORD */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                Semester
+              </Label>
+              <Select
+                value={formData.semester}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, semester: val })
+                }
+              >
+                <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
+                  <SelectValue placeholder="Pilih Semester" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-100">
+                  {Array.from({ length: 8 }, (_, index) => {
+                    const semesterValue = `${index + 1}`;
+                    return (
+                      <SelectItem key={semesterValue} value={semesterValue}>
+                        Semester {semesterValue}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {isAdmin && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+                  Dosen Wali
+                </Label>
+                <Select
+                  value={formData.lecturerId}
+                  onValueChange={(val) =>
+                    setFormData({
+                      ...formData,
+                      lecturerId: val,
+                      classId: "none",
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
+                    <SelectValue placeholder="Pilih Dosen" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-100">
+                    <SelectItem value="none">Pilih dosen wali dulu</SelectItem>
+                    {lecturers.map((l) => (
+                      <SelectItem key={l.id} value={l.id}>
+                        {l.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+              Pilih Kelas
+            </Label>
+            <Select
+              value={formData.classId}
+              onValueChange={(val) =>
+                setFormData({ ...formData, classId: val })
+              }
+              disabled={classSelectDisabled}
+            >
+              <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
+                <SelectValue
+                  placeholder={
+                    classSelectDisabled
+                      ? "Pilih dosen wali terlebih dahulu"
+                      : "Pilih Kelas"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-slate-100">
+                <SelectItem value="none">Pilih Kelas</SelectItem>
+                {filteredClasses.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.studyProgram?.name} - {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-1.5">
             <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
               Password
@@ -297,6 +306,10 @@ export function AddStudentModal({ onAdd, children }: AddStudentModalProps) {
           </Button>
           <Button
             onClick={handleSave}
+            disabled={
+              formData.classId === "none" ||
+              (isAdmin && formData.lecturerId === "none")
+            }
             className="bg-brand hover:bg-brand-hover text-white rounded-xl px-6 h-9 text-xs font-bold shadow-md shadow-brand/20 transition-all active:scale-95"
           >
             <Save className="w-3.5 h-3.5 mr-2" />

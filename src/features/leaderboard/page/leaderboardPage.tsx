@@ -1,13 +1,6 @@
 "use client";
 
 import PageHeader from "@/components/common/PageHeader";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { Class, ClassLeaderboardData } from "@/lib/types/class.type";
 import { classesService } from "@/services/classes.service";
 import { useAuthStore } from "@/store/auth.store";
@@ -126,41 +119,6 @@ export default function LeaderboardPage() {
           isStudent
             ? "Lihat posisi Anda dan perbandingan skor motivasi di kelas Anda."
             : "Pantau urutan performa motivasi antar kelas dan peringkat mahasiswa di tiap kelas."
-        }
-        actions={
-          <div className="flex gap-3">
-            <Select defaultValue="genap">
-              <SelectTrigger className="w-[200px] bg-white dark:bg-slate-900 border-none shadow-sm">
-                <SelectValue placeholder="Semester" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="genap">Genap 2025/26</SelectItem>
-                <SelectItem value="ganjil">Ganjil 2025/26</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {isStudent ? (
-              <div className="flex items-center px-4 h-10 rounded-xl bg-brand/10 text-brand border border-brand/20 shadow-sm text-sm font-bold">
-                {selectedClassName}
-              </div>
-            ) : (
-              <Select
-                value={selectedClassId}
-                onValueChange={setSelectedClassId}
-              >
-                <SelectTrigger className="w-[260px] bg-white dark:bg-slate-900 border-none shadow-sm font-medium">
-                  <SelectValue placeholder="Pilih kelas" />
-                </SelectTrigger>
-                <SelectContent>
-                  {classes.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.studyProgram?.name} — {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
         }
       />
 

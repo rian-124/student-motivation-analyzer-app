@@ -74,7 +74,7 @@ const getSidebarData = (userRole: string): NavCategory[] => {
       ],
     },
     {
-      label: "Analisis & Grafik",
+      label: "Leaderboard",
       roles: ["ADMIN", "LECTURER", "STUDENT"],
       items: [
         {

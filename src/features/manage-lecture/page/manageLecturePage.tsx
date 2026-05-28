@@ -12,7 +12,6 @@ import { UserPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AddLectureModal } from "../components/AddLectureModal";
-import LectureStatsSection from "../section/LectureStatsSection";
 import LectureTableSection from "../section/LectureTableSection";
 
 export default function ManageLecturePage() {
@@ -103,7 +102,6 @@ export default function ManageLecturePage() {
       />
 
       <div className="space-y-8">
-        <LectureStatsSection />
         <LectureTableSection
           lectures={lectures}
           loading={loading}

@@ -16,8 +16,8 @@ import type {
   Lecturer,
   UpdateLecturerPayload,
 } from "@/lib/types/lecturer.type";
+import { getPaginationPages } from "@/utils/pagination";
 import {
-  BookOpen,
   ChevronLeft,
   ChevronRight,
   Edit,
@@ -50,18 +50,29 @@ export default function LectureTableSection({
   onDelete,
 }: LectureTableSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const paginationItems = getPaginationPages(
+    pagination.page,
+    pagination.lastPage,
+    5,
+  ).reduce<Array<{ key: string; pageNum: number | null }>>((acc, pageNum) => {
+    if (pageNum === null) {
+      const previousPageNum = acc[acc.length - 1]?.pageNum ?? "start";
+      acc.push({ key: `ellipsis-${previousPageNum}`, pageNum: null });
+      return acc;
+    }
+    acc.push({ key: `page-${pageNum}`, pageNum });
+    return acc;
+  }, []);
 
   const filteredLectures = (lectures ?? []).filter((lecture) => {
     return (
       lecture.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lecture.nip.includes(searchQuery)
+      lecture.nip.includes(searchQuery) ||
+      (lecture.user?.email ?? "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
     );
   });
-
-  const pageNumbers = Array.from(
-    { length: pagination.lastPage },
-    (_, i) => i + 1,
-  );
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
@@ -98,7 +109,13 @@ export default function LectureTableSection({
                   Dosen Wali
                 </TableHead>
                 <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">
-                  Departemen
+                  Akun
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">
+                  Kelas Wali
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">
+                  Mahasiswa
                 </TableHead>
                 <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5 text-right">
                   Opsi
@@ -110,7 +127,7 @@ export default function LectureTableSection({
               {filteredLectures.length === 0 && !loading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={3}
+                    colSpan={5}
                     className="h-32 text-center text-slate-500"
                   >
                     Tidak ada data dosen yang ditemukan.
@@ -132,13 +149,31 @@ export default function LectureTableSection({
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="px-5">
-                      <div className="flex items-center gap-2">
-                        <BookOpen className="w-3 h-3 text-brand/50" />
-                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                          {lecture.department || "-"}
-                        </span>
+                    <TableCell className="py-3.5 px-5">
+                      <span className="text-xs text-slate-600 dark:text-slate-300">
+                        {lecture.user?.email || "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-3.5 px-5">
+                      <div className="flex flex-col gap-1">
+                        {(lecture.supervisedClasses?.length ?? 0) > 0 ? (
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            {lecture.supervisedClasses?.slice(0, 2).join(", ")}
+                            {(lecture.supervisedClasses?.length ?? 0) > 2
+                              ? "..."
+                              : ""}
+                          </span>
+                        ) : (
+                          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            Belum ada kelas
+                          </span>
+                        )}
                       </div>
+                    </TableCell>
+                    <TableCell className="py-3.5 px-5">
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        {lecture._count?.students ?? 0} mahasiswa
+                      </span>
                     </TableCell>
                     <TableCell className="text-right px-5">
                       <div className="flex items-center justify-end gap-1">
@@ -180,7 +215,7 @@ export default function LectureTableSection({
         </div>
 
         {/* FOOTER */}
-        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
+        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
             Total {pagination.total} Dosen Wali Aktif
           </p>
@@ -194,26 +229,35 @@ export default function LectureTableSection({
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <div className="flex items-center gap-1 px-1">
-              {pageNumbers.map((pageNumber) => (
-                <button
-                  key={pageNumber}
-                  type="button"
-                  aria-label={`Buka halaman ${pageNumber}`}
-                  aria-current={
-                    pagination.page === pageNumber ? "page" : undefined
-                  }
-                  onClick={() => onPageChange(pageNumber)}
-                  className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
-                    ${
-                      pagination.page === pageNumber
-                        ? "bg-brand text-white"
-                        : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
-                >
-                  {pageNumber}
-                </button>
-              ))}
+            <div className="flex items-center gap-0.5 px-1">
+              {paginationItems.map(({ key, pageNum }) =>
+                pageNum === null ? (
+                  <span
+                    key={key}
+                    className="w-6 h-6 flex items-center justify-center text-slate-300 text-xs"
+                  >
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-label={`Buka halaman ${pageNum}`}
+                    aria-current={
+                      pagination.page === pageNum ? "page" : undefined
+                    }
+                    onClick={() => onPageChange(pageNum)}
+                    className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
+                      ${
+                        pagination.page === pageNum
+                          ? "bg-brand text-white"
+                          : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      }`}
+                  >
+                    {pageNum}
+                  </button>
+                ),
+              )}
             </div>
             <Button
               variant="ghost"

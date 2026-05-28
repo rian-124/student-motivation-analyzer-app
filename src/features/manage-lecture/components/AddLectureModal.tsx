@@ -22,7 +22,7 @@ import {
 import type { Class } from "@/lib/types/class.type";
 import type { CreateLecturerPayload } from "@/lib/types/lecturer.type";
 import { classesService } from "@/services/classes.service";
-import { BookOpen, Hash, Lock, Mail, Save, User, UserPlus } from "lucide-react";
+import { Hash, Lock, Mail, Save, User, UserPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface AddLectureModalProps {
@@ -38,8 +38,8 @@ export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
     name: "",
     email: "",
     password: "",
-    department: "",
-    classId: "none",
+    selectedClassId: "none",
+    classIds: [] as string[],
   });
 
   useEffect(() => {
@@ -63,20 +63,17 @@ export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      department: formData.department || undefined,
-      class: formData.classId === "none" ? undefined : formData.classId,
+      classIds: formData.classIds,
     };
 
-    if (onAdd) {
-      onAdd(payload);
-    }
+    onAdd?.(payload);
     setFormData({
       name: "",
       nip: "",
-      department: "",
       email: "",
       password: "",
-      classId: "none",
+      selectedClassId: "none",
+      classIds: [],
     });
     setOpen(false);
   };
@@ -97,8 +94,7 @@ export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-5 space-y-4">
-          {/* NAMA */}
+        <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
           <div className="space-y-1.5">
             <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
               Nama Lengkap
@@ -116,8 +112,7 @@ export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {/* NIP */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
                 NIP
@@ -135,62 +130,25 @@ export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
               </div>
             </div>
 
-            {/* DEPARTEMEN & KELAS */}
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
-                Departemen & Kelas
+                Email
               </Label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <Input
-                  value={formData.department}
+                  value={formData.email}
                   onChange={(e) =>
-                    setFormData({ ...formData, department: e.target.value })
+                    setFormData({ ...formData, email: e.target.value })
                   }
-                  placeholder="Teknik..."
-                  className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
+                  type="email"
+                  placeholder="email@kampus.ac.id"
+                  className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
                 />
-                <Select
-                  value={formData.classId}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, classId: val })
-                  }
-                >
-                  <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
-                    <SelectValue placeholder="Pilih Kelas" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-100">
-                    <SelectItem value="none">Tanpa Kelas</SelectItem>
-                    {classes.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.studyProgram?.name} — {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </div>
 
-          {/* EMAIL */}
-          <div className="space-y-1.5">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
-              Email
-            </Label>
-            <div className="relative">
-              <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                type="email"
-                placeholder="email@lecturer.com"
-                className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
-              />
-            </div>
-          </div>
-
-          {/* PASSWORD */}
           <div className="space-y-1.5">
             <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
               Password
@@ -203,9 +161,76 @@ export function AddLectureModal({ onAdd, children }: AddLectureModalProps) {
                   setFormData({ ...formData, password: e.target.value })
                 }
                 type="password"
-                placeholder="********"
+                placeholder="Minimal 6 karakter"
                 className="pl-9 h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-1 focus:ring-brand/30"
               />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">
+              Pilih Kelas Perwalian
+            </Label>
+            <Select
+              value={formData.selectedClassId}
+              onValueChange={(val) => {
+                if (val !== "none" && !formData.classIds.includes(val)) {
+                  setFormData({
+                    ...formData,
+                    selectedClassId: "none",
+                    classIds: [...formData.classIds, val],
+                  });
+                  return;
+                }
+                setFormData({ ...formData, selectedClassId: val });
+              }}
+            >
+              <SelectTrigger className="h-10 text-sm rounded-xl bg-slate-50 dark:bg-slate-800 border-none">
+                <SelectValue placeholder="Tambah kelas..." />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-slate-100">
+                <SelectItem value="none">Pilih kelas</SelectItem>
+                {classes.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.studyProgram?.name} - {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {formData.classIds.length === 0 && (
+                <span className="text-[11px] text-slate-400">
+                  Belum ada kelas dipilih.
+                </span>
+              )}
+              {formData.classIds.map((classId) => {
+                const selectedClass = classes.find((c) => c.id === classId);
+                if (!selectedClass) return null;
+                return (
+                  <span
+                    key={classId}
+                    className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  >
+                    {selectedClass.studyProgram?.name} - {selectedClass.name}
+                    <button
+                      type="button"
+                      className="rounded-full p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          classIds: formData.classIds.filter(
+                            (id) => id !== classId,
+                          ),
+                        })
+                      }
+                      aria-label={`Hapus kelas ${selectedClass.name}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>

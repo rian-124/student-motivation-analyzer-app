@@ -72,6 +72,8 @@ export default function AnalysisResultPage() {
   }
 
   const targetUser = analysisData.student || user;
+  const confidencePercent =
+    analysisData.confidencePercent ?? analysisData.confidence * 100;
   const formattedDate = new Date(analysisData.createdAt).toLocaleDateString(
     "id-ID",
     {
@@ -144,7 +146,7 @@ export default function AnalysisResultPage() {
           </div>
           <p className="text-sm text-emerald-800 dark:text-emerald-400 font-medium leading-tight">
             Analisis berhasil diproses dengan tingkat kepercayaan{" "}
-            {(analysisData.confidence * 100).toFixed(1)}%.
+            {confidencePercent.toFixed(1)}%.
           </p>
         </div>
 

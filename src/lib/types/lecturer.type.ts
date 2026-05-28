@@ -2,8 +2,9 @@ export interface Lecturer {
   id: string;
   nip: string;
   name: string;
-  department?: string;
   classId?: string;
+  supervisedClassIds?: string[];
+  supervisedClasses?: string[];
   class?: {
     id: string;
     name: string;
@@ -34,13 +35,13 @@ export interface CreateLecturerPayload {
   name: string;
   email: string;
   password: string;
-  department?: string;
-  class?: string;
+  classIds?: string[];
 }
 
 export interface UpdateLecturerPayload {
   nip?: string;
   name?: string;
-  department?: string;
-  class?: string;
+  email?: string;
+  password?: string;
+  classIds?: string[];
 }

@@ -4,18 +4,24 @@ import { Award, Brain, Mic, TrendingUp } from "lucide-react";
 
 interface TopStatsSectionProps {
   confidence: number;
+  confidencePercent?: number;
   prediction: string;
+  result?: {
+    label: string;
+    confidencePercent: number;
+  };
 }
 
 export default function TopStatsSection({
   data,
 }: { data: TopStatsSectionProps }) {
   // Map real data to display fields
-  const score = Math.round(data?.confidence * 100) || 0;
-  const status = data?.prediction || "N/A"; // e.g. "Intrinsik"
-  const dominant = data?.prediction || "N/A";
+  const score =
+    data?.confidencePercent ?? Math.round((data?.confidence || 0) * 100);
+  const status = data?.result?.label || data?.prediction || "N/A";
+  const dominant = data?.result?.label || data?.prediction || "N/A";
   const sttScore = 80; // Default placeholder for now
-  const mfccScore = Math.round(data?.confidence * 100);
+  const mfccScore = score;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">

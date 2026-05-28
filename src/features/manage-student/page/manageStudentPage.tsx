@@ -12,7 +12,6 @@ import { Download, UserPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AddStudentModal } from "../components/AddStudentModal";
-import StudentStatsSection from "../section/StudentStatsSection";
 import StudentTableSection from "../section/StudentTableSection";
 
 export default function ManageStudentPage() {
@@ -101,7 +100,6 @@ export default function ManageStudentPage() {
           </div>
         }
       />
-      <StudentStatsSection />
       <StudentTableSection
         students={students}
         loading={loading}

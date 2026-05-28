@@ -147,15 +147,6 @@ export default function Dashboard() {
               Berikut ringkasan performa motivasi mahasiswa periode ini.
             </p>
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                Semester Genap {currentYear - 1}/{currentYear % 100}
-              </span>
-            </div>
-          </div>
         </div>
 
         <div className="space-y-8">

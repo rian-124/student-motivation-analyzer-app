@@ -56,7 +56,7 @@ export default function StudentLeaderboardSection({
         <p className="text-xs text-slate-500">{subtitle}</p>
       </CardHeader>
 
-      <CardContent className="p-0">
+      <CardContent className="p-0 h-[375px] overflow-y-auto">
         <Table>
           <TableHeader>
             <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
