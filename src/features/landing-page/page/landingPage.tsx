@@ -1,6 +1,7 @@
 import FeatureSection from "../section/FeatureSection";
 import FlowSystemSection from "../section/FlowSystemSection";
 import HeroSection from "../section/HeroSection";
+import ProgramBarChartSection from "../section/ProgramBarChartSection";
 import StartNowSection from "../section/StartNowSection";
 
 export default function Home() {
@@ -14,6 +15,9 @@ export default function Home() {
       </div>
       <div id="flow">
         <FlowSystemSection />
+      </div>
+      <div id="stats">
+        <ProgramBarChartSection />
       </div>
       <div id="contact">
         <StartNowSection />

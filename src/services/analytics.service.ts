@@ -17,6 +17,13 @@ export interface AnalyticsCharts {
   barChart: { label: string; value: number }[];
 }
 
+export interface ProgramStats {
+  programName: string;
+  avgScore: number;
+  totalStudents: number;
+  totalAnalyses: number;
+}
+
 export const analyticsService = {
   getStats: async (): Promise<AnalyticsStats> => {
     const response = await api.get<WebResponse<AnalyticsStats>>(
@@ -28,6 +35,13 @@ export const analyticsService = {
   getCharts: async (): Promise<AnalyticsCharts> => {
     const response = await api.get<WebResponse<AnalyticsCharts>>(
       "/motivation-stats/charts",
+    );
+    return response.data.data;
+  },
+
+  getPublicProgramStats: async (): Promise<ProgramStats[]> => {
+    const response = await api.get<WebResponse<ProgramStats[]>>(
+      "/analytics/public/program-stats",
     );
     return response.data.data;
   },
