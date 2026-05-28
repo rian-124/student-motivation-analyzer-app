@@ -1,6 +1,8 @@
-"use client"
+"use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -9,34 +11,66 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, Loader2, ListCollapse } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useAuthStore } from "@/store/auth.store";
+import type { Student } from "@/lib/types/student.type";
 import { studentService } from "@/services/student.service";
+import { useAuthStore } from "@/store/auth.store";
+import { getPaginationPages } from "@/utils/pagination";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ListCollapse,
+  Loader2,
+  Search,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Student } from "@/lib/types/student.type";
 
 export default function StudentAnalysisListSection() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [meta, setMeta] = useState<any>(null);
+  const [meta, setMeta] = useState<{
+    total: number;
+    page: number;
+    limit: number;
+    lastPage: number;
+  } | null>(null);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const paginationItems = meta
+    ? getPaginationPages(page, meta.lastPage, 5).reduce<
+        Array<{ key: string; pageNum: number | null }>
+      >((acc, pageNum) => {
+        if (pageNum === null) {
+          const previousPageNum = acc[acc.length - 1]?.pageNum ?? "start";
+          acc.push({ key: `ellipsis-${previousPageNum}`, pageNum: null });
+          return acc;
+        }
+        acc.push({ key: `page-${pageNum}`, pageNum });
+        return acc;
+      }, [])
+    : [];
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         setLoading(true);
-        // Panggil data mahasiswa (jika role lecturer, bisa di-filter di backend berdasarkan user, 
+        // Panggil data mahasiswa (jika role lecturer, bisa di-filter di backend berdasarkan user,
         // tapi di sini menggunakan findAll standar dulu)
         const response = await studentService.findAll(page);
         setStudents(Array.isArray(response.data) ? response.data : []);
-        setMeta(response.meta);
+        setMeta({
+          total: response.meta.total,
+          page: response.meta.page,
+          limit: response.meta.limit,
+          lastPage: Math.max(
+            1,
+            Math.ceil(response.meta.total / response.meta.limit),
+          ),
+        });
       } catch (error) {
         console.error("Failed to fetch students:", error);
         toast.error("Gagal mengambil data mahasiswa.");
@@ -67,15 +101,15 @@ export default function StudentAnalysisListSection() {
           <CardTitle className="text-base font-bold text-slate-800 dark:text-white px-1">
             Daftar Mahasiswa
           </CardTitle>
-          
+
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input 
+              <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari Mahasiswa/NIM..." 
-                className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" 
+                placeholder="Cari Mahasiswa/NIM..."
+                className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
               />
             </div>
           </div>
@@ -92,10 +126,18 @@ export default function StudentAnalysisListSection() {
           <Table>
             <TableHeader>
               <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-transparent">
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">Mahasiswa</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Kelas</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">Total Analisis</TableHead>
-                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">Opsi</TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 px-5">
+                  Mahasiswa
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">
+                  Kelas
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-center">
+                  Total Analisis
+                </TableHead>
+                <TableHead className="font-semibold text-slate-500 dark:text-slate-400 h-10 text-right px-5">
+                  Opsi
+                </TableHead>
               </TableRow>
             </TableHeader>
 
@@ -103,21 +145,30 @@ export default function StudentAnalysisListSection() {
               {filteredStudents.length === 0 && !loading ? (
                 <TableRow>
                   <TableCell colSpan={4} className="h-40 text-center">
-                    <p className="text-sm text-slate-400 font-medium">Belum ada mahasiswa yang ditemukan.</p>
+                    <p className="text-sm text-slate-400 font-medium">
+                      Belum ada mahasiswa yang ditemukan.
+                    </p>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredStudents.map((student) => (
-                  <TableRow key={student.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors">
+                  <TableRow
+                    key={student.id}
+                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors"
+                  >
                     <TableCell className="py-3.5 px-5">
                       <div className="flex flex-col">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">{student.name}</span>
-                        <span className="text-[10px] text-slate-400 font-mono tracking-wider">{student.nim}</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                          {student.name}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono tracking-wider">
+                          {student.nim}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
                       <span className="text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase">
-                        {student.class?.name || '—'}
+                        {student.class?.name || "—"}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
@@ -126,10 +177,10 @@ export default function StudentAnalysisListSection() {
                       </span>
                     </TableCell>
                     <TableCell className="text-right px-5">
-                      <Button 
+                      <Button
                         onClick={() => handleViewHistory(student.id)}
-                        size="sm" 
-                        variant="outline" 
+                        size="sm"
+                        variant="outline"
                         className="h-7 px-3 text-[11px] font-bold border-slate-200 dark:border-slate-800 text-slate-500 hover:text-brand hover:border-brand/30 transition-all"
                       >
                         <ListCollapse className="w-3 h-3 mr-1.5" />
@@ -142,7 +193,7 @@ export default function StudentAnalysisListSection() {
             </TableBody>
           </Table>
         </div>
-        
+
         {/* FOOTER / PAGINATION */}
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
@@ -159,20 +210,31 @@ export default function StudentAnalysisListSection() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <div className="flex items-center gap-1 px-1">
-                {Array.from({ length: meta.lastPage }).map((_, i) => (
-                  <span
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
-                      ${page === i + 1
-                        ? 'bg-brand text-white'
-                        : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                      }`}
-                  >
-                    {i + 1}
-                  </span>
-                ))}
+              <div className="flex items-center gap-0.5 px-1">
+                {paginationItems.map(({ key, pageNum }) =>
+                  pageNum === null ? (
+                    <span
+                      key={key}
+                      className="w-6 h-6 flex items-center justify-center text-slate-300 text-xs"
+                    >
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setPage(pageNum)}
+                      className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
+                        ${
+                          page === pageNum
+                            ? "bg-brand text-white"
+                            : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ),
+                )}
               </div>
               <Button
                 variant="ghost"

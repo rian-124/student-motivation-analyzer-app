@@ -17,10 +17,11 @@ export default function FlowSystemSection() {
             <span className="text-brand-secondary">Sistem</span>
           </h2>
           <p className="max-w-2xl mx-auto text-brand-secondary/60 text-lg font-medium">
-            Pelajari bagaimana sistem kami menganalisis dan melacak motivasi mahasiswa melalui pendekatan multimodal yang terintegrasi.
+            Pelajari bagaimana sistem kami menganalisis dan melacak motivasi
+            mahasiswa melalui pendekatan multimodal yang terintegrasi.
           </p>
         </div>
-        
+
         <WorkFlow />
       </div>
     </section>

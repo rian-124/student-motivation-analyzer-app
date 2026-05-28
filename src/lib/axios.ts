@@ -1,10 +1,16 @@
-import axios from 'axios';
-import { useAuthStore } from '@/store/auth.store';
+import type { AuthTokens, WebResponse } from "@/lib/types/auth.type";
+import { useAuthStore } from "@/store/auth.store";
+import axios from "axios";
+import type {
+  AxiosError,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -17,26 +23,38 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Flag untuk mencegah loop refresh token
 let isRefreshing = false;
-let failedQueue: any[] = [];
+type FailedQueueItem = {
+  resolve: (token: string | null) => void;
+  reject: (error: Error) => void;
+};
+let failedQueue: FailedQueueItem[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
+const processQueue = (error: Error | null, token: string | null = null) => {
+  for (const prom of failedQueue) {
     if (error) prom.reject(error);
     else prom.resolve(token);
-  });
+  }
   failedQueue = [];
 };
 
 // Response Interceptor
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as
+      | (InternalAxiosRequestConfig & {
+          _retry?: boolean;
+        })
+      | null;
+
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -44,7 +62,9 @@ api.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+            if (token) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
             return api(originalRequest);
           })
           .catch((err) => Promise.reject(err));
@@ -61,24 +81,35 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${api.defaults.baseURL}/auth/refresh`, {}, {
-          headers: { Authorization: `Bearer ${refreshToken}` }
-        });
+        const response = await axios.post<WebResponse<AuthTokens>>(
+          `${api.defaults.baseURL}/auth/refresh`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${refreshToken}` },
+          },
+        );
 
         // Backend mengembalikan WebResponse<AuthTokens>, token ada di response.data.data
-        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        const { accessToken, refreshToken: newRefreshToken } =
+          response.data.data;
 
-        useAuthStore.getState().setAuth(accessToken, newRefreshToken, useAuthStore.getState().user);
+        useAuthStore
+          .getState()
+          .setAuth(accessToken, newRefreshToken, useAuthStore.getState().user);
 
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
+        const queueError =
+          refreshError instanceof Error
+            ? refreshError
+            : new Error("Refresh token request failed");
+        processQueue(queueError, null);
         useAuthStore.getState().clearAuth();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
         }
         return Promise.reject(refreshError);
       } finally {
@@ -87,7 +118,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

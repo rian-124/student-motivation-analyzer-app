@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { UserRole } from "@/lib/types/Role.type";
+import type { UserRole } from "@/lib/types/Role.type";
 import { useRouter } from "next/navigation";
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export interface User {
   id: string;
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem("user_data", JSON.stringify(userData));
-    
+
     // Redirect based on role
     if (userData.role === "student") {
       router.push("/upload-recording");
@@ -57,13 +58,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        userRole: user?.role || null, 
-        login, 
-        logout, 
-        isAuthenticated: !!user 
+    <AuthContext.Provider
+      value={{
+        user,
+        userRole: user?.role || null,
+        login,
+        logout,
+        isAuthenticated: !!user,
       }}
     >
       {children}

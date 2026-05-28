@@ -22,6 +22,7 @@ import {
 import type { MotivationAnalysis } from "@/lib/types/motivation-analysis.type";
 import { motivationAnalysisService } from "@/services/motivation-analysis.service";
 import { useAuthStore } from "@/store/auth.store";
+import { getPaginationPages } from "@/utils/pagination";
 import {
   ChevronLeft,
   ChevronRight,
@@ -54,6 +55,19 @@ export default function HistoryTableSection({
   const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState<HistoryMeta | null>(null);
   const [page, setPage] = useState(1);
+  const paginationItems = meta
+    ? getPaginationPages(page, meta.lastPage, 5).reduce<
+        Array<{ key: string; pageNum: number | null }>
+      >((acc, pageNum) => {
+        if (pageNum === null) {
+          const previousPageNum = acc[acc.length - 1]?.pageNum ?? "start";
+          acc.push({ key: `ellipsis-${previousPageNum}`, pageNum: null });
+          return acc;
+        }
+        acc.push({ key: `page-${pageNum}`, pageNum });
+        return acc;
+      }, [])
+    : [];
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -322,25 +336,31 @@ export default function HistoryTableSection({
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <div className="flex items-center gap-1 px-1">
-                {Array.from(
-                  { length: meta.lastPage },
-                  (_, pageIndex) => pageIndex + 1,
-                ).map((pageNumber) => (
-                  <button
-                    key={pageNumber}
-                    type="button"
-                    onClick={() => setPage(pageNumber)}
-                    className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
-                      ${
-                        page === pageNumber
-                          ? "bg-brand text-white"
-                          : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                      }`}
-                  >
-                    {pageNumber}
-                  </button>
-                ))}
+              <div className="flex items-center gap-0.5 px-1">
+                {paginationItems.map(({ key, pageNum }) =>
+                  pageNum === null ? (
+                    <span
+                      key={key}
+                      className="w-6 h-6 flex items-center justify-center text-slate-300 text-xs"
+                    >
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setPage(pageNum)}
+                      className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
+                        ${
+                          page === pageNum
+                            ? "bg-brand text-white"
+                            : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ),
+                )}
               </div>
               <Button
                 variant="ghost"

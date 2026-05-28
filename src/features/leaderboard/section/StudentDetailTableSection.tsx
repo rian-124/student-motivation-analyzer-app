@@ -12,11 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getPaginationPages } from "@/utils/pagination";
 import { ChevronLeft, ChevronRight, FileText, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function StudentDetailTableSection() {
   const router = useRouter();
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
   const students = [
     {
       id: "4",
@@ -46,6 +50,23 @@ export default function StudentDetailTableSection() {
       color: "emerald",
     },
   ];
+  const total = students.length;
+  const lastPage = Math.max(1, Math.ceil(total / pageSize));
+  const paginatedStudents = students.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
+  const paginationItems = getPaginationPages(page, lastPage, 5).reduce<
+    Array<{ key: string; pageNum: number | null }>
+  >((acc, pageNum) => {
+    if (pageNum === null) {
+      const previousPageNum = acc[acc.length - 1]?.pageNum ?? "start";
+      acc.push({ key: `ellipsis-${previousPageNum}`, pageNum: null });
+      return acc;
+    }
+    acc.push({ key: `page-${pageNum}`, pageNum });
+    return acc;
+  }, []);
 
   const handleViewDetail = (id: string) => {
     router.push(`/analysis-result?studentId=${id}`);
@@ -93,7 +114,7 @@ export default function StudentDetailTableSection() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map((student) => (
+              {paginatedStudents.map((student) => (
                 <TableRow
                   key={student.id}
                   className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 border-slate-100 dark:border-slate-800 transition-colors"
@@ -146,25 +167,56 @@ export default function StudentDetailTableSection() {
         </div>
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-            Menampilkan 5 dari 24 Mahasiswa
+            Menampilkan {paginatedStudents.length} dari {total} Mahasiswa
           </p>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-7 h-7 rounded-md text-slate-400"
-              disabled
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-7 h-7 rounded-md text-slate-400"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
+          {lastPage > 1 && (
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-7 h-7 rounded-md text-slate-400"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <div className="flex items-center gap-0.5 px-1">
+                {paginationItems.map(({ key, pageNum }) =>
+                  pageNum === null ? (
+                    <span
+                      key={key}
+                      className="w-6 h-6 flex items-center justify-center text-slate-300 text-xs"
+                    >
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setPage(pageNum)}
+                      className={`w-6 h-6 flex items-center justify-center text-[11px] font-bold rounded-md cursor-pointer transition-colors
+                        ${
+                          page === pageNum
+                            ? "bg-brand text-white"
+                            : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ),
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-7 h-7 rounded-md text-slate-400"
+                disabled={page === lastPage}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

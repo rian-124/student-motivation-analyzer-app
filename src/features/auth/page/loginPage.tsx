@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/auth.store";
 import { userService } from "@/services/user.service";
-import LoginFormSection from "../section/LoginFormSection";
+import { useAuthStore } from "@/store/auth.store";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import LoginFormSection from "../section/LoginFormSection";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,16 +25,20 @@ export default function LoginPage() {
       setIsRedirecting(true);
       try {
         let currentUser = user;
-        
+
         // Ambil data profil jika belum ada di store (karena tidak dipersist di localStorage)
         if (!currentUser) {
           const profile = await userService.getMe();
-          setAuth(accessToken, useAuthStore.getState().refreshToken || "", profile);
+          setAuth(
+            accessToken,
+            useAuthStore.getState().refreshToken || "",
+            profile,
+          );
           currentUser = profile;
         }
 
         if (currentUser) {
-          if (currentUser.role === 'student') {
+          if (currentUser.role === "student") {
             router.push("/upload-recording");
           } else {
             router.push("/dashboard");
@@ -68,7 +72,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold text-brand-secondary">Selamat Datang</h1>
+            <h1 className="text-2xl font-bold text-brand-secondary">
+              Selamat Datang
+            </h1>
             <p className="text-sm text-muted-foreground">
               Student Motivation Analyzer System
             </p>

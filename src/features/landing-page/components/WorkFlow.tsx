@@ -7,7 +7,7 @@ export default function WorkFlow() {
     <ol className="relative md:flex md:flex-col md:items-center">
       {/* Garis vertikal dengan gradient */}
       <div className="absolute left-4 md:left-1/2 w-1 h-full bg-gradient-to-b from-brand via-brand-secondary to-brand/20 rounded-full transform md:-translate-x-1/2 hidden md:block" />
-      
+
       <WorkFlowItem
         position="left"
         date="Tahap 01"

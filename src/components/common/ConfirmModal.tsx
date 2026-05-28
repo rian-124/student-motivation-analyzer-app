@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { AlertCircle, HelpCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -57,10 +57,18 @@ export function ConfirmModal({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[380px] rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
         <DialogHeader className="p-6 pb-2 flex flex-col items-center text-center">
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
-            variant === 'destructive' ? 'bg-rose-50 text-rose-600' : 'bg-brand/10 text-brand'
-          }`}>
-            {icon === "warning" ? <AlertCircle className="w-6 h-6" /> : <HelpCircle className="w-6 h-6" />}
+          <div
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
+              variant === "destructive"
+                ? "bg-rose-50 text-rose-600"
+                : "bg-brand/10 text-brand"
+            }`}
+          >
+            {icon === "warning" ? (
+              <AlertCircle className="w-6 h-6" />
+            ) : (
+              <HelpCircle className="w-6 h-6" />
+            )}
           </div>
           <DialogTitle className="text-xl font-black text-slate-800 leading-tight">
             {title}
