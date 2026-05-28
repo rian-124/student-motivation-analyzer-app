@@ -109,34 +109,6 @@ export default function AnalysisResultPage() {
               • {formattedDate}
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-lg"
-              onClick={() =>
-                toast.success("Tautan Disalin", {
-                  description: "Tautan laporan berhasil disalin ke papan klip.",
-                })
-              }
-            >
-              <Share2 className="w-3.5 h-3.5 mr-2" />
-              Bagikan
-            </Button>
-            <Button
-              size="sm"
-              className="bg-brand hover:bg-brand-hover text-white rounded-lg shadow-sm"
-              onClick={() =>
-                toast.success("Unduhan Dimulai", {
-                  description: "Laporan PDF sedang dipersiapkan untuk diunduh.",
-                })
-              }
-            >
-              <Download className="w-3.5 h-3.5 mr-2" />
-              Unduh PDF
-            </Button>
-          </div>
         </div>
 
         {/* SUCCESS ALERT */}

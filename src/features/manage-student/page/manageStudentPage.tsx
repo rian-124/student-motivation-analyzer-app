@@ -2,11 +2,13 @@
 
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
+import type { Class } from "@/lib/types/class.type";
 import type {
   CreateStudentPayload,
   Student,
   UpdateStudentPayload,
 } from "@/lib/types/student.type";
+import { classesService } from "@/services/classes.service";
 import { studentService } from "@/services/student.service";
 import { Download, UserPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -16,17 +18,21 @@ import StudentTableSection from "../section/StudentTableSection";
 
 export default function ManageStudentPage() {
   const [students, setStudents] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedClassId, setSelectedClassId] = useState<string | undefined>(
+    undefined,
+  );
   const [pagination, setPagination] = useState({
     page: 1,
     total: 0,
     lastPage: 1,
   });
 
-  const fetchStudents = useCallback(async (page = 1) => {
+  const fetchStudents = useCallback(async (page = 1, classId?: string) => {
     setLoading(true);
     try {
-      const response = await studentService.findAll(page);
+      const response = await studentService.findAll(page, 10, classId);
       setStudents(response.data);
       setPagination({
         page: response.meta.page,
@@ -41,14 +47,19 @@ export default function ManageStudentPage() {
     }
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional — only run on mount
   useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+    fetchStudents(1, selectedClassId);
+  }, []);
+
+  useEffect(() => {
+    classesService.findAll().then((res) => setClasses(res.data));
+  }, []);
 
   const handleAddStudent = async (data: CreateStudentPayload) => {
     try {
       await studentService.create(data);
-      fetchStudents(pagination.page);
+      fetchStudents(pagination.page, selectedClassId);
       toast.success("Berhasil!", {
         description: `Data mahasiswa ${data.name} berhasil ditambahkan.`,
       });
@@ -61,7 +72,7 @@ export default function ManageStudentPage() {
   const handleEditStudent = async (id: string, data: UpdateStudentPayload) => {
     try {
       await studentService.update(id, data);
-      fetchStudents(pagination.page);
+      fetchStudents(pagination.page, selectedClassId);
       toast.success("Diperbarui!", {
         description: `Data mahasiswa ${data.name ?? id} berhasil diperbarui.`,
       });
@@ -74,7 +85,7 @@ export default function ManageStudentPage() {
   const handleDeleteStudent = async (id: string) => {
     try {
       await studentService.remove(id);
-      fetchStudents(pagination.page);
+      fetchStudents(pagination.page, selectedClassId);
       toast.success("Dihapus!", {
         description: "Data mahasiswa berhasil dihapus.",
       });
@@ -82,6 +93,11 @@ export default function ManageStudentPage() {
       toast.error("Gagal menghapus mahasiswa");
       console.error(error);
     }
+  };
+
+  const handleClassFilterChange = (classId: string) => {
+    setSelectedClassId(classId === "all" ? undefined : classId);
+    fetchStudents(1, classId === "all" ? undefined : classId);
   };
 
   return (
@@ -102,9 +118,12 @@ export default function ManageStudentPage() {
       />
       <StudentTableSection
         students={students}
+        classes={classes}
         loading={loading}
         pagination={pagination}
-        onPageChange={fetchStudents}
+        selectedClassId={selectedClassId}
+        onPageChange={(page) => fetchStudents(page, selectedClassId)}
+        onClassFilterChange={handleClassFilterChange}
         onEdit={handleEditStudent}
         onDelete={handleDeleteStudent}
       />

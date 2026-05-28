@@ -9,6 +9,8 @@ export interface MotivationAnalysis {
   predictionCode?: string;
   confidence: number;
   confidencePercent?: number;
+  weightedScore?: number | null;
+  duration?: number | null;
   probabilities: {
     code: string;
     label: string;

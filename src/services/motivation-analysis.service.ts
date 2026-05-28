@@ -23,6 +23,7 @@ export type StudentGraphData = {
     B: number;
     fullMark: number;
   }>;
+  message: string;
 };
 
 export const motivationAnalysisService = {

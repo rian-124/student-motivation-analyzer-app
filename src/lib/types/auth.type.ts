@@ -20,6 +20,12 @@ export interface User {
       id: string;
       name: string;
     };
+    classAssignments?: Array<{
+      class: {
+        id: string;
+        name: string;
+      };
+    }>;
   };
 }
 

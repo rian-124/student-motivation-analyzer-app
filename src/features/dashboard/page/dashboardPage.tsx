@@ -7,7 +7,6 @@ import {
   motivationAnalysisService,
 } from "@/services/motivation-analysis.service";
 import { useAuthStore } from "@/store/auth.store";
-import { Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import ChartSection from "../section/ChartSection";
 import StatsSection from "../section/StatsSection";
@@ -42,7 +41,6 @@ function StudentDashboard() {
   const [graphData, setGraphData] = useState<StudentGraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const studentId = user?.student?.id;
-  const userClassName = user?.student?.class?.name || "Kelas Anda";
 
   useEffect(() => {
     const fetchStudentGraph = async () => {
@@ -89,10 +87,6 @@ function StudentDashboard() {
               rata-rata teman sekelas secara anonim.
             </p>
           </div>
-
-          <div className="flex items-center px-4 h-10 rounded-xl bg-brand/10 text-brand border border-brand/20 shadow-sm text-sm font-bold">
-            {userClassName}
-          </div>
         </div>
 
         {graphData && <ClassStatsSection isStudent stats={graphData.stats} />}
@@ -103,23 +97,16 @@ function StudentDashboard() {
           benchmark={graphData?.benchmark}
         />
 
-        <div className="bg-gradient-to-br from-brand/5 to-brand-secondary/5 border border-brand/10 rounded-[2rem] p-8">
-          <h3 className="text-xl font-bold text-brand-secondary mb-4">
-            Insight Motivasi Anda
-          </h3>
-          {(() => {
-            const growth = graphData?.stats?.growth ?? 0;
-
-            return (
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed max-w-3xl">
-                {growth > 0
-                  ? `Luar biasa! Motivasi Anda meningkat sebesar ${growth}% dibandingkan rekaman sebelumnya. Pertahankan energi dan kejelasan bicara Anda!`
-                  : "Berdasarkan analisis terbaru, Anda memiliki stabilitas yang cukup baik. Cobalah untuk lebih mengekspresikan minat Anda saat berbicara agar motivasi intrinsik Anda semakin terlihat."}{" "}
-                Tetap semangat dalam proses belajar mandiri di kelas ini!
-              </p>
-            );
-          })()}
-        </div>
+        {graphData?.message && (
+          <div className="bg-gradient-to-br from-brand/5 to-brand-secondary/5 border border-brand/10 rounded-[2rem] p-8">
+            <h3 className="text-xl font-bold text-brand-secondary mb-4">
+              Insight Motivasi Anda
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 leading-relaxed max-w-3xl">
+              {graphData.message}
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

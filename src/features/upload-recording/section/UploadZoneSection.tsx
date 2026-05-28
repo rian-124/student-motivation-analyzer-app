@@ -347,45 +347,33 @@ export default function UploadZoneSection({
   };
 
   return (
-    <Card className="w-full border-none shadow-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand via-brand-accent to-brand-secondary" />
-
-      <CardHeader className="pb-2 pt-5">
-        <div className="flex items-center justify-between px-2">
-          <CardTitle className="text-xl font-bold tracking-tight text-brand-secondary dark:text-white">
-            Panel Unggah Rekaman
-          </CardTitle>
-          <Badge
-            variant="outline"
-            className="border-brand/20 text-brand font-medium text-[10px]"
-          >
-            Sistem Cerdas v1.0
-          </Badge>
-        </div>
+    <Card className="w-full border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
+      <CardHeader className="pb-3 pt-5 px-6">
+        <CardTitle className="text-lg font-bold text-slate-800 dark:text-white">
+          Panel Unggah Rekaman
+        </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-5 pt-2 pb-6 px-6">
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant={isRecording ? "destructive" : "outline"}
-            className="h-9 text-xs"
-            onClick={isRecording ? stopLiveRecording : startLiveRecording}
-            disabled={isAnalyzing}
-          >
-            {isRecording ? (
-              <>
-                <Square className="w-3.5 h-3.5 mr-1.5" />
-                Stop Recording ({formatTime(recordSeconds)})
-              </>
-            ) : (
-              <>
-                <Mic className="w-3.5 h-3.5 mr-1.5" />
-                Live Recording
-              </>
-            )}
-          </Button>
-        </div>
+      <CardContent className="space-y-4 pb-6 px-6">
+        <Button
+          type="button"
+          variant={isRecording ? "destructive" : "outline"}
+          className="h-9 text-xs"
+          onClick={isRecording ? stopLiveRecording : startLiveRecording}
+          disabled={isAnalyzing}
+        >
+          {isRecording ? (
+            <>
+              <Square className="w-3.5 h-3.5 mr-1.5" />
+              Stop ({formatTime(recordSeconds)})
+            </>
+          ) : (
+            <>
+              <Mic className="w-3.5 h-3.5 mr-1.5" />
+              Rekam Langsung
+            </>
+          )}
+        </Button>
 
         <label
           htmlFor={
@@ -395,11 +383,11 @@ export default function UploadZoneSection({
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           className={cn(
-            "relative group border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ease-in-out",
+            "relative block border-2 border-dashed rounded-xl p-6 text-center transition-all",
             isAnalyzing ? "cursor-wait opacity-80" : "cursor-pointer",
             isDragging
-              ? "border-brand bg-brand/5 scale-[1.01]"
-              : "border-slate-100 dark:border-slate-800 hover:border-brand/40 hover:bg-slate-50/50 dark:hover:bg-slate-800/50",
+              ? "border-brand bg-brand/5"
+              : "border-slate-200 dark:border-slate-700 hover:border-brand/40 hover:bg-slate-50 dark:hover:bg-slate-800/50",
             file && "border-brand/40 bg-brand/5",
           )}
         >
@@ -413,14 +401,9 @@ export default function UploadZoneSection({
           />
 
           {isAnalyzing && (
-            <div className="absolute inset-0 z-20 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px] flex flex-col items-center justify-center rounded-2xl animate-in fade-in duration-500">
-              <div className="relative">
-                <Loader2 className="w-12 h-12 text-brand animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-brand rounded-full animate-pulse" />
-                </div>
-              </div>
-              <p className="mt-4 text-sm font-bold text-slate-700 dark:text-slate-200 animate-pulse">
+            <div className="absolute inset-0 z-20 bg-white/70 dark:bg-slate-900/70 flex flex-col items-center justify-center rounded-xl">
+              <Loader2 className="w-8 h-8 text-brand animate-spin" />
+              <p className="mt-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
                 {analysisStep}
               </p>
             </div>
@@ -495,8 +478,6 @@ export default function UploadZoneSection({
               </div>
             </div>
           )}
-
-          <div className="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl -z-10" />
         </label>
 
         <div className="pt-1">
@@ -504,24 +485,24 @@ export default function UploadZoneSection({
             disabled={!file || isAnalyzing || isRecording}
             onClick={handleStartAnalysis}
             className={cn(
-              "w-full h-12 text-sm font-bold rounded-xl transition-all duration-300 shadow-lg",
+              "w-full h-11 text-sm font-bold rounded-xl transition-all",
               file && !isAnalyzing && !isRecording
-                ? "bg-brand hover:bg-brand-hover text-white shadow-brand/20 scale-[1.01]"
+                ? "bg-brand hover:bg-brand-hover text-white"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed",
             )}
           >
             {isAnalyzing ? (
               <>
-                <Loader2 className="mr-2.5 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Menganalisis...
               </>
             ) : file ? (
               <>
-                <Play className="mr-2.5 h-4 w-4 fill-current" />
-                Mulai Analisis Sekarang
+                <Play className="mr-2 h-4 w-4 fill-current" />
+                Mulai Analisis
               </>
             ) : (
-              "Pilih File Atau Rekam Dulu"
+              "Pilih atau Rekam Audio"
             )}
           </Button>
 

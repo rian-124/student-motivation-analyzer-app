@@ -3,16 +3,16 @@
 import MotivationBarChart from "@/components/common/MotivationBarChart";
 import MotivationPieChart from "@/components/common/MotivationPieChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, PieChart, Target } from "lucide-react";
+import { BarChart3, PieChart, Target, TrendingUp, Users } from "lucide-react";
 import {
-  Legend,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 type WeeklyTrendDatum = {
@@ -40,18 +40,27 @@ export default function ClassChartsSection({
 }: ClassChartsSectionProps) {
   const defaultWeeklyData = [{ label: "M1", value: 0 }];
 
-  const defaultBenchmarkData = [
-    { subject: "Motivasi Diri", A: 0, B: 0, fullMark: 100 },
-    { subject: "Tujuan Belajar", A: 0, B: 0, fullMark: 100 },
-    { subject: "Percaya Diri", A: 0, B: 0, fullMark: 100 },
-    { subject: "Konsistensi", A: 0, B: 0, fullMark: 100 },
-    { subject: "Kejelasan", A: 0, B: 0, fullMark: 100 },
-  ];
-
   const displayWeekly =
     weeklyTrend && weeklyTrend.length > 0 ? weeklyTrend : defaultWeeklyData;
-  const displayBenchmark =
-    benchmark && benchmark.length > 0 ? benchmark : defaultBenchmarkData;
+
+  const studentScore =
+    benchmark && benchmark.length > 0
+      ? Math.round(
+          benchmark.reduce((sum, b) => sum + b.A, 0) / benchmark.length,
+        )
+      : 0;
+
+  const classAvgScore =
+    benchmark && benchmark.length > 0
+      ? Math.round(
+          benchmark.reduce((sum, b) => sum + b.B, 0) / benchmark.length,
+        )
+      : 0;
+
+  const comparisonData = [
+    { label: "Anda", value: studentScore },
+    { label: "Rata-rata Kelas", value: classAvgScore },
+  ];
 
   const distributionData = [
     { category: "Motivasi Tinggi", value: 65, fill: "#10b981" },
@@ -66,10 +75,12 @@ export default function ClassChartsSection({
         <CardHeader className="p-6 pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
             <BarChart3 className="w-4 h-4 text-brand" />
-            {isStudent ? "Tren Motivasi Kelas" : "Tren Motivasi Mingguan"}
+            {isStudent ? "Riwayat Skor Anda" : "Tren Motivasi Mingguan"}
           </CardTitle>
           <p className="text-xs text-slate-500">
-            Statistik perkembangan rata-rata motivasi kelas per minggu.
+            {isStudent
+              ? "Skor motivasi Anda dari setiap sesi rekaman."
+              : "Statistik perkembangan rata-rata motivasi kelas per minggu."}
           </p>
         </CardHeader>
         <CardContent className="p-6">
@@ -86,7 +97,7 @@ export default function ClassChartsSection({
             {isStudent ? (
               <>
                 <Target className="w-4 h-4 text-emerald-500" />
-                Perbandingan Anda vs Kelas
+                Skor Anda vs Kelas
               </>
             ) : (
               <>
@@ -97,54 +108,83 @@ export default function ClassChartsSection({
           </CardTitle>
           <p className="text-xs text-slate-500">
             {isStudent
-              ? "Benchmarking performa Anda dibandingkan rata-rata kelas."
+              ? "Bandingkan skor rata-rata Anda dengan rata-rata kelas."
               : "Distribusi tingkat motivasi di dalam kelas ini."}
           </p>
         </CardHeader>
         <CardContent className="p-6 flex flex-col items-center justify-center min-h-[350px]">
           {isStudent ? (
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="80%"
-                  data={displayBenchmark}
-                >
-                  <PolarGrid stroke="#e2e8f0" />
-                  <PolarAngleAxis
-                    dataKey="subject"
-                    tick={{ fill: "#64748b", fontSize: 10, fontWeight: 600 }}
-                  />
-                  <PolarRadiusAxis
-                    angle={30}
-                    domain={[0, 100]}
-                    tick={{ fontSize: 9 }}
-                  />
-                  <Radar
-                    name="Anda"
-                    dataKey="A"
-                    stroke="#5841EA"
-                    fill="#5841EA"
-                    fillOpacity={0.6}
-                  />
-                  <Radar
-                    name="Rata-rata Kelas"
-                    dataKey="B"
-                    stroke="#10b981"
-                    fill="#10b981"
-                    fillOpacity={0.3}
-                  />
-                  <Tooltip />
-                  <Legend
-                    wrapperStyle={{
-                      fontSize: "10px",
-                      fontWeight: "bold",
-                      paddingTop: "20px",
-                    }}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="w-full space-y-6">
+              <div className="h-[240px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={comparisonData}
+                    margin={{ top: 20, right: 20, left: -20, bottom: 10 }}
+                  >
+                    <CartesianGrid
+                      vertical={false}
+                      strokeDasharray="3 3"
+                      strokeOpacity={0.1}
+                    />
+                    <XAxis
+                      dataKey="label"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      fontSize={13}
+                      fontWeight="bold"
+                      className="fill-slate-600"
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={12}
+                      className="fill-slate-400"
+                    />
+                    <Tooltip
+                      cursor={{ fill: "rgba(0,0,0,0.03)", radius: 4 }}
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 shadow-lg text-xs font-bold">
+                            <span className="text-slate-500">{data.label}</span>
+                            : {data.value}
+                          </div>
+                        );
+                      }}
+                    />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={70}>
+                      {comparisonData.map((entry) => (
+                        <Cell
+                          key={entry.label}
+                          fill={entry.label === "Anda" ? "#5841EA" : "#10b981"}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="flex items-center justify-center gap-6 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-sm bg-[#5841EA]" />
+                  <span className="font-bold text-slate-600">Anda</span>
+                  <span className="font-black text-[#5841EA] text-sm">
+                    {studentScore}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-sm bg-[#10b981]" />
+                  <span className="font-bold text-slate-600">
+                    Rata-rata Kelas
+                  </span>
+                  <span className="font-black text-[#10b981] text-sm">
+                    {classAvgScore}
+                  </span>
+                </div>
+              </div>
             </div>
           ) : (
             <MotivationPieChart data={distributionData} centerLabel="92%" />

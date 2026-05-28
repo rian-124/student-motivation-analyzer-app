@@ -19,8 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Class } from "@/lib/types/class.type";
 import type { Student, UpdateStudentPayload } from "@/lib/types/student.type";
-import { useAuthStore } from "@/store/auth.store";
 import { getPaginationPages } from "@/utils/pagination";
 import {
   ChevronLeft,
@@ -35,43 +35,44 @@ import { EditStudentModal } from "../components/EditStudentModal";
 
 interface StudentTableSectionProps {
   students: Student[];
+  classes: Class[];
   loading?: boolean;
   pagination: {
     page: number;
     total: number;
     lastPage: number;
   };
+  selectedClassId?: string;
   onPageChange: (page: number) => void;
+  onClassFilterChange: (classId: string) => void;
   onEdit: (id: string, student: UpdateStudentPayload) => void;
   onDelete: (id: string) => void;
 }
 
 export default function StudentTableSection({
   students,
+  classes,
   loading,
   pagination,
+  selectedClassId,
   onPageChange,
+  onClassFilterChange,
   onEdit,
   onDelete,
 }: StudentTableSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [classFilter, setClassFilter] = useState("all");
 
   const filteredStudents = (students || []).filter((student) => {
     const matchesSearch =
       student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       student.nim.includes(searchQuery);
 
-    const studentClassName = student.class?.name || "";
-    const matchesClass =
-      classFilter === "all" ||
-      studentClassName.toLowerCase() === classFilter.toLowerCase();
-
-    return matchesSearch && matchesClass;
+    return matchesSearch;
   });
 
-  const { user } = useAuthStore();
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const sortedClasses = [...classes].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   const paginationItems = getPaginationPages(
     pagination.page,
     pagination.lastPage,
@@ -106,20 +107,22 @@ export default function StudentTableSection({
               />
             </div>
 
-            {isAdmin && (
-              <Select value={classFilter} onValueChange={setClassFilter}>
-                <SelectTrigger className="w-[120px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-                  <SelectValue placeholder="Kelas" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Kelas</SelectItem>
-                  <SelectItem value="a">Kelas A</SelectItem>
-                  <SelectItem value="b">Kelas B</SelectItem>
-                  <SelectItem value="c">Kelas C</SelectItem>
-                  <SelectItem value="d">Kelas D</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
+            <Select
+              value={selectedClassId ?? "all"}
+              onValueChange={onClassFilterChange}
+            >
+              <SelectTrigger className="w-[160px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                <SelectValue placeholder="Filter Kelas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Kelas</SelectItem>
+                {sortedClasses.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </CardHeader>

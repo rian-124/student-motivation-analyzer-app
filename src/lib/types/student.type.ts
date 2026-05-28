@@ -1,3 +1,10 @@
+export interface LatestAnalysis {
+  id: string;
+  prediction: string;
+  confidence: number;
+  createdAt: string;
+}
+
 export interface Student {
   id: string;
   nim: string;
@@ -25,6 +32,7 @@ export interface Student {
   _count?: {
     analyses: number;
   };
+  latestAnalysis?: LatestAnalysis | null;
   createdAt: string;
   updatedAt: string;
 }

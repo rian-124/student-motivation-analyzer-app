@@ -55,88 +55,73 @@ export default function StatsSection() {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
-      {/* Total Students - Only for Admin/Lecturer */}
-      <div className="flex-1 min-w-[200px]">
-        {isAdmin || isLecturer ? (
-          <StatCard
-            icon={Users}
-            label={isAdmin ? "Total Mahasiswa" : "Mahasiswa Bimbingan"}
-            value={stats?.totalStudents || 0}
-            variant="blue"
-            trend={{ value: "+4", isUp: true }}
-          />
-        ) : (
-          <StatCard
-            icon={GraduationCap}
-            label="Skor Motivasi Saya"
-            value="84"
-            variant="blue"
-            trend={{ value: "+5", isUp: true }}
-          />
-        )}
-      </div>
-
-      <div className="flex-1 min-w-[200px]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {isAdmin || isLecturer ? (
         <StatCard
-          icon={AlertTriangle}
-          label="Sangat Rendah"
-          value={stats?.veryLowMotivation || 0}
-          variant="rose"
-          trend={{ value: "↓", isUp: false }}
+          icon={Users}
+          label={isAdmin ? "Total Mahasiswa" : "Mahasiswa Yang Di Wali"}
+          value={stats?.totalStudents || 0}
+          variant="blue"
+          trend={{ value: "+4", isUp: true }}
         />
-      </div>
-
-      <div className="flex-1 min-w-[200px]">
+      ) : (
         <StatCard
-          icon={AlertTriangle}
-          label="Motivasi Rendah"
-          value={stats?.lowMotivation || 0}
-          variant="orange"
-          trend={{ value: "↓", isUp: false }}
+          icon={GraduationCap}
+          label="Skor Motivasi Saya"
+          value="84"
+          variant="blue"
+          trend={{ value: "+5", isUp: true }}
         />
-      </div>
+      )}
 
-      <div className="flex-1 min-w-[200px]">
-        <StatCard
-          icon={TrendingUp}
-          label="Motivasi Cukup"
-          value={stats?.averageMotivation || 0}
-          variant="amber"
-          trend={{ value: "→", isUp: null }}
-        />
-      </div>
+      <StatCard
+        icon={AlertTriangle}
+        label="Sangat Rendah"
+        value={stats?.veryLowMotivation || 0}
+        variant="rose"
+        trend={{ value: "↓", isUp: false }}
+      />
 
-      <div className="flex-1 min-w-[200px]">
-        <StatCard
-          icon={CheckCircle2}
-          label="Motivasi Tinggi"
-          value={stats?.highMotivation || 0}
-          variant="emerald"
-          trend={{ value: "↑", isUp: true }}
-        />
-      </div>
+      <StatCard
+        icon={AlertTriangle}
+        label="Motivasi Rendah"
+        value={stats?.lowMotivation || 0}
+        variant="orange"
+        trend={{ value: "↓", isUp: false }}
+      />
 
-      <div className="flex-1 min-w-[200px]">
-        <StatCard
-          icon={Zap}
-          label="Sangat Tinggi"
-          value={stats?.veryHighMotivation || 0}
-          variant="green"
-          trend={{ value: "↑↑", isUp: true }}
-        />
-      </div>
+      <StatCard
+        icon={TrendingUp}
+        label="Motivasi Cukup"
+        value={stats?.averageMotivation || 0}
+        variant="amber"
+        trend={{ value: "→", isUp: null }}
+      />
+
+      <StatCard
+        icon={CheckCircle2}
+        label="Motivasi Tinggi"
+        value={stats?.highMotivation || 0}
+        variant="emerald"
+        trend={{ value: "↑", isUp: true }}
+      />
+
+      <StatCard
+        icon={Zap}
+        label="Sangat Tinggi"
+        value={stats?.veryHighMotivation || 0}
+        variant="green"
+        trend={{ value: "↑↑", isUp: true }}
+      />
 
       {isAdmin && (
-        <div className="flex-1 min-w-[200px]">
-          <StatCard
-            icon={BookOpen}
-            label="Kelas Terdaftar"
-            value={stats?.totalClasses || 0}
-            variant="purple"
-            trend={{ value: "0", isUp: null }}
-          />
-        </div>
+        <StatCard
+          icon={BookOpen}
+          label="Kelas Terdaftar"
+          value={stats?.totalClasses || 0}
+          variant="purple"
+          trend={{ value: "0", isUp: null }}
+        />
       )}
     </div>
   );

@@ -8,10 +8,26 @@ export default function AnalysisGridSection({
 }: {
   data: MotivationAnalysis | null;
 }) {
+  const weightedScore = data?.weightedScore ?? null;
   const score =
-    data?.confidencePercent ?? Math.round((data?.confidence || 0) * 100);
+    weightedScore ??
+    data?.confidencePercent ??
+    Math.round((data?.confidence || 0) * 100);
   const dominant = data?.result?.label || data?.prediction || "Intrinsik";
   const transcript = data?.transcription || "Tidak ada transkrip tersedia.";
+  const wordCount =
+    transcript === "Tidak ada transkrip tersedia."
+      ? 0
+      : transcript.split(" ").length;
+  const formatDuration = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = Math.round(sec % 60);
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
+  const effectiveDuration =
+    data?.duration != null
+      ? formatDuration(data.duration)
+      : formatDuration(wordCount / 3);
 
   const mfccMetrics = [
     {
@@ -124,7 +140,7 @@ export default function AnalysisGridSection({
                 Total Kata
               </p>
               <p className="text-xl font-black text-slate-900 dark:text-white">
-                {transcript.split(" ").length} Kata
+                {wordCount} Kata
               </p>
             </div>
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 space-y-1">
@@ -132,7 +148,7 @@ export default function AnalysisGridSection({
                 Durasi Efektif
               </p>
               <p className="text-xl font-black text-slate-900 dark:text-white">
-                00:38
+                {effectiveDuration}
               </p>
             </div>
             <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 space-y-1">
@@ -145,13 +161,11 @@ export default function AnalysisGridSection({
             </div>
             <div className="p-4 rounded-xl bg-brand/5 border border-brand/10 space-y-1">
               <p className="text-[10px] font-bold text-brand uppercase tracking-widest">
-                Akurasi AI
+                Skor Motivasi
               </p>
               <p className="text-xl font-black text-brand">
-                {(
-                  data?.confidencePercent ?? (data?.confidence || 0) * 100
-                ).toFixed(1)}
-                %
+                {score}
+                <span className="text-sm font-bold text-brand/70">%</span>
               </p>
             </div>
           </div>

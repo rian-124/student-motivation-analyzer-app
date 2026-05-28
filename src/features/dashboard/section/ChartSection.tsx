@@ -22,15 +22,6 @@ export default function ChartSection() {
   const isAdmin = userRole === "ADMIN";
   const isStudent = userRole === "STUDENT";
 
-  // Get class info safely
-  const lecturerClass = user?.lecturer?.class?.name;
-  const studentClass = user?.student?.class?.name;
-  const userClassName = isAdmin
-    ? "Global"
-    : isStudent
-      ? studentClass || "Kelas Anda"
-      : lecturerClass || "Kelas Bimbingan";
-
   useEffect(() => {
     const fetchCharts = async () => {
       try {
@@ -68,12 +59,12 @@ export default function ChartSection() {
               ? "Motivasi per Jurusan"
               : isStudent
                 ? "Tren Motivasi Saya"
-                : "Tren Motivasi Kelas"}
+                : "Rata-rata Skor per Kelas Yang Di Wali"}
           </CardTitle>
           <p className="text-xs text-slate-500">
             {isAdmin
               ? "Rata-rata skor motivasi mahasiswa di tiap jurusan."
-              : `Statistik motivasi harian untuk kelas ${userClassName}.`}
+              : "Rata-rata skor motivasi per kelas yang di wali."}
           </p>
         </CardHeader>
 
@@ -87,14 +78,12 @@ export default function ChartSection() {
         <CardHeader className="p-6 pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
             <PieChart className="w-4 h-4 text-slate-400" />
-            {isAdmin
-              ? "Distribusi Global"
-              : `Distribusi Kelas ${userClassName}`}
+            {isAdmin ? "Distribusi Global" : "Distribusi Kelas Yang Di Wali"}
           </CardTitle>
           <p className="text-xs text-slate-500">
             {isAdmin
               ? "Distribusi tingkat motivasi seluruh mahasiswa."
-              : "Berdasarkan hasil analisis bimbingan terbaru."}
+              : "Berdasarkan hasil analisis kelas yang di wali."}
           </p>
         </CardHeader>
 

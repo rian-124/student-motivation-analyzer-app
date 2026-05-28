@@ -3,10 +3,13 @@
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import type { Student } from "@/lib/types/student.type";
+import { motivationAnalysisService } from "@/services/motivation-analysis.service";
 import { studentService } from "@/services/student.service";
-import { ArrowLeft, FileDown, Filter } from "lucide-react";
+import { exportAnalysisHistory } from "@/utils/export-excel";
+import { ArrowLeft, FileDown, Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import HistoryTableSection from "../section/HistoryTableSection";
 
 export default function StudentAnalysisHistoryPage() {
@@ -14,6 +17,7 @@ export default function StudentAnalysisHistoryPage() {
   const router = useRouter();
   const studentId = params.studentId as string;
   const [student, setStudent] = useState<Student | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -27,6 +31,22 @@ export default function StudentAnalysisHistoryPage() {
     };
     fetchStudent();
   }, [studentId]);
+
+  const handleExport = async () => {
+    if (exporting || !studentId) return;
+    try {
+      setExporting(true);
+      const data = await motivationAnalysisService.findByStudent(studentId);
+      const ts = new Date().toISOString().slice(0, 10);
+      const name = student?.name?.replace(/\s+/g, "_") || studentId;
+      exportAnalysisHistory(data, `riwayat-${name}-${ts}.xlsx`);
+      toast.success("Data berhasil diekspor.");
+    } catch {
+      toast.error("Gagal mengekspor data.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <section className="p-6 lg:p-8 space-y-6 w-full min-h-screen bg-slate-50/50 dark:bg-slate-950/50">
@@ -49,26 +69,23 @@ export default function StudentAnalysisHistoryPage() {
           actions={
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
-                size="sm"
-                className="rounded-lg border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filter
-              </Button>
-              <Button
                 size="sm"
                 className="bg-brand hover:bg-brand/90 text-white rounded-lg shadow-sm"
+                onClick={handleExport}
+                disabled={exporting}
               >
-                <FileDown className="w-4 h-4 mr-2" />
-                Ekspor Data
+                {exporting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <FileDown className="w-4 h-4 mr-2" />
+                )}
+                {exporting ? "Mengekspor..." : "Ekspor Data"}
               </Button>
             </div>
           }
         />
 
         <div className="w-full">
-          {/* We pass the studentId to the HistoryTableSection so it specifically fetches for this student */}
           <HistoryTableSection studentId={studentId} />
         </div>
       </div>

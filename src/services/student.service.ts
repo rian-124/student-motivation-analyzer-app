@@ -8,10 +8,22 @@ import type {
 } from "@/lib/types/student.type";
 
 export const studentService = {
-  /** GET /students?page=&limit= → { data: Student[], meta: {...} } */
-  findAll: async (page = 1, limit = 10): Promise<StudentResponse> => {
+  /** GET /students?page=&limit=&classId=&prediction= → { data: Student[], meta: {...} } */
+  findAll: async (
+    page = 1,
+    limit = 10,
+    classId?: string,
+    prediction?: string,
+  ): Promise<StudentResponse> => {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    if (classId) params.set("classId", classId);
+    if (prediction) params.set("prediction", prediction);
+
     const response = await api.get<WebResponse<Student[]>>(
-      `/students?page=${page}&limit=${limit}`,
+      `/students?${params.toString()}`,
     );
     return {
       data: response.data.data,

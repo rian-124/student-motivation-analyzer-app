@@ -32,7 +32,7 @@ import {
   Search,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 interface HistoryTableSectionProps {
@@ -55,6 +55,7 @@ export default function HistoryTableSection({
   const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState<HistoryMeta | null>(null);
   const [page, setPage] = useState(1);
+  const [predictionFilter, setPredictionFilter] = useState("all");
   const paginationItems = meta
     ? getPaginationPages(page, meta.lastPage, 5).reduce<
         Array<{ key: string; pageNum: number | null }>
@@ -142,6 +143,14 @@ export default function HistoryTableSection({
     }
   };
 
+  const filteredData = useMemo(() => {
+    if (predictionFilter === "all") return historyData;
+    return historyData.filter((row) => {
+      const label = row.result?.label || row.prediction || "";
+      return label === predictionFilter;
+    });
+  }, [historyData, predictionFilter]);
+
   return (
     <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
       {/* TOOLBAR */}
@@ -161,16 +170,21 @@ export default function HistoryTableSection({
                 className="pl-9 w-full sm:w-[240px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
               />
             </div>
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[130px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+            <Select
+              value={predictionFilter}
+              onValueChange={setPredictionFilter}
+            >
+              <SelectTrigger className="w-[160px] h-9 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                 <Filter className="w-3.5 h-3.5 mr-2 text-slate-400" />
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Filter Label" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua</SelectItem>
-                <SelectItem value="high">Tinggi</SelectItem>
-                <SelectItem value="medium">Sedang</SelectItem>
-                <SelectItem value="low">Rendah</SelectItem>
+                <SelectItem value="all">Semua Label</SelectItem>
+                <SelectItem value="Sangat Tinggi">Sangat Tinggi</SelectItem>
+                <SelectItem value="Tinggi">Tinggi</SelectItem>
+                <SelectItem value="Cukup">Cukup</SelectItem>
+                <SelectItem value="Rendah">Rendah</SelectItem>
+                <SelectItem value="Sangat Rendah">Sangat Rendah</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -236,16 +250,18 @@ export default function HistoryTableSection({
                     </TableCell>
                   </TableRow>
                 ))
-              ) : historyData.length === 0 ? (
+              ) : filteredData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-40 text-center">
                     <p className="text-sm text-slate-400 font-medium">
-                      Belum ada riwayat analisis.
+                      {predictionFilter !== "all"
+                        ? "Tidak ada riwayat dengan label tersebut."
+                        : "Belum ada riwayat analisis."}
                     </p>
                   </TableCell>
                 </TableRow>
               ) : (
-                historyData.map((row) => {
+                filteredData.map((row) => {
                   const prediction = row.result?.label || row.prediction;
                   const confidencePercent =
                     row.confidencePercent ?? row.confidence * 100;
@@ -324,6 +340,9 @@ export default function HistoryTableSection({
         <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/10">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
             Total {meta?.total ?? historyData.length} Record
+            {predictionFilter !== "all"
+              ? ` (${filteredData.length} sesuai filter)`
+              : ""}
           </p>
           {meta && meta.lastPage > 1 && (
             <div className="flex items-center gap-1">
