@@ -72,7 +72,7 @@ export default function AnalysisGridSection({
             Detail Akustik (MFCC)
           </CardTitle>
           <p className="text-xs text-slate-500 font-medium">
-            Karakteristik fisik suara yang mencerminkan kondisi emosional.
+            Karakteristik fisik suara yang diekstraksi untuk analisis motivasi.
           </p>
         </CardHeader>
 

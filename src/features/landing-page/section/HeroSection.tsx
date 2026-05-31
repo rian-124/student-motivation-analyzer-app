@@ -29,9 +29,10 @@ export default function HeroSection() {
 
           {/* Subtext */}
           <p className="text-brand-secondary/60 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
-            Implementasi kecerdasan buatan multimodal untuk mengukur dan
-            menganalisis tingkat keterlibatan mahasiswa menggunakan Pemrosesan
-            Bahasa Alami dan Analisis Sentimen Audio.
+            Sistem AI multimodal yang menganalisis rekaman suara mahasiswa
+            melalui Pemrosesan Bahasa Alami dan Analisis Ciri Akustik untuk
+            mengklasifikasikan tingkat motivasi dan memberikan wawasan berbasis
+            data bagi pendidik.
           </p>
 
           {/* Actions */}

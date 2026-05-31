@@ -2,7 +2,7 @@ import WorkFlow from "../components/WorkFlow";
 
 export default function FlowSystemSection() {
   return (
-    <section className="w-full min-h-screen py-24 relative overflow-hidden">
+    <section className="w-full min-h-screen py-16 md:py-24 relative overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute top-1/4 left-0 w-72 h-72 bg-brand/10 blur-[120px] rounded-full -translate-x-1/2 pointer-events-none" />
       <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-brand-secondary/10 blur-[150px] rounded-full translate-x-1/2 pointer-events-none" />

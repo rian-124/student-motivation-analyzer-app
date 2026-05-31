@@ -34,29 +34,29 @@ export default function FeatureSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <CardFeature
             title="Pemrosesan Bahasa Alami (NLP)"
-            description="Analisis linguistik data teks untuk mengekstrak sentimen emosional dan mengidentifikasi indikator motivasi dari refleksi mahasiswa."
-            imageSrc="/nlp.svg"
+            description="Transkripsi suara ke teks (Whisper) dan analisis linguistik untuk mengekstrak indikator motivasi dari refleksi mahasiswa."
+            imageSrc="/features/nlp.svg"
           />
           <CardFeature
-            title="Pengenalan Emosi Suara (SER)"
-            description="Analisis akustik menggunakan pembelajaran mesin untuk mendeteksi keadaan emosional dari karakteristik vokal dalam audio kelas."
-            imageSrc="/nlp.svg"
+            title="Analisis Ciri Akustik"
+            description="Ekstraksi 37 fitur audio (MFCC) menggunakan librosa untuk menangkap karakteristik vokal sebagai pelengkap analisis teks."
+            imageSrc="/features/ser.svg"
           />
           <CardFeature
             title="Mesin Integrasi Data"
             description="Mensintesis aliran data terpisah menjadi profil keterlibatan yang terpadu untuk memastikan reliabilitas analisis yang tinggi."
-            imageSrc="/logo-icon.svg"
+            imageSrc="/features/data-integration.svg"
           />
           <CardFeature
             title="Metrik Kuantitatif"
-            description="Pembuatan skor keterlibatan objektif berdasarkan kombinasi isyarat perilaku dan linguistik yang dianalisis."
-            imageSrc="/file.svg"
+            description="Pembuatan skor motivasi objektif berdasarkan kombinasi isyarat perilaku dan linguistik yang dianalisis."
+            imageSrc="/features/metric.svg"
             className="md:col-span-2 lg:col-span-1"
           />
           <CardFeature
             title="Pelaporan Analisis"
             description="Visualisasi mendetail dari tren motivasi mahasiswa untuk memberikan wawasan berbasis data bagi riset pendidikan."
-            imageSrc="/window.svg"
+            imageSrc="/features/report.svg"
             className="md:col-span-2 lg:col-span-2"
           />
         </div>

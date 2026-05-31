@@ -71,28 +71,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal Information */}
-          <div className="flex flex-col gap-6">
-            <ul className="space-y-4">
-              <li>
-                <Link
-                  href="#"
-                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
-                >
-                  Ketentuan Penggunaan
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
-                >
-                  Privasi Data
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Contact Info */}
           <div className="flex flex-col gap-6">
             <ul className="space-y-4">
@@ -101,12 +79,12 @@ export default function Footer() {
                   href="mailto:research@university.edu"
                   className="text-brand-secondary text-sm font-bold hover:text-brand transition-colors"
                 >
-                  research@university.edu
+                  afriyanlionel0@gmail.com
                 </Link>
               </li>
               <li>
                 <span className="text-brand-secondary text-sm font-bold">
-                  Tahun Akademik 2024/2025
+                  Tahun Akademik 2026
                 </span>
               </li>
             </ul>
@@ -119,15 +97,8 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-brand-secondary text-xs font-bold">
-            © {year} Proyek Analisis Motivasi Mahasiswa. Hak cipta dilindungi
-            undang-undang.
+            © {year} Proyek Analisis Motivasi Mahasiswa
           </p>
-          <Link
-            href="#"
-            className="text-brand-secondary text-xs font-bold hover:text-brand transition-colors"
-          >
-            Pengaturan Cookie
-          </Link>
         </div>
       </div>
     </footer>

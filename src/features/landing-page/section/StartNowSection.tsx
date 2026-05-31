@@ -28,8 +28,8 @@ export default function StartNowSection() {
               </h2>
               <p className="max-w-2xl mx-auto text-white/70 text-lg md:text-xl font-medium">
                 Akses dasbor analisis untuk mengeksplorasi bagaimana AI
-                multimodal dapat digunakan untuk memantau keterlibatan dan
-                motivasi mahasiswa di lingkungan pendidikan.
+                multimodal menganalisis motivasi mahasiswa melalui rekaman suara
+                di lingkungan pendidikan.
               </p>
             </div>
 
