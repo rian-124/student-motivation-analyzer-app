@@ -5,6 +5,7 @@ import { Award, Brain, Mic, TrendingUp } from "lucide-react";
 interface TopStatsSectionProps {
   confidence: number;
   confidencePercent?: number;
+  weightedScore?: number | null;
   prediction: string;
   result?: {
     label: string;
@@ -17,7 +18,9 @@ export default function TopStatsSection({
 }: { data: TopStatsSectionProps }) {
   // Map real data to display fields
   const score =
-    data?.confidencePercent ?? Math.round((data?.confidence || 0) * 100);
+    data?.weightedScore ??
+    data?.confidencePercent ??
+    Math.round((data?.confidence || 0) * 100);
   const status = data?.result?.label || data?.prediction || "N/A";
   const dominant = data?.result?.label || data?.prediction || "N/A";
   const sttScore = 80; // Default placeholder for now
@@ -74,9 +77,9 @@ export default function TopStatsSection({
             <div className="space-y-1">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center justify-center md:justify-start gap-2">
                 Motivasi{" "}
-                {score > 70
+                {score > 62
                   ? "Luar Biasa!"
-                  : score > 50
+                  : score > 37
                     ? "Cukup Baik"
                     : "Perlu Ditingkatkan"}
                 <Award className="w-6 h-6 text-brand-accent fill-brand-accent/20" />
@@ -84,7 +87,7 @@ export default function TopStatsSection({
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                 Dominasi motivasi Anda adalah{" "}
                 <span className="font-bold text-brand">{dominant}</span>.
-                {score > 70
+                {score > 62
                   ? " Pertahankan ritme dan antusiasme Anda!"
                   : " Cobalah untuk menemukan tujuan baru yang lebih personal."}
               </p>
@@ -96,7 +99,7 @@ export default function TopStatsSection({
                   Status
                 </span>
                 <span
-                  className={`text-sm font-bold ${score > 70 ? "text-emerald-500" : score > 50 ? "text-amber-500" : "text-rose-500"}`}
+                  className={`text-sm font-bold ${score > 62 ? "text-emerald-500" : score > 37 ? "text-amber-500" : "text-rose-500"}`}
                 >
                   {status.toUpperCase()}
                 </span>
