@@ -263,8 +263,10 @@ export default function HistoryTableSection({
               ) : (
                 filteredData.map((row) => {
                   const prediction = row.result?.label || row.prediction;
-                  const confidencePercent =
-                    row.confidencePercent ?? row.confidence * 100;
+                  const weightedScore =
+                    row.weightedScore ??
+                    row.confidencePercent ??
+                    Math.round(row.confidence * 100);
                   const color = getStatusColor(prediction);
                   const formattedDate = new Date(
                     row.createdAt,
@@ -311,7 +313,7 @@ export default function HistoryTableSection({
                       </TableCell>
                       <TableCell className="text-right px-5">
                         <span className="font-mono font-bold text-slate-900 dark:text-white">
-                          {confidencePercent.toFixed(1)}
+                          {weightedScore.toFixed(1)}
                         </span>
                       </TableCell>
                       <TableCell className="text-slate-500 text-xs px-5">

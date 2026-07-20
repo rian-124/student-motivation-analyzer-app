@@ -23,7 +23,10 @@ export function exportAnalysisHistory(
     NIM: item.student?.nim || "-",
     Kelas: item.student?.className || item.student?.class?.name || "-",
     "Label Prediksi": item.result?.label || item.prediction || "-",
-    "Skor (%)": item.confidencePercent ?? (item.confidence * 100).toFixed(1),
+    "Skor (%)":
+      item.weightedScore ??
+      item.confidencePercent ??
+      Math.round(item.confidence * 100),
     Tanggal: new Date(item.createdAt).toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
