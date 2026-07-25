@@ -49,6 +49,25 @@ const mergeAudioBuffers = (buffers: Float32Array[]) => {
   return merged;
 };
 
+const downsample = (
+  samples: Float32Array,
+  fromRate: number,
+  toRate: number,
+) => {
+  if (fromRate === toRate) return samples;
+  const ratio = fromRate / toRate;
+  const newLength = Math.round(samples.length / ratio);
+  const result = new Float32Array(newLength);
+  for (let i = 0; i < newLength; i++) {
+    const srcIndex = i * ratio;
+    const low = Math.floor(srcIndex);
+    const high = Math.min(low + 1, samples.length - 1);
+    const frac = srcIndex - low;
+    result[i] = samples[low] * (1 - frac) + samples[high] * frac;
+  }
+  return result;
+};
+
 const encodeWav = (samples: Float32Array, sampleRate: number) => {
   const bytesPerSample = 2;
   const blockAlign = bytesPerSample;
@@ -254,7 +273,12 @@ export default function UploadZoneSection({
       return;
     }
 
-    const blob = encodeWav(samples, recordingSampleRateRef.current);
+    const downsampled = downsample(
+      samples,
+      recordingSampleRateRef.current,
+      16000,
+    );
+    const blob = encodeWav(downsampled, 16000);
     const recordedFile = new File([blob], `live-recording-${Date.now()}.wav`, {
       type: "audio/wav",
     });
